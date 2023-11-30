@@ -1,0 +1,23 @@
+<div class="image-browser-frame">
+	<div class="tree">
+		
+	</div>
+	<div class="node-view">
+		<div class="stats">
+			stats
+		</div>
+		<div class="node-content">
+			<div class="box-holder">
+				<div class="choice-boxes">
+				</div>
+			</div>
+			
+			
+		</div>
+		<div class="controls">
+			controls	
+		</div>
+	</div>
+	
+	
+</div>
