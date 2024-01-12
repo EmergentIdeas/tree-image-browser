@@ -26,6 +26,10 @@ module.exports = [{
 		rules: [
 			{ test: /\.tmpl$/, use: 'tripartite/webpack-loader.mjs' }
 			, { test: /\.tri$/, use: 'tripartite/webpack-loader.mjs' }
+			, {
+				test: /\.txt$/i,
+				use: 'raw-loader',
+			}
 		],
 	},
 	resolve: {
@@ -60,6 +64,10 @@ module.exports = [{
 		rules: [
 			{ test: /\.tmpl$/, use: 'tripartite/webpack-loader.mjs' }
 			, { test: /\.tri$/, use: 'tripartite/webpack-loader.mjs' }
+			, {
+				test: /\.txt$/i,
+				use: 'raw-loader',
+			}
 		],
 	},
 	resolve: {
@@ -75,4 +83,4 @@ module.exports = [{
 		reasons: true
 	},
 
-} ]
+}]

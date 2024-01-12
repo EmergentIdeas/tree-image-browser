@@ -3,8 +3,23 @@
 		__!this.thumbnail??'<span class="material-icons thumbnail-icon">' + thumbnailIcon + '</span>'__
 		__this.thumbnail??'<img class="thumbnail-image" src="' + thumbnail + '" />'__
 	</div>
-	<div class="basename">
-		__baseName__
+	<div class="size-line">
+		__size__
 	</div>
-	
+	<div class="bottom">
+		<div class="content">
+			<div class="basename">
+				__baseName__
+			</div>
+			<div class="extensions">
+				__extensions::./extension-pill__
+			</div>
+		</div>
+		<div class="actions">
+			<button class="details">
+				<span class="material-icons">more_vert</span>
+			</button>
+		</div>
+	</div>
+
 </div>

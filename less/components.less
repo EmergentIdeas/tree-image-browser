@@ -1,15 +1,23 @@
+.webhandle-file-tree-image-browser-colors() {
+	@webhandle-file-tree-image-box-background: #eeeeee;
+}
+
+.webhandle-file-tree-image-browser-colors();
+
 .webhandle-file-tree-image-browser {
+	--webhandle-file-tree-image-box-background: @webhandle-file-tree-image-box-background;
+
 	.image-browser {
 		.image-browser-frame {
 			display: grid;
 			grid-template-columns: minmax(300px, 30%) 1fr;
 			column-gap: 20px;
-			height: 800px;
+			& > .treebox {
+				height: 800px;
+				position: relative;
+			}
 		}
 
-		.tree {
-			height: 100%;
-		}
 		
 		.node-content {
 			position: relative;
@@ -48,6 +56,10 @@
 				display: grid;
 				aspect-ratio: 1.6;
 				position: relative;
+				
+				.thumbnail-icon {
+					font-size: 70px;
+				}
 
 				& > span {
 					grid-column: 1;
@@ -65,9 +77,36 @@
 					max-height: 100%;
 				}
 			}
+			
+			.bottom {
+				display: grid;
+				grid-template-columns: 1fr auto;
+				.basename {
+					display: inline;
+				}
+				
+				.extensions {
+					display: inline-flex;
+					column-gap: 5px;
+				}
+				
+				.actions {
+					button {
+						border: 0;
+						background: none;
+					}
+				}
+			}
+		}
+		
+		.extension-pill {
+			padding: 3px 5px;
+			border-radius: 5px;
+			background-color: var(--webhandle-file-tree-image-box-background);
 		}
 
 
 	}
+
 
 }
