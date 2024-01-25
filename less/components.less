@@ -1,11 +1,13 @@
 .webhandle-file-tree-image-browser-colors() {
 	@webhandle-file-tree-image-box-background: #eeeeee;
+	@webhandle-file-tree-image-selected-box-hightlight: blue;
 }
 
 .webhandle-file-tree-image-browser-colors();
 
 .webhandle-file-tree-image-browser {
 	--webhandle-file-tree-image-box-background: @webhandle-file-tree-image-box-background;
+	--webhandle-file-tree-image-selected-box-hightlight: @webhandle-file-tree-image-selected-box-hightlight;
 
 	.image-browser {
 		.image-browser-frame {
@@ -94,8 +96,13 @@
 					button {
 						border: 0;
 						background: none;
+						cursor: pointer;
 					}
 				}
+			}
+			
+			&.selected {
+				box-shadow: 1px 1px 10px var(--webhandle-file-tree-image-selected-box-hightlight);
 			}
 		}
 		

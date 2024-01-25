@@ -461,14 +461,18 @@ body {
 .nowrap {
   white-space: nowrap;
 }
+.webhandle-file-tree-image-browser {
+  --webhandle-file-tree-image-box-background: #eeeeee;
+  --webhandle-file-tree-image-selected-box-hightlight: blue;
+}
 .webhandle-file-tree-image-browser .image-browser .image-browser-frame {
   display: grid;
   grid-template-columns: minmax(300px, 30%) 1fr;
   column-gap: 20px;
-  height: 800px;
 }
-.webhandle-file-tree-image-browser .image-browser .tree {
-  height: 100%;
+.webhandle-file-tree-image-browser .image-browser .image-browser-frame > .treebox {
+  height: 800px;
+  position: relative;
 }
 .webhandle-file-tree-image-browser .image-browser .node-content {
   position: relative;
@@ -506,6 +510,9 @@ body {
   aspect-ratio: 1.6;
   position: relative;
 }
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .img .thumbnail-icon {
+  font-size: 70px;
+}
 .webhandle-file-tree-image-browser .image-browser .variant-choice-box .img > span {
   grid-column: 1;
   grid-row: 1;
@@ -519,5 +526,29 @@ body {
   transform: translate(-50%, -50%);
   max-width: 100%;
   max-height: 100%;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom .basename {
+  display: inline;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom .extensions {
+  display: inline-flex;
+  column-gap: 5px;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom .actions button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box.selected {
+  box-shadow: 1px 1px 10px var(--webhandle-file-tree-image-selected-box-hightlight);
+}
+.webhandle-file-tree-image-browser .image-browser .extension-pill {
+  padding: 3px 5px;
+  border-radius: 5px;
+  background-color: var(--webhandle-file-tree-image-box-background);
 }
 /*# sourceMappingURL=pages.css.map */

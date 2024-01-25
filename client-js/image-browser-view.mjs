@@ -5,16 +5,39 @@ import condense from '@dankolz/webp-detection/lib/condense-image-variants.js'
 import basename from '@dankolz/webp-detection/lib/file-basename.js'
 // import Dialog from 'ei-dialog'
 import { FormAnswerDialog } from './form-answer-dialog.mjs'
+import { InfoDialog } from './info-dialog.mjs'
 import formatBytes from './format-bytes.mjs'
 
 export default class ImageBrowserView extends View {
+	
+	/**
+	 * Construct a new file browser
+	 * @param {object} options 
+	 * @param {FileSink} options.sink The file to use as a file source
+	 * @param {boolean} options.imagesOnly Set to true if you would like to display only images
+	 * @param {boolean} options.allowFileSelection Set to true so that selected files are marked
+	 */
+	constructor(options) {
+		super(options)
+	}
 	preinitialize() {
 		this.className = 'image-browser'
 		this.idInd = 1
 		this.nodes = {}
 		this.events = {
 			'click .create-directory': 'createDirectory'
+			, 'click .variant-choice-box .details': 'showVariantDetails'
+			, 'click .variant-choice-box': 'selectVariant'
 		}
+	}
+
+	selectVariant(evt, selected) {
+		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+		for(let sel of currentSelected) {
+			sel.classList.remove('selected')
+		}
+
+		selected.classList.add('selected')
 	}
 
 	createDirectory(evt, selected) {
@@ -25,16 +48,50 @@ export default class ImageBrowserView extends View {
 		let prom = dialog.open()
 		prom.then(async data => {
 			if (data) {
-				console.log(`should create directory`)
-				console.log(data)
 				let directoryPath = this.currentNode.file.relPath + '/' + data.name
 				await this.sink.mkdir(directoryPath)
 				let file = await this.sink.getFullFileInfo(directoryPath)
 				let node = this._fileToKalpaNode(file)
 				this.tree.options.stream.emit('data', node)
 			}
-			else {
-				console.log(`should NOT create directory`)
+		})
+
+	}
+
+	showVariantDetails(evt, selected) {
+		let choiceBox = selected.closest('.variant-choice-box')
+		let variant = choiceBox.variant
+
+		let files = []
+		if(variant.variants) {
+			files.push(...variant.variants.map(variant => variant.file))
+		}
+		else {
+			files.push(variant.file)
+		}
+		
+
+		let content = '<ul>'
+		for(let file of files) {
+			content += '<li><a target="_blank" href="' + file.accessUrl + '">'
+			content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
+			content += '</li>'
+		}
+		content += '</ul>'
+		
+		let dialog = new InfoDialog({
+			title: 'File Details: ' + variant.baseName
+			, body: content
+			, buttons: [
+				{
+					classes: 'btn btn-primary btn-ok',
+					label: 'OK'
+				}
+			]
+		})
+		let prom = dialog.open()
+		prom.then(async data => {
+			if (data) {
 			}
 		})
 
@@ -160,9 +217,7 @@ export default class ImageBrowserView extends View {
 	_formatBytes = formatBytes
 
 
-	async setCurrentNode(node) {
-		this.currentNode = node
-		let info = await this.sink.getFullFileInfo(node.file.relPath)
+	createVariantValues(info) {
 		let variants = condense(info.children)
 		let variantValues = Object.values(variants)
 
@@ -189,15 +244,17 @@ export default class ImageBrowserView extends View {
 			}
 		}
 
-		for (let file of remainingChildren) {
-			let info = {
-				file: file
-				, thumbnailIcon: 'description'
+		if(!this.imagesOnly) {
+			for (let file of remainingChildren) {
+				let info = {
+					file: file
+					, thumbnailIcon: 'description'
+				}
+				let name = file.name
+				info.ext = name.substring(name.lastIndexOf('.') + 1)
+				info.baseName = name.substring(0, name.lastIndexOf('.'))
+				variantValues.push(info)
 			}
-			let name = file.name
-			info.ext = name.substring(name.lastIndexOf('.') + 1)
-			info.baseName = name.substring(0, name.lastIndexOf('.'))
-			variantValues.push(info)
 		}
 
 
@@ -214,6 +271,13 @@ export default class ImageBrowserView extends View {
 		}
 
 		variantValues.sort(this._compareVariants)
+		return variantValues
+	}
+
+	async setCurrentNode(node) {
+		this.currentNode = node
+		let info = await this.sink.getFullFileInfo(node.file.relPath)
+		let variantValues = this.createVariantValues(info)
 
 
 		let content = ''
@@ -221,11 +285,15 @@ export default class ImageBrowserView extends View {
 			content += variantChoiceBox(child)
 		}
 
-		this.newContent = content
 
 		let choicesBoxes = this.el.querySelector('.choice-boxes')
 		choicesBoxes.innerHTML = ''
 		choicesBoxes.insertAdjacentHTML('beforeend', content)
+		
+		for(let i = 0; i < choicesBoxes.children.length; i++) {
+			choicesBoxes.children[i].variant = variantValues[i]
+		}
+		this.el.querySelector('.box-holder').scrollTop = 0
 	}
 
 	_join(...parts) {

@@ -3101,6 +3101,216 @@ module.exports = function defineDataProperty(
 
 /***/ }),
 
+/***/ "./node_modules/ei-dialog/dialog.js":
+/*!******************************************!*\
+  !*** ./node_modules/ei-dialog/dialog.js ***!
+  \******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+let dialogStyles = __webpack_require__(/*! ./dialog-styles.txt */ "./node_modules/ei-dialog/dialog-styles.txt")
+let sequence = 0
+
+// If we're loading via a module system or packed by webpack, we may
+// have a module here instead of the value. We need to check for default
+// and use that if it exists.
+if(typeof dialogStyles !== 'string' && dialogStyles.default) {
+	dialogStyles = dialogStyles.default	
+}
+
+
+/**
+ * A button definition.
+ * @typedef {Object} Button
+ * @property {string} classes Classes to add to the button
+ * @property {string} label Text shown to the user
+ */
+
+
+
+/**
+ * A whole page dialog. 
+ * @param {object} options 
+ * @param {string,function} options.body The contents of the body section. This can be a string,
+ * in which case it will just be inserted into the body. It can be a function, in which case
+ * it is expected to return a string (which will be inserted) or a Promise, which should resolve to
+ * a string, which will be inserted. However, this function is passed the body element and dialog
+ * object as arguments, so it can also modify content directory and return an empty string.
+ * @param {object} options.on An object which the key is the selector and the value is a funtion
+ * which is called when the object with that selector is clicked. If the function returns false the
+ * dialog will not be closed. If it returns a Promise, the promise will be resolved and if the resolved
+ * value is false, it will not be closed. Any other return condition will result in the dialog being
+ * closed.
+ * @param {Button[]} options.buttons The buttons that will show up in the footer of the dialog. If buttons are not
+ * specified, "OK" and "Cancel" buttons will be added.
+ * @param {string} options.title The title of the dialog
+ * @param {string} options.dialogFrameClass An additional string inserted into the class attribute for
+ * specific styling of specific types of dialog boxes.
+ * @param {function} options.afterOpen A function which is called after open with the body element and dialog object
+ * as arguments.
+ */
+var Dialog = function(options) {
+	this.id = "dialog" + (new Date().getTime()) + (sequence++)
+	Object.assign(this, options)
+	if(!this.on) {
+		this.on = {}
+	}
+	if(!this.on['.btn-cancel']) {
+		this.on['.btn-cancel'] = function() {
+		}
+	}
+	if(!this.on['.btn-close']) {
+		this.on['.btn-close'] = function() {
+		}
+	}
+	
+	if(!options.buttons) {
+		this.buttons = [
+			{
+				classes: 'btn btn-primary btn-ok',
+				label: 'OK'
+			},
+			{
+				classes: 'btn btn-cancel',
+				label: 'Cancel'
+			}
+		]
+	}
+	
+	this.body = options.body
+}
+
+Dialog.prototype.getBodySelector = function() {
+	return '#' + this.id + ' .body'
+}
+
+Dialog.prototype.getFrameSelector = function() {
+	return '#' + this.id 
+}
+
+Dialog.prototype.addStylesIfNeeded = function() {
+	if(!document.querySelector('#dialog-frame-styles')) {
+		document.querySelector('head').insertAdjacentHTML('beforeend', 
+			'<style type="text/css" id="dialog-frame-styles">' +
+			dialogStyles + 
+			'</style>')
+	}
+}
+
+Dialog.prototype.renderButton = function(button) {
+	return `<button class="${button.classes}" type="button">${button.label}</button>`
+}
+
+Dialog.prototype.generateFrame = function() {
+	let buttons = this.buttons.map(this.renderButton).join('')
+	
+	return `
+<div class="dialog-frame ${this.dialogFrameClass || ''}" id="${this.id}" >
+	<div class="mask">
+	</div>
+	<div class="the-dialog">
+		<div class="close btn-close">&times;</div>
+		<div class="head">
+			${this.title}
+		</div>
+		<div class="body">
+		</div>
+		<div class="foot">
+			${buttons}
+		</div>
+	</div>
+</div>
+	`
+}
+
+Dialog.prototype.open = function() {
+	let self = this
+	this.addStylesIfNeeded()
+	document.querySelector('body').insertAdjacentHTML('beforeend', this.generateFrame())
+	
+	let bodySelector = this.getBodySelector()
+	let frameSelector = this.getFrameSelector()
+	
+	let bodyContent
+	let bodyElement = document.querySelector(bodySelector)
+	let frameElement = document.querySelector(frameSelector)
+
+	
+	
+	frameElement.addEventListener('click', function(evt) {
+		for(let selector in self.on) {
+			let target = frameElement.querySelector(selector)
+			if(evt.target == target) {
+				let result = self.on[selector]()
+				if(typeof result === 'boolean') {
+					if(result) {
+						self.close()
+					}
+				}
+				else if(typeof Promise === 'function' && result instanceof Promise) {
+					result.then(function(result) {
+						if(result !== false) {
+							self.close()
+						}
+					})
+				}
+				else {
+					self.close()
+				}
+				
+				break
+			}
+		}
+	})
+	
+	function afterOpenResizeSetup() {
+		setTimeout(function() {
+			let head = document.querySelector(frameSelector + ' .head').clientHeight 
+			let foot = document.querySelector(frameSelector + ' .foot').clientHeight
+			let topAndBottom = head + foot
+
+			bodyElement.style.maxHeight = 'calc(90vh - ' + topAndBottom + 'px)'
+			frameElement.classList.add('open')
+			
+			if(self.afterOpen) {
+				self.afterOpen(bodyElement, self)
+			}
+		})
+	}
+	
+	if(typeof this.body === 'function') {
+		bodyContent = this.body(bodyElement, this)
+	}
+	else if(typeof this.body == 'string') {
+		bodyContent = this.body
+	}
+
+	if(typeof bodyContent === 'string') {
+		bodyElement.insertAdjacentHTML('beforeend', bodyContent)
+		afterOpenResizeSetup()
+	}
+	else if(typeof Promise === 'function' && bodyContent instanceof Promise) {
+		bodyContent.then(function(content) {
+			bodyElement.insertAdjacentHTML('beforeend', content)
+			afterOpenResizeSetup()
+		})
+	}
+	
+
+	return this
+}
+
+Dialog.prototype.close = function() {
+	let frame = document.querySelector(this.getFrameSelector())
+	frame.remove()
+	return this
+}
+
+module.exports = Dialog
+
+
+
+/***/ }),
+
 /***/ "./node_modules/events/events.js":
 /*!***************************************!*\
   !*** ./node_modules/events/events.js ***!
@@ -8520,6 +8730,20 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/ei-dialog/dialog-styles.txt":
+/*!**************************************************!*\
+  !*** ./node_modules/ei-dialog/dialog-styles.txt ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (".dialog-frame {\n\tposition: fixed;\n\ttop: 0;\n\tbottom: 0;\n\tleft: 0;\n\tright: 0;\n\tz-index: 10000;\n\topacity: 0;\n\ttransition: opacity .3s;\n\toverflow: hidden;\n\t\n\t\n\tdisplay: grid;\n\tjustify-content: center;\n\talign-content: center;\n\tpadding: 5vh 5%;\n}\n\n.dialog-frame.open {\n\topacity: 1;\n}\n\n.dialog-frame .mask {\n\tposition: absolute;\n\tbox-sizing: border-box;\n\ttop: 0;\n\tbottom: 0;\n\tleft: 0;\n\tright: 0;\n\tbackground-color: #333333;\n\topacity: .7;\n\theight: 100%;\n\tz-index: 0;\n\t\n}\n\n\n.dialog-frame .the-dialog {\n\tposition: relative;\n\tdisplay: inline-block;\n\tz-index: 1;\n\tborder-radius: 5px;\n\tbackground-color: white;\n\toverflow: hidden;\n\ttransform: scale(.84);\n\ttransition: transform 0.262s cubic-bezier(.77,-1.72,.08,1);\n}\n\n.dialog-frame.open .the-dialog {\n\ttransform: scale(1);\n}\n\n.dialog-frame .the-dialog .close {\n\tposition: absolute;\n\ttop: 0px;\n\tright: 0px;\n\tpadding: 8px 10px 10px 10px;\n\tcursor: pointer;\n}\n\n.dialog-frame .the-dialog .head {\n\tborder-bottom: solid #aaaaaa 1px;\n\tline-height: 2em;\n\tpadding: 0 10px;\n}\n\n.dialog-frame .the-dialog .body {\n\tbox-sizing: border-box;\n\tpadding: 20px;\n\toverflow: auto;\n\tmax-height: calc(90vh - 75px);\n}\n\n.dialog-frame .the-dialog .foot {\n\tborder-top: solid #aaaaaa 1px;\n\tpadding: 10px;\n}\n\n.dialog-frame .the-dialog .foot button {\n\tmargin-right: 15px;\n}");
+
+/***/ }),
+
 /***/ "./node_modules/readable-stream/duplex-browser.js":
 /*!********************************************************!*\
   !*** ./node_modules/readable-stream/duplex-browser.js ***!
@@ -12389,13 +12613,24 @@ if (typeof __webpack_require__.g != 'undefined') {
 
 /***/ }),
 
+/***/ "./views/extension-pill.tri":
+/*!**********************************!*\
+  !*** ./views/extension-pill.tri ***!
+  \**********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<span class=\"extension-pill\">__this__<\/span>"; 
+module.exports = tri.addTemplate("extension-pill", t); 
+
+/***/ }),
+
 /***/ "./views/image-browser-frame.tri":
 /*!***************************************!*\
   !*** ./views/image-browser-frame.tri ***!
   \***************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"tree\">\n\t\t\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"stats\">\n\t\t\tstats\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t\t\n\t\t\t\n\t\t<\/div>\n\t\t<div class=\"controls\">\n\t\t\tcontrols\t\n\t\t<\/div>\n\t<\/div>\n\t\n\t\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"treebox\">\n\t\t\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"view-controls\">\n\t\t\t<input name=\"filter\" type=\"text\" placeholder=\"filter\"\/>\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t\t\n\t\t\t\n\t\t<\/div>\n\t\t<div class=\"directory-controls\">\n\t\t\t<button type=\"button\" class=\"btn create-directory\">Create Directory<\/button>\n\t\t<\/div>\n\t<\/div>\n\t\n\t\n<\/div>"; 
 module.exports = tri.addTemplate("image-browser-frame", t); 
 
 /***/ }),
@@ -12428,7 +12663,7 @@ module.exports = tri.addTemplate("test2", t);
   \**************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"variant-choice-box\">\n\t<div class=\"img\">\n\t\t__!this.thumbnail??'<span class=\"material-icons thumbnail-icon\">' + thumbnailIcon + '<\/span>'__\n\t\t__this.thumbnail??'<img class=\"thumbnail-image\" src=\"' + thumbnail + '\" \/>'__\n\t<\/div>\n\t<div class=\"basename\">\n\t\t__baseName__\n\t<\/div>\n\t\n<\/div>\n"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"variant-choice-box\">\n\t<div class=\"img\">\n\t\t__!this.thumbnail??'<span class=\"material-icons thumbnail-icon\">' + thumbnailIcon + '<\/span>'__\n\t\t__this.thumbnail??'<img class=\"thumbnail-image\" src=\"' + thumbnail + '\" \/>'__\n\t<\/div>\n\t<div class=\"size-line\">\n\t\t__size__\n\t<\/div>\n\t<div class=\"bottom\">\n\t\t<div class=\"content\">\n\t\t\t<div class=\"basename\">\n\t\t\t\t__baseName__\n\t\t\t<\/div>\n\t\t\t<div class=\"extensions\">\n\t\t\t\t__extensions::.\/extension-pill__\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"actions\">\n\t\t\t<button class=\"details\">\n\t\t\t\t<span class=\"material-icons\">more_vert<\/span>\n\t\t\t<\/button>\n\t\t<\/div>\n\t<\/div>\n\n<\/div>"; 
 module.exports = tri.addTemplate("variant-choice-box", t); 
 
 /***/ }),
@@ -13206,10 +13441,97 @@ function extend() {
 
 /***/ }),
 
-/***/ "./client-js/image-browser-view.js":
-/*!*****************************************!*\
-  !*** ./client-js/image-browser-view.js ***!
-  \*****************************************/
+/***/ "./client-js/form-answer-dialog.mjs":
+/*!******************************************!*\
+  !*** ./client-js/form-answer-dialog.mjs ***!
+  \******************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FormAnswerDialog: () => (/* binding */ FormAnswerDialog)
+/* harmony export */ });
+/* harmony import */ var ei_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ei-dialog */ "./node_modules/ei-dialog/dialog.js");
+/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
+
+
+class FormAnswerDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
+	constructor(options) {
+		super(Object.assign({}, options,
+			{
+				on: {
+					'.btn-ok': () => {
+						this.resolve(this.gatherFormData())
+						return true
+					},
+					'.mask': () => {
+						console.log('mask')
+						this.resolve()
+						return true
+					},
+					'.btn-cancel': () => {
+						console.log('cancel')
+						this.resolve()
+						return true
+					}
+				}
+
+			}
+		))
+	}
+
+	gatherFormData() {
+		let result = {}
+		let dialogBody = document.querySelector(this.getBodySelector())
+		let controls = dialogBody.querySelectorAll('input, textarea, select')
+		for (let control of controls) {
+			result[control.getAttribute('name')] = control.value
+		}
+		return result
+
+	}
+
+	async open() {
+		this.promise = new Promise((resolve, reject) => {
+			this.resolve = resolve
+			this.reject = reject
+		})
+		super.open()
+
+		return this.promise
+	}
+
+}
+
+/***/ }),
+
+/***/ "./client-js/format-bytes.mjs":
+/*!************************************!*\
+  !*** ./client-js/format-bytes.mjs ***!
+  \************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ formatBytes)
+/* harmony export */ });
+
+function formatBytes(bytes, decimals) {
+	if (bytes == 0)
+		return '0 Bytes'
+	var k = 1024,
+		dm = decimals || 2,
+		sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+		i = Math.floor(Math.log(bytes) / Math.log(k))
+	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+}
+
+/***/ }),
+
+/***/ "./client-js/image-browser-view.mjs":
+/*!******************************************!*\
+  !*** ./client-js/image-browser-view.mjs ***!
+  \******************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -13221,17 +13543,106 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var kalpa_tree_on_page__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! kalpa-tree-on-page */ "./node_modules/kalpa-tree-on-page/client-js/kalpa-tree-loader.js");
 /* harmony import */ var _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @dankolz/webp-detection/lib/condense-image-variants.js */ "./node_modules/@dankolz/webp-detection/lib/condense-image-variants.js");
 /* harmony import */ var _dankolz_webp_detection_lib_file_basename_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @dankolz/webp-detection/lib/file-basename.js */ "./node_modules/@dankolz/webp-detection/lib/file-basename.js");
+/* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./form-answer-dialog.mjs */ "./client-js/form-answer-dialog.mjs");
+/* harmony import */ var _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./info-dialog.mjs */ "./client-js/info-dialog.mjs");
+/* harmony import */ var _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./format-bytes.mjs */ "./client-js/format-bytes.mjs");
 
 
+
+
+
+// import Dialog from 'ei-dialog'
 
 
 
 
 class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__.View {
+	
+	/**
+	 * Construct a new file browser
+	 * @param {object} options 
+	 * @param {FileSink} options.sink The file to use as a file source
+	 * @param {boolean} options.imagesOnly Set to true if you would like to display only images
+	 * @param {boolean} options.allowFileSelection Set to true so that selected files are marked
+	 */
+	constructor(options) {
+		super(options)
+	}
 	preinitialize() {
 		this.className = 'image-browser'
 		this.idInd = 1
 		this.nodes = {}
+		this.events = {
+			'click .create-directory': 'createDirectory'
+			, 'click .variant-choice-box .details': 'showVariantDetails'
+			, 'click .variant-choice-box': 'selectVariant'
+		}
+	}
+
+	selectVariant(evt, selected) {
+		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+		for(let sel of currentSelected) {
+			sel.classList.remove('selected')
+		}
+
+		selected.classList.add('selected')
+	}
+
+	createDirectory(evt, selected) {
+		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+			title: 'Create Directory'
+			, body: '<label>Directory name <input type="text" name="name" /></label>'
+		})
+		let prom = dialog.open()
+		prom.then(async data => {
+			if (data) {
+				let directoryPath = this.currentNode.file.relPath + '/' + data.name
+				await this.sink.mkdir(directoryPath)
+				let file = await this.sink.getFullFileInfo(directoryPath)
+				let node = this._fileToKalpaNode(file)
+				this.tree.options.stream.emit('data', node)
+			}
+		})
+
+	}
+
+	showVariantDetails(evt, selected) {
+		let choiceBox = selected.closest('.variant-choice-box')
+		let variant = choiceBox.variant
+
+		let files = []
+		if(variant.variants) {
+			files.push(...variant.variants.map(variant => variant.file))
+		}
+		else {
+			files.push(variant.file)
+		}
+		
+
+		let content = '<ul>'
+		for(let file of files) {
+			content += '<li><a target="_blank" href="' + file.accessUrl + '">'
+			content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
+			content += '</li>'
+		}
+		content += '</ul>'
+		
+		let dialog = new _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__.InfoDialog({
+			title: 'File Details: ' + variant.baseName
+			, body: content
+			, buttons: [
+				{
+					classes: 'btn btn-primary btn-ok',
+					label: 'OK'
+				}
+			]
+		})
+		let prom = dialog.open()
+		prom.then(async data => {
+			if (data) {
+			}
+		})
+
 	}
 
 	async findDirectories() {
@@ -13255,7 +13666,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 
 		this.rootDirectory = await this.sink.getFullFileInfo('')
 		this.rootDirectory.name = "Files"
-		let rootNode = this._fileToKalpaNode(this.rootDirectory)
+		let rootNode = this.rootNode = this._fileToKalpaNode(this.rootDirectory)
 		this.data.push(rootNode)
 
 
@@ -13264,16 +13675,33 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 
 		this.data.push(...directories.map(this._fileToKalpaNode.bind(this)))
 		kalpa_tree_on_page__WEBPACK_IMPORTED_MODULE_2__({
-			treeContainerSelector: `#${this.id} .tree`
+			treeContainerSelector: `#${this.id} .treebox`
 			, data: this.data
 		}).then(tree => {
 			this.tree = tree
 			tree.on('select', (node) => {
 				this.setCurrentNode(node)
 			})
+			tree.on('selected', (node) => {
+				// There's a bug, either in the browser or kalpa tree that causes it
+				// not to examine if a scroll bar is needed for the tree if the content
+				// area changes in a big way. Part of this bug may be that it's being
+				// used in a grid which has some weird width/height effects
+				// Anyway, we need to make sure the browser knows to examine the tree so
+				// we change the height then change it back.
+				// This event is triggered when kalpa-tree thinks it's done with transitions
+
+				let tree = this.el.querySelector('.tree')
+				tree.style.height = '99.99999%'
+				setTimeout(() => {
+					tree.style.height = '100%'
+				}, 100)
+			})
+			tree.select(1)
+
 		})
 	}
-	
+
 	_sortFiles(files) {
 		files.sort((one, two) => {
 			return one.relPath.toLowerCase().localeCompare(two.relPath.toLowerCase())
@@ -13284,31 +13712,136 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	_compareVariants(one, two) {
 		return one.baseName.toLowerCase().localeCompare(two.baseName.toLowerCase())
 	}
-	
+
 	_createAccessUrl(file) {
 		return file.accessUrl
+	}
+
+	_determineExtensions(variant) {
+		let extensions = new Set()
+		if (variant.variants) {
+			for (let imgVariant of variant.variants) {
+				extensions.add(imgVariant.ext)
+			}
+		}
+		else {
+			extensions.add(variant.ext)
+		}
+
+		let result = Array.from(extensions).filter(item => !!item)
+		result.sort((a, b) => {
+			return a.toLowerCase().localeCompare(b.toLowerCase())
+		})
+
+		return result
+	}
+
+	_determineSizes(variant) {
+		let min = 2000000000
+		let max = 0
+		if (variant.variants) {
+			for (let imgVariant of variant.variants) {
+				let size = imgVariant.file.stat.size
+				if (size > max) {
+					max = size
+				}
+				if (size < min) {
+					min = size
+				}
+			}
+		}
+		else {
+			let size = variant.file.stat.size
+			if (size > max) {
+				max = size
+			}
+			if (size < min) {
+				min = size
+			}
+		}
+		return [min, max]
+	}
+
+	_formatBytes = _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_7__["default"]
+
+
+	createVariantValues(info) {
+		let variants = _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_3__(info.children)
+		let variantValues = Object.values(variants)
+
+		let used = []
+		for (let variant of variantValues) {
+			if (variant.definitionFile) {
+				used.push(variant.definitionFile.name)
+			}
+			for (let imgVariant of variant.variants) {
+				used.push(imgVariant.file.name)
+			}
+		}
+
+		let remainingChildren = info.children.filter(item => {
+			return !used.includes(item.name)
+		})
+			.filter(item => !item.directory)
+
+		// Add thumbnails
+		for (let child of variantValues) {
+			child.thumbnailIcon = 'image'
+			if (child.preview) {
+				child.thumbnail = this._createAccessUrl(child.preview.file)
+			}
+		}
+
+		if(!this.imagesOnly) {
+			for (let file of remainingChildren) {
+				let info = {
+					file: file
+					, thumbnailIcon: 'description'
+				}
+				let name = file.name
+				info.ext = name.substring(name.lastIndexOf('.') + 1)
+				info.baseName = name.substring(0, name.lastIndexOf('.'))
+				variantValues.push(info)
+			}
+		}
+
+
+		// Determine extensions
+		for (let item of variantValues) {
+			item.extensions = this._determineExtensions(item)
+			item.sizes = this._determineSizes(item)
+			if (item.sizes[0] == item.sizes[1]) {
+				item.size = this._formatBytes(item.sizes[0])	
+			}
+			else {
+				item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1]) 
+			}
+		}
+
+		variantValues.sort(this._compareVariants)
+		return variantValues
 	}
 
 	async setCurrentNode(node) {
 		this.currentNode = node
 		let info = await this.sink.getFullFileInfo(node.file.relPath)
-		let variants = _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_3__(info.children)
-		let variantValues = Object.values(variants)
-		variantValues.sort(this._compareVariants)
-		
-		// Add thumbnails
-		for (let child of variantValues) {
-			child.thumbnailIcon = 'image'
-			if(child.preview) {
-				child.thumbnail = this._createAccessUrl(child.preview.file)
-			}
-		}
+		let variantValues = this.createVariantValues(info)
+
 
 		let content = ''
 		for (let child of variantValues) {
 			content += (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.variantChoiceBox)(child)
 		}
-		this.el.querySelector('.choice-boxes').innerHTML = content
+
+
+		let choicesBoxes = this.el.querySelector('.choice-boxes')
+		choicesBoxes.innerHTML = ''
+		choicesBoxes.insertAdjacentHTML('beforeend', content)
+		
+		for(let i = 0; i < choicesBoxes.children.length; i++) {
+			choicesBoxes.children[i].variant = variantValues[i]
+		}
+		this.el.querySelector('.box-holder').scrollTop = 0
 	}
 
 	_join(...parts) {
@@ -13352,8 +13885,59 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 	}
 	*/
+
 }
 
+
+/***/ }),
+
+/***/ "./client-js/info-dialog.mjs":
+/*!***********************************!*\
+  !*** ./client-js/info-dialog.mjs ***!
+  \***********************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   InfoDialog: () => (/* binding */ InfoDialog)
+/* harmony export */ });
+/* harmony import */ var ei_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ei-dialog */ "./node_modules/ei-dialog/dialog.js");
+
+
+class InfoDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
+	constructor(options) {
+		super(Object.assign({}, options,
+			{
+				on: {
+					'.btn-ok': () => {
+						this.resolve()
+						return true
+					},
+					'.mask': () => {
+						this.resolve()
+						return true
+					},
+					'.btn-cancel': () => {
+						this.resolve()
+						return true
+					}
+				}
+
+			}
+		))
+	}
+
+	async open() {
+		this.promise = new Promise((resolve, reject) => {
+			this.resolve = resolve
+			this.reject = reject
+		})
+		super.open()
+
+		return this.promise
+	}
+
+}
 
 /***/ }),
 
@@ -19226,6 +19810,7 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extensionPill: () => (/* binding */ extensionPill),
 /* harmony export */   imageBrowserFrame: () => (/* binding */ imageBrowserFrame),
 /* harmony export */   test1: () => (/* binding */ test1),
 /* harmony export */   test2: () => (/* binding */ test2),
@@ -19235,6 +19820,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _test2_tri__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./test2.tri */ "./views/test2.tri");
 /* harmony import */ var _image_browser_frame_tri__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./image-browser-frame.tri */ "./views/image-browser-frame.tri");
 /* harmony import */ var _variant_choice_box_tri__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./variant-choice-box.tri */ "./views/variant-choice-box.tri");
+/* harmony import */ var _extension_pill_tri__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./extension-pill.tri */ "./views/extension-pill.tri");
+
+
 
 
 
@@ -19245,6 +19833,7 @@ let test1 = _test1_tri__WEBPACK_IMPORTED_MODULE_0__
 let test2 = _test2_tri__WEBPACK_IMPORTED_MODULE_1__
 let imageBrowserFrame = _image_browser_frame_tri__WEBPACK_IMPORTED_MODULE_2__
 let variantChoiceBox = _variant_choice_box_tri__WEBPACK_IMPORTED_MODULE_3__
+let extensionPill = _extension_pill_tri__WEBPACK_IMPORTED_MODULE_4__
 
 /***/ })
 
@@ -19324,22 +19913,19 @@ var __webpack_exports__ = {};
   \*****************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sink_setup_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sink-setup.mjs */ "./client-js/sink-setup.mjs");
-/* harmony import */ var _image_browser_view_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./image-browser-view.js */ "./client-js/image-browser-view.js");
+/* harmony import */ var _image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./image-browser-view.mjs */ "./client-js/image-browser-view.mjs");
 
 (0,_sink_setup_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()
-// import {default as go} from './index.js'
-// go()
 
 ;
 
 
-let imageBrowserView = new _image_browser_view_js__WEBPACK_IMPORTED_MODULE_1__["default"]({
+let imageBrowserView = new _image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_1__["default"]({
 	sink: webhandle.sinks.files
+	// , imagesOnly: true
 })
 imageBrowserView.appendTo(document.querySelector('.webhandle-file-tree-image-browser'))
 imageBrowserView.render()
-
-
 
 })();
 

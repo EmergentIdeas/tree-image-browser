@@ -1,5 +1,5 @@
 {
-	"name": "webhandle-tree-image-browser",
+	"name": "@webhandle/tree-file-browser",
 	"version": "1.0.0",
 	"description": "",
 	"main": "client-js/index.js",
