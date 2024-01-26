@@ -12613,6 +12613,83 @@ if (typeof __webpack_require__.g != 'undefined') {
 
 /***/ }),
 
+/***/ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/cancel-button.tri":
+/*!*****************************************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/cancel-button.tri ***!
+  \*****************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "\t\t<span class=\"cancel-operation material-icons\" title=\"cancel\">\n\t\t\tcancel\n\t\t<\/span>"; 
+module.exports = tri.addTemplate("@webhandle/event-notification-panel/panels/cancel-button", t); 
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/cancel-mask.tri":
+/*!***************************************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/cancel-mask.tri ***!
+  \***************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"cancel-mask\">\n\tAttempting to Cancel Operation\t\n<\/div>"; 
+module.exports = tri.addTemplate("@webhandle/event-notification-panel/panels/cancel-mask", t); 
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/expand-more.tri":
+/*!***************************************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/expand-more.tri ***!
+  \***************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "\t\t<span class=\"expand-message material-icons\" title=\"view more\">\n\t\t\texpand_more\n\t\t<\/span>"; 
+module.exports = tri.addTemplate("@webhandle/event-notification-panel/panels/expand-more", t); 
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/message-holder.tri":
+/*!******************************************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/message-holder.tri ***!
+  \******************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "\t\t<div class=\"message-holder\">\n\t\t\t<div class=\"message\">\n\t\t\t\t__message__\n\t\t\t<\/div>\n\t\t<\/div>"; 
+module.exports = tri.addTemplate("@webhandle/event-notification-panel/panels/message-holder", t); 
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/notification-top.tri":
+/*!********************************************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/notification-top.tri ***!
+  \********************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "\n\t\t<div class=\"top\">\n\t\t\t<span class=\"icon\">\n\t\t\t\t<span class=\"material-icons\">__status::@webhandle\/event-notification-panel\/utils\/iconForStatus__<\/span>\n\t\t\t<\/span>\n\t\t\t<span class=\"headline\">\n\t\t\t\t__headline__\n\t\t\t<\/span>\n\t\t<\/div>"; 
+module.exports = tri.addTemplate("@webhandle/event-notification-panel/panels/notification-top", t); 
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/progress-message.tri":
+/*!********************************************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/progress-message.tri ***!
+  \********************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"notification __status__\">\n\t<div class=\"info\">\n\t\t__::.\/notification-top__\n\t\t__message??this::.\/message-holder__\n\t\t<div class=\"progress\">\n\t\t\t<div class=\"numeric-holder\">\n\t\t\t\t<span class=\"numeric\">__progressComplete__<\/span>%\n\t\t\t<\/div>\n\t\t\t<div class=\"bar\">\n\t\t\t\t<div class=\"made\" style=\"margin-left: __progressComplete__%;\"><\/div>\n\t\t\t<\/div>\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"actions\">\n\t\t<span class=\"remove-notification material-icons\" title=\"close\">\n\t\t\tclose\n\t\t<\/span>\n\t\t__message??this::.\/expand-more__\n\t\t__cancelable??this::.\/cancel-button__\n\t<\/div>\n<\/div>"; 
+module.exports = tri.addTemplate("@webhandle/event-notification-panel/panels/progress-message", t); 
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/simple-message.tri":
+/*!******************************************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/simple-message.tri ***!
+  \******************************************************************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"notification __status__\">\n\t<div class=\"info\">\n\t\t__::.\/notification-top__\n\t\t__message??this::.\/message-holder__\n\t<\/div>\n\t<div class=\"actions\">\n\t\t<span class=\"remove-notification material-icons\" title=\"close\">\n\t\t\tclose\n\t\t<\/span>\n\t\t__message??this::.\/expand-more__\n\t<\/div>\n<\/div>"; 
+module.exports = tri.addTemplate("@webhandle/event-notification-panel/panels/simple-message", t); 
+
+/***/ }),
+
 /***/ "./views/extension-pill.tri":
 /*!**********************************!*\
   !*** ./views/extension-pill.tri ***!
@@ -12630,7 +12707,7 @@ module.exports = tri.addTemplate("extension-pill", t);
   \***************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"treebox\">\n\t\t\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"view-controls\">\n\t\t\t<input name=\"filter\" type=\"text\" placeholder=\"filter\"\/>\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t\t\n\t\t\t\n\t\t<\/div>\n\t\t<div class=\"directory-controls\">\n\t\t\t<button type=\"button\" class=\"btn create-directory\">Create Directory<\/button>\n\t\t<\/div>\n\t<\/div>\n\t\n\t\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"treebox\">\n\t\t\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"view-controls\">\n\t\t\t<input name=\"filter\" type=\"text\" placeholder=\"filter\"\/>\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"bottom-controls\">\n\t\t\t<div class=\"directory-controls\">\n\t\t\t\t<button type=\"button\" class=\"btn create-directory\">Create Directory<\/button>\n\t\t\t<\/div>\n\t\t\t<div class=\"file-controls\">\n\t\t\t\t<button type=\"button\" class=\"btn delete-file\">Delete File<\/button>\n\t\t\t<\/div>\n\t\t\t\t\n\t\t<\/div>\n\t<\/div>\n\t\n\t\n<\/div>"; 
 module.exports = tri.addTemplate("image-browser-frame", t); 
 
 /***/ }),
@@ -13452,7 +13529,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FormAnswerDialog: () => (/* binding */ FormAnswerDialog)
 /* harmony export */ });
 /* harmony import */ var ei_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ei-dialog */ "./node_modules/ei-dialog/dialog.js");
-/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 
 
 class FormAnswerDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
@@ -13465,12 +13541,12 @@ class FormAnswerDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
 						return true
 					},
 					'.mask': () => {
-						console.log('mask')
+						// console.log('mask')
 						this.resolve()
 						return true
 					},
 					'.btn-cancel': () => {
-						console.log('cancel')
+						// console.log('cancel')
 						this.resolve()
 						return true
 					}
@@ -13546,6 +13622,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./form-answer-dialog.mjs */ "./client-js/form-answer-dialog.mjs");
 /* harmony import */ var _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./info-dialog.mjs */ "./client-js/info-dialog.mjs");
 /* harmony import */ var _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./format-bytes.mjs */ "./client-js/format-bytes.mjs");
+/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 
 
 
@@ -13557,13 +13634,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__.View {
-	
+
 	/**
 	 * Construct a new file browser
 	 * @param {object} options 
 	 * @param {FileSink} options.sink The file to use as a file source
 	 * @param {boolean} options.imagesOnly Set to true if you would like to display only images
 	 * @param {boolean} options.allowFileSelection Set to true so that selected files are marked
+	 * @param {EventNotificationPanel} options.eventNotificationPanel The panel which status messages will be added to.
+	 * @param {string} options.startingDirectory
 	 */
 	constructor(options) {
 		super(options)
@@ -13574,18 +13653,166 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		this.nodes = {}
 		this.events = {
 			'click .create-directory': 'createDirectory'
+			, 'click .delete-file': 'deleteFile'
 			, 'click .variant-choice-box .details': 'showVariantDetails'
+			, 'dblclick .variant-choice-box': 'showVariantDetails'
 			, 'click .variant-choice-box': 'selectVariant'
+			, 'keyup [name="filter"]': 'applyFilter'
+			, 'change [name="filter"]': 'applyFilter'
+			, 'dragenter .': 'dragEnter'
+			, 'dragleave .': 'dragLeave'
+			, 'dragover .': 'dragOver'
+			, 'drop .': 'handleDrop'
 		}
+		this.overCount = 0
+	}
+	dragEnter(evt, selected) {
+		this.overCount++
+		this.el.classList.add('file-dropping')
+	}
+	dragLeave(evt, selected) {
+		this.overCount--
+		if (this.overCount == 0) {
+			this._cleanupDropDone()
+		}
+	}
+	dragOver(evt, selected) {
+		evt.preventDefault()
+	}
+
+	async handleDrop(evt, selected) {
+		console.log('drop')
+		this._cleanupDropDone()
+		evt.preventDefault()
+		let files = []
+
+		// items is the new interface we should use if that's available
+		if (evt.dataTransfer.items) {
+			[...evt.dataTransfer.items].forEach((item, i) => {
+				if (item.kind === "file") {
+					const file = item.getAsFile()
+					files.push(file)
+				}
+			})
+		} else {
+			[...evt.dataTransfer.files].forEach((file, i) => {
+				files.push(file)
+			})
+		}
+		for (let file of files) {
+			let note
+			if (this.eventNotificationPanel) {
+				note = this.eventNotificationPanel.addNotification({
+					model: {
+						status: 'pending',
+						headline: `uploading ${file.name}`
+					}
+				})
+			}
+			await this._uploadFile(file)
+			if (this.eventNotificationPanel) {
+				note.remove()
+				note = this.eventNotificationPanel.addNotification({
+					model: {
+						status: 'success',
+						headline: `uploaded ${file.name}`
+					}
+					, ttl: 2000
+				})
+			}
+		}
+		this.setCurrentNode(this.currentNode)
+	}
+
+	sanitizeFileName(name) {
+		return name.split('/').join('-').split('..').join('-')
+	}
+	async _uploadFile(file) {
+		let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(file.name)
+		await this.sink.write(path, file)
+
+	}
+	_cleanupDropDone() {
+		this.overCount = 0
+		this.el.classList.remove('file-dropping')
+	}
+
+	applyFilter(evt, selected) {
+		setTimeout(() => {
+			let value = this.el.querySelector('[name="filter"]').value
+			let allVariants = this.el.querySelectorAll('.choice-boxes .variant-choice-box')
+			for (let variant of allVariants) {
+				variant.classList.remove('hidden')
+				if (value) {
+					let searchString = variant.variant.baseName + variant.variant.extensions.join()
+					if (searchString.indexOf(value) < 0) {
+						variant.classList.add('hidden')
+					}
+				}
+			}
+		})
 	}
 
 	selectVariant(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		for(let sel of currentSelected) {
+		for (let sel of currentSelected) {
 			sel.classList.remove('selected')
 		}
 
 		selected.classList.add('selected')
+	}
+
+	deleteFile(evt, selected) {
+		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+		if(currentSelected.length > 0) {
+			let files = []
+			for (let sel of currentSelected) {
+				if(sel.variant.file) {
+					files.push(sel.variant.file)
+				}
+				if(sel.variant.variants) {
+					files.push(...sel.variant.variants.map(vr => vr.file))
+				}
+			}
+			let names = files.map(file => file.name)
+			let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+				title: 'Delete File' + (files.length > 1 ? 's' : '')
+				, body: '<p>' + names.join(', ') + '</p>'
+			})
+			let prom = dialog.open()
+			prom.then(async data => {
+				if (data) {
+					for(let file of files) {
+						let path = file.relPath 
+						let note
+						if (this.eventNotificationPanel) {
+							note = this.eventNotificationPanel.addNotification({
+								model: {
+									status: 'pending',
+									headline: `deleting ${file.name}`
+								}
+							})
+						}
+						await this.sink.rm(path)
+						if (this.eventNotificationPanel) {
+							note.remove()
+							note = this.eventNotificationPanel.addNotification({
+								model: {
+									status: 'success',
+									headline: `removed ${file.name}`
+								}
+								, ttl: 2000
+							})
+						}
+					}
+					for (let sel of currentSelected) {
+						sel.remove()
+					}
+				}
+			})
+
+		}
+
 	}
 
 	createDirectory(evt, selected) {
@@ -13611,22 +13838,22 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		let variant = choiceBox.variant
 
 		let files = []
-		if(variant.variants) {
+		if (variant.variants) {
 			files.push(...variant.variants.map(variant => variant.file))
 		}
 		else {
 			files.push(variant.file)
 		}
-		
+
 
 		let content = '<ul>'
-		for(let file of files) {
+		for (let file of files) {
 			content += '<li><a target="_blank" href="' + file.accessUrl + '">'
 			content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
 			content += '</li>'
 		}
 		content += '</ul>'
-		
+
 		let dialog = new _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__.InfoDialog({
 			title: 'File Details: ' + variant.baseName
 			, body: content
@@ -13664,6 +13891,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		this.el.innerHTML = (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.imageBrowserFrame)(this.model)
 		this.data = []
 
+
 		this.rootDirectory = await this.sink.getFullFileInfo('')
 		this.rootDirectory.name = "Files"
 		let rootNode = this.rootNode = this._fileToKalpaNode(this.rootDirectory)
@@ -13697,7 +13925,19 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 					tree.style.height = '100%'
 				}, 100)
 			})
-			tree.select(1)
+			if (this.startingDirectory) {
+				for (let node of Object.values(this.tree.nodes)) {
+					if (node.file && node.file.relPath && node.file.relPath == this.startingDirectory) {
+						// this.setCurrentNode(node)
+						tree.select(node.id)
+						break
+					}
+				}
+			}
+			else {
+				tree.select(1)
+				// this.setCurrentNode(Object.values(this.tree.nodes)[0])
+			}
 
 		})
 	}
@@ -13792,7 +14032,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			}
 		}
 
-		if(!this.imagesOnly) {
+		if (!this.imagesOnly) {
 			for (let file of remainingChildren) {
 				let info = {
 					file: file
@@ -13811,10 +14051,10 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			item.extensions = this._determineExtensions(item)
 			item.sizes = this._determineSizes(item)
 			if (item.sizes[0] == item.sizes[1]) {
-				item.size = this._formatBytes(item.sizes[0])	
+				item.size = this._formatBytes(item.sizes[0])
 			}
 			else {
-				item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1]) 
+				item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1])
 			}
 		}
 
@@ -13837,11 +14077,12 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		let choicesBoxes = this.el.querySelector('.choice-boxes')
 		choicesBoxes.innerHTML = ''
 		choicesBoxes.insertAdjacentHTML('beforeend', content)
-		
-		for(let i = 0; i < choicesBoxes.children.length; i++) {
+
+		for (let i = 0; i < choicesBoxes.children.length; i++) {
 			choicesBoxes.children[i].variant = variantValues[i]
 		}
 		this.el.querySelector('.box-holder').scrollTop = 0
+		this.applyFilter()
 	}
 
 	_join(...parts) {
@@ -14270,6 +14511,488 @@ class View {
 		}
 	}
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/add-js-templates.mjs":
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/add-js-templates.mjs ***!
+  \*****************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ addJsTemplates)
+/* harmony export */ });
+/* harmony import */ var tripartite__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js");
+
+
+let init = false
+
+let icons = {
+	success: 'done'
+	, error: 'error'
+	, warning: 'warning'
+	, info: 'info'
+	, waiting: 'pending'
+	, performing: 'swap_horiz'
+	, unknown: 'question_mark'
+}
+
+function addJsTemplates() {
+	
+	if(!init) {
+		init = true
+		tripartite__WEBPACK_IMPORTED_MODULE_0__.addTemplate('@webhandle/event-notification-panel/utils/iconForStatus', (status) => {
+			if(status in icons) {
+				return icons[status]
+			}
+			if(!status) {
+				return status
+			}
+			return icons.info
+		})
+	}
+
+}
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/event-notification-panel.mjs":
+/*!*************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/event-notification-panel.mjs ***!
+  \*************************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ EventNotificationPanel)
+/* harmony export */ });
+/* harmony import */ var _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @webhandle/backbone-view */ "./node_modules/@webhandle/backbone-view/client-js/index.js");
+/* harmony import */ var _event_notification_view_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./event-notification-view.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/event-notification-view.mjs");
+
+
+
+class EventNotificationPanel extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__.View {
+	constructor(options) {
+		super(options)
+	}
+
+	preinitialize() {
+		this.className = 'webhandle-event-notifications'
+	}
+
+	render() {
+		return this
+	}
+	
+	/**
+	 * Remove the markup for all notifications
+	 */
+	removeAllNotifications() {
+		this.el.innerHTML = ''
+	}
+
+	/**
+	 * 
+	 * @param {object} options 
+	 * @param {object} options.model Represents the status data to show. Should be an instance of
+	 * @webhandle/event-notification-panel/client-js/notification.js
+	 * @param {integer} [options.ttl] The time in milliseconds to wait before removing the message
+	 * automatically.
+	 * @param {boolean} [options.closed] Controls whether the notification message starts closed. Default is true
+	 * @returns An EventNotificationView object
+	 */
+	addNotification(options) {
+		let ev = new _event_notification_view_mjs__WEBPACK_IMPORTED_MODULE_1__["default"](options)
+		ev.render()
+		this.el.insertBefore(ev.el, this.el.firstChild)
+		return ev
+	}
+}
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/event-notification-view.mjs":
+/*!************************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/event-notification-view.mjs ***!
+  \************************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ EventNotificationView)
+/* harmony export */ });
+/* harmony import */ var _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @webhandle/backbone-view */ "./node_modules/@webhandle/backbone-view/client-js/index.js");
+/* harmony import */ var _views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/load-browser-views.js */ "./node_modules/@webhandle/event-notification-panel/views/load-browser-views.js");
+/* harmony import */ var _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @webhandle/minimal-browser-event-emitter */ "./node_modules/@webhandle/minimal-browser-event-emitter/client-js/index.js");
+/* harmony import */ var _notification_status_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./notification-status.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/notification-status.mjs");
+/* harmony import */ var _init_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./init.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/init.mjs");
+
+
+
+
+
+
+(0,_init_mjs__WEBPACK_IMPORTED_MODULE_4__["default"])()
+
+/**
+ * @property {EventTarget} notification Fires events on notification lifecycle and can trigger
+ * rerendering. Events sent are: initialize, nodeAdd, render, expandMessage, cancel, startRemove, remove
+ * It listens for the events: modelUpdate
+ */
+class EventNotificationView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__.View {
+	/**
+	 * 
+	 * @param {object} options 
+	 * @param {object} options.model Could be anything, but probably a Notification object is best.
+	 * @param {boolean} [options.closed] True if the event should start closed (true is default)
+	 * @param {boolean} [options.ttl] The time to live in ms before this event is automatically removed
+	 * 
+	 */
+	constructor(options = {}) {
+		super(options)
+	}
+
+	preinitialize() {
+		this.events = {
+			'click .expand-message': 'expandMessage',
+			'click .cancel-operation': 'cancelOperation',
+			'click .remove-notification': 'removeSlowly'
+		}
+		this.className = 'event-notification-view'
+		this.notification = new _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_2__["default"]()
+		this.notification.on('modelUpdate', this.modelUpdate.bind(this))
+		
+		/**
+		 * The time by which we can assume that some failure occurred and
+		 * this event will not be added.
+		 */
+		this.failToAddTime = 10000
+	}
+
+	initialize() {
+		if (this.closed) {
+			this.el.classList.add('closed')
+		}
+		this.notification.emit('initialize', this)
+		if(this._isComplete()) {
+			// We only want to set up ttl if we're complete
+			this._setupWatchNodeInsertion()
+		}
+	}
+	
+	modelUpdate() {
+		if(this._isProgressType()) {
+			this.el.querySelector('.made').style.marginLeft = this.model.progressComplete + '%'
+			this.el.querySelector('.numeric').innerText = '' + this.model.progressComplete
+		}
+	}
+	
+	_isComplete() {
+		if(this.model.status === _notification_status_mjs__WEBPACK_IMPORTED_MODULE_3__["default"].SUCCESS ||
+			this.model.status === _notification_status_mjs__WEBPACK_IMPORTED_MODULE_3__["default"].INFO ||
+			this.model.status === _notification_status_mjs__WEBPACK_IMPORTED_MODULE_3__["default"].WARNING ||
+			this.model.status === _notification_status_mjs__WEBPACK_IMPORTED_MODULE_3__["default"].UNKNOWN ||
+			this.model.status === _notification_status_mjs__WEBPACK_IMPORTED_MODULE_3__["default"].ERROR
+			) {
+				return true
+			}
+		return false
+	}
+	_isProgressType() {
+		return this.model.progressComplete !== null && this.model.progressComplete !== undefined
+	}
+	
+	/**
+	 * 
+	 * This is a big mess to listen for the add event for this.el
+	 * We need to know when the event is added to be able to remove
+	 * it after the ttl. It might be possible just to assume that the creation
+	 * time represents the add time, and that's what I'll do if this is
+	 * a performance drag. 
+	 * 
+	 * If not found to be added after 10 seconds, we'll clean up the observer
+	 * so as not to leak memory and computation.
+	 */
+	_setupWatchNodeInsertion() {
+		let disconnected = false
+		const config = { attributes: false, childList: true, subtree: true };
+		const observer = new MutationObserver((mutationList, observer) => {
+			let found = false
+			allMutations: for (let mutation of mutationList) {
+				if (mutation.type === "childList" && mutation.addedNodes && mutation.addedNodes.length > 0) {
+					for (let node of mutation.addedNodes.values()) {
+						if (node == this.el) {
+							found = true
+							break allMutations
+						}
+					}
+				}
+			}
+			if (found) {
+				observer.disconnect()
+				disconnected = true
+				this.notification.emit('nodeAdd', this)
+				if(this.ttl) {
+					setTimeout(() => {
+						this.removeSlowly()
+					}, this.ttl)
+				}
+			}
+		})
+		observer.observe(document.body, config)
+		
+		setTimeout(() => {
+			if(!disconnected) {
+				observer.disconnect()
+				disconnected = true
+			}
+		}, this.failToAddTime)	
+	}
+
+	render() {
+		let templ
+		if(this._isProgressType()) {
+			templ = _views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.progressMessage
+		}
+		else {
+			templ = _views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.simpleMessage
+		}
+
+		this.el.innerHTML = templ(this.model)
+		this.notification.emit('render', this)
+		return this
+	}
+
+	/**
+	 * Show the additional information message.
+	 */
+	expandMessage() {
+		this.el.classList.remove('closed')
+		this.notification.emit('expandMessage', this)
+	}
+
+	/**
+	 * Emit a 'cancel' event, add a mask that indicates it's being canceled
+	 * and remove the cancel button
+	 */
+	cancelOperation() {
+		this.notification.emit('cancel', this)
+		this.el.querySelector('.notification').insertAdjacentHTML('beforeend', (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.cancelMask)())
+		this.el.querySelector('.cancel-operation').remove()
+	}
+	
+	remove() {
+		if(this.el.parentElement) {
+			this.notification.emit('remove', this)
+			super.remove()
+		}
+	}
+
+	/**
+	 * Transition the notification to zero opacity and then remove
+	 */
+	removeSlowly() {
+		this.notification.emit('startRemove', this)
+		addEventListener("transitionend", (event) => {
+			this.remove()
+		})
+		this.el.style.opacity = 0
+	}
+}
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/index.mjs":
+/*!******************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/index.mjs ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   EventNotificationPanel: () => (/* reexport safe */ _event_notification_panel_mjs__WEBPACK_IMPORTED_MODULE_4__["default"]),
+/* harmony export */   EventNotificationView: () => (/* reexport safe */ _event_notification_view_mjs__WEBPACK_IMPORTED_MODULE_3__["default"]),
+/* harmony export */   Notification: () => (/* reexport safe */ _notification_mjs__WEBPACK_IMPORTED_MODULE_5__["default"]),
+/* harmony export */   addJsTemplates: () => (/* reexport safe */ _add_js_templates_mjs__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   init: () => (/* reexport safe */ _init_mjs__WEBPACK_IMPORTED_MODULE_6__["default"]),
+/* harmony export */   notificationStatus: () => (/* reexport safe */ _notification_status_mjs__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   setup: () => (/* reexport safe */ _webhandle_env_setup_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _webhandle_env_setup_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./webhandle-env-setup.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/webhandle-env-setup.mjs");
+/* harmony import */ var _add_js_templates_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./add-js-templates.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/add-js-templates.mjs");
+/* harmony import */ var _notification_status_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./notification-status.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/notification-status.mjs");
+/* harmony import */ var _event_notification_view_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./event-notification-view.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/event-notification-view.mjs");
+/* harmony import */ var _event_notification_panel_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./event-notification-panel.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/event-notification-panel.mjs");
+/* harmony import */ var _notification_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./notification.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/notification.mjs");
+/* harmony import */ var _init_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./init.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/init.mjs");
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/init.mjs":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/init.mjs ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ init)
+/* harmony export */ });
+/* harmony import */ var _add_js_templates_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./add-js-templates.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/add-js-templates.mjs");
+
+
+let initialized = false
+
+function init() {
+
+	if(!initialized) {
+		initialized = true
+		;(0,_add_js_templates_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()
+	}
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/notification-status.mjs":
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/notification-status.mjs ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/**
+ * @typedef {object} NotificationStatus
+ */
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+
+	SUCCESS: 'success'
+	, INFO: 'info'
+	, ERROR: 'error'
+	, WARNING: 'warning'
+	, WAITING: 'waiting'
+	, PERFORMING: 'performing'
+	, UNKNOWN: 'unknown'
+});
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/notification.mjs":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/notification.mjs ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Notification)
+/* harmony export */ });
+/* harmony import */ var _notification_status_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./notification-status.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/notification-status.mjs");
+
+
+/**
+ * @property {string} status One of the values of NotificaitonStatus
+ * @property {string} headline
+ * @property {string} message
+ * @property {integer} progressComplete How much progress has been made as percent. Needed only 
+ * if this is supposed to show a progress notification.
+ * @param {boolean} [options.cancelable] True if the operation can be canceled and a cancel button should
+ * be shown. The default is false. This will only effect notifcations which are not complete.
+ */
+class Notification {
+	constructor(options) {
+		Object.assign(this, options)
+	}
+}
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/client-js/webhandle-env-setup.mjs":
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/client-js/webhandle-env-setup.mjs ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ webhandleEnvSetup)
+/* harmony export */ });
+/* harmony import */ var _init_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./init.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/init.mjs");
+/* harmony import */ var _event_notification_panel_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./event-notification-panel.mjs */ "./node_modules/@webhandle/event-notification-panel/client-js/event-notification-panel.mjs");
+
+
+
+/**
+ * 
+ * @param {object} options
+ * @param {string} options.notificationHolder The query selector for the holder of the
+ * EventNotificationsPanel
+ * @returns 
+ */
+function webhandleEnvSetup({notificationHolder = '#event-notifications'} = {}) {
+	let webhandle = window.webhandle = window.webhandle || {}
+
+	;(0,_init_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()
+
+	let holder = document.querySelector(notificationHolder)
+	let panel = webhandle.eventPanel = new _event_notification_panel_mjs__WEBPACK_IMPORTED_MODULE_1__["default"]()
+	panel.appendTo(holder)
+	panel.render()
+
+	return panel
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/event-notification-panel/views/load-browser-views.js":
+/*!**************************************************************************************!*\
+  !*** ./node_modules/@webhandle/event-notification-panel/views/load-browser-views.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   cancelButton: () => (/* reexport default export from named module */ _webhandle_event_notification_panel_panels_cancel_button_tri__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   cancelMask: () => (/* reexport default export from named module */ _webhandle_event_notification_panel_panels_cancel_mask_tri__WEBPACK_IMPORTED_MODULE_4__),
+/* harmony export */   expandMore: () => (/* reexport default export from named module */ _webhandle_event_notification_panel_panels_expand_more_tri__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   messageHolder: () => (/* reexport default export from named module */ _webhandle_event_notification_panel_panels_message_holder_tri__WEBPACK_IMPORTED_MODULE_5__),
+/* harmony export */   notificationTop: () => (/* reexport default export from named module */ _webhandle_event_notification_panel_panels_notification_top_tri__WEBPACK_IMPORTED_MODULE_6__),
+/* harmony export */   progressMessage: () => (/* reexport default export from named module */ _webhandle_event_notification_panel_panels_progress_message_tri__WEBPACK_IMPORTED_MODULE_1__),
+/* harmony export */   simpleMessage: () => (/* reexport default export from named module */ _webhandle_event_notification_panel_panels_simple_message_tri__WEBPACK_IMPORTED_MODULE_0__)
+/* harmony export */ });
+/* harmony import */ var _webhandle_event_notification_panel_panels_simple_message_tri__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./@webhandle/event-notification-panel/panels/simple-message.tri */ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/simple-message.tri");
+/* harmony import */ var _webhandle_event_notification_panel_panels_progress_message_tri__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./@webhandle/event-notification-panel/panels/progress-message.tri */ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/progress-message.tri");
+/* harmony import */ var _webhandle_event_notification_panel_panels_expand_more_tri__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./@webhandle/event-notification-panel/panels/expand-more.tri */ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/expand-more.tri");
+/* harmony import */ var _webhandle_event_notification_panel_panels_cancel_button_tri__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./@webhandle/event-notification-panel/panels/cancel-button.tri */ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/cancel-button.tri");
+/* harmony import */ var _webhandle_event_notification_panel_panels_cancel_mask_tri__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./@webhandle/event-notification-panel/panels/cancel-mask.tri */ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/cancel-mask.tri");
+/* harmony import */ var _webhandle_event_notification_panel_panels_message_holder_tri__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./@webhandle/event-notification-panel/panels/message-holder.tri */ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/message-holder.tri");
+/* harmony import */ var _webhandle_event_notification_panel_panels_notification_top_tri__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./@webhandle/event-notification-panel/panels/notification-top.tri */ "./node_modules/@webhandle/event-notification-panel/views/@webhandle/event-notification-panel/panels/notification-top.tri");
+
+
+
+
+
+
+
+
+
 
 
 /***/ }),
@@ -19914,18 +20637,35 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sink_setup_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sink-setup.mjs */ "./client-js/sink-setup.mjs");
 /* harmony import */ var _image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./image-browser-view.mjs */ "./client-js/image-browser-view.mjs");
+/* harmony import */ var _webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @webhandle/event-notification-panel */ "./node_modules/@webhandle/event-notification-panel/client-js/index.mjs");
 
 (0,_sink_setup_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()
 
 ;
 
+let eventPanel = (0,_webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_2__.setup)({
+	notificationHolder: '#event-notifications' /* Optional. The selector of the element to which the
+												  panel should be added. */
+})
+
 
 let imageBrowserView = new _image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_1__["default"]({
 	sink: webhandle.sinks.files
 	// , imagesOnly: true
+	, eventNotificationPanel: eventPanel
+	, startingDirectory: 'test2'
 })
 imageBrowserView.appendTo(document.querySelector('.webhandle-file-tree-image-browser'))
 imageBrowserView.render()
+
+// eventPanel.addNotification({
+// 	model: {
+// 		status: 'success',
+// 		headline: 'Page started'
+// 	}
+// })
+
+
 
 })();
 

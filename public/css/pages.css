@@ -450,6 +450,139 @@ th {
 .material-icons-styles-marker {
   content: "loaded";
 }
+.webhandle-event-notifications {
+  --grey-box-outline: #eeeeee;
+  --success-color: green;
+  --warning-color: orange;
+  --error-color: red;
+  --progress-bar-color: blue;
+  --trransition-time: 0.3s;
+  overflow: auto;
+}
+.webhandle-event-notifications .event-notification-view {
+  transition: opacity var(--trransition-time);
+}
+.webhandle-event-notifications .event-notification-view.closed .info .message-holder {
+  max-height: 0;
+}
+.webhandle-event-notifications .event-notification-view.closed .actions {
+  padding-left: 15px;
+}
+.webhandle-event-notifications .event-notification-view.closed .actions .expand-message {
+  display: block;
+}
+.webhandle-event-notifications .event-notification-view.closed .actions > * {
+  margin-bottom: 10px;
+}
+.webhandle-event-notifications .notification {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 10px 16px;
+  border: solid 1px var(--grey-box-outline);
+  border-radius: 4px;
+}
+.webhandle-event-notifications .notification .info .top .icon {
+  position: relative;
+  display: inline-block;
+  padding: 5px 5px 2px 5px;
+  margin-right: 20px;
+  border-radius: 4px;
+  isolation: isolate;
+}
+.webhandle-event-notifications .notification .info .top .icon:before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 20%;
+  border-radius: 4px;
+}
+.webhandle-event-notifications .notification .info .top .icon .material-icons {
+  font-size: 16px;
+}
+.webhandle-event-notifications .notification .info .top .headline {
+  font-weight: 600;
+}
+.webhandle-event-notifications .notification .info .message-holder {
+  overflow: hidden;
+  transition: max-height var(--trransition-time);
+  max-height: 200px;
+  overflow: auto;
+}
+.webhandle-event-notifications .notification .info .message {
+  margin-top: 10px;
+}
+.webhandle-event-notifications .notification .info .progress {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 30px;
+}
+.webhandle-event-notifications .notification .info .progress .bar {
+  position: relative;
+  border: solid 1px var(--grey-box-outline);
+  border-radius: 12px;
+  overflow: hidden;
+  align-self: center;
+  height: 12px;
+}
+.webhandle-event-notifications .notification .info .progress .bar .made {
+  position: absolute;
+  width: 100%;
+  background-color: var(--progress-bar-color);
+  top: 0;
+  bottom: 0;
+  left: -100%;
+  transition: margin-left var(--trransition-time);
+}
+.webhandle-event-notifications .notification .actions {
+  z-index: 3;
+}
+.webhandle-event-notifications .notification .actions span {
+  display: block;
+  cursor: pointer;
+  font-size: 16px;
+}
+.webhandle-event-notifications .notification .actions .expand-message {
+  display: none;
+}
+.webhandle-event-notifications .notification .cancel-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.webhandle-event-notifications .notification .cancel-mask:before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-color: var(--grey-box-outline);
+  z-index: -1;
+}
+.webhandle-event-notifications .notification.success .icon {
+  color: var(--success-color);
+}
+.webhandle-event-notifications .notification.success .icon:before {
+  background-color: var(--success-color);
+}
+.webhandle-event-notifications .notification.warning .icon {
+  color: var(--warning-color);
+}
+.webhandle-event-notifications .notification.warning .icon:before {
+  background-color: var(--warning-color);
+}
+.webhandle-event-notifications .notification.error .icon {
+  color: var(--error-color);
+}
+.webhandle-event-notifications .notification.error .icon:before {
+  background-color: var(--error-color);
+}
+.webhandle-event-notifications .notification {
+  margin: 10px;
+}
 body {
   font-family: 'Open Sans', sans-serif;
 }
@@ -546,9 +679,18 @@ body {
 .webhandle-file-tree-image-browser .image-browser .variant-choice-box.selected {
   box-shadow: 1px 1px 10px var(--webhandle-file-tree-image-selected-box-hightlight);
 }
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box.hidden {
+  display: none;
+}
 .webhandle-file-tree-image-browser .image-browser .extension-pill {
   padding: 3px 5px;
   border-radius: 5px;
   background-color: var(--webhandle-file-tree-image-box-background);
+}
+.webhandle-file-tree-image-browser .image-browser .bottom-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding-right: 34px;
+  padding-top: 10px;
 }
 /*# sourceMappingURL=pages.css.map */

@@ -9,13 +9,15 @@ import { InfoDialog } from './info-dialog.mjs'
 import formatBytes from './format-bytes.mjs'
 
 export default class ImageBrowserView extends View {
-	
+
 	/**
 	 * Construct a new file browser
 	 * @param {object} options 
 	 * @param {FileSink} options.sink The file to use as a file source
 	 * @param {boolean} options.imagesOnly Set to true if you would like to display only images
 	 * @param {boolean} options.allowFileSelection Set to true so that selected files are marked
+	 * @param {EventNotificationPanel} options.eventNotificationPanel The panel which status messages will be added to.
+	 * @param {string} options.startingDirectory
 	 */
 	constructor(options) {
 		super(options)
@@ -26,18 +28,166 @@ export default class ImageBrowserView extends View {
 		this.nodes = {}
 		this.events = {
 			'click .create-directory': 'createDirectory'
+			, 'click .delete-file': 'deleteFile'
 			, 'click .variant-choice-box .details': 'showVariantDetails'
+			, 'dblclick .variant-choice-box': 'showVariantDetails'
 			, 'click .variant-choice-box': 'selectVariant'
+			, 'keyup [name="filter"]': 'applyFilter'
+			, 'change [name="filter"]': 'applyFilter'
+			, 'dragenter .': 'dragEnter'
+			, 'dragleave .': 'dragLeave'
+			, 'dragover .': 'dragOver'
+			, 'drop .': 'handleDrop'
 		}
+		this.overCount = 0
+	}
+	dragEnter(evt, selected) {
+		this.overCount++
+		this.el.classList.add('file-dropping')
+	}
+	dragLeave(evt, selected) {
+		this.overCount--
+		if (this.overCount == 0) {
+			this._cleanupDropDone()
+		}
+	}
+	dragOver(evt, selected) {
+		evt.preventDefault()
+	}
+
+	async handleDrop(evt, selected) {
+		console.log('drop')
+		this._cleanupDropDone()
+		evt.preventDefault()
+		let files = []
+
+		// items is the new interface we should use if that's available
+		if (evt.dataTransfer.items) {
+			[...evt.dataTransfer.items].forEach((item, i) => {
+				if (item.kind === "file") {
+					const file = item.getAsFile()
+					files.push(file)
+				}
+			})
+		} else {
+			[...evt.dataTransfer.files].forEach((file, i) => {
+				files.push(file)
+			})
+		}
+		for (let file of files) {
+			let note
+			if (this.eventNotificationPanel) {
+				note = this.eventNotificationPanel.addNotification({
+					model: {
+						status: 'pending',
+						headline: `uploading ${file.name}`
+					}
+				})
+			}
+			await this._uploadFile(file)
+			if (this.eventNotificationPanel) {
+				note.remove()
+				note = this.eventNotificationPanel.addNotification({
+					model: {
+						status: 'success',
+						headline: `uploaded ${file.name}`
+					}
+					, ttl: 2000
+				})
+			}
+		}
+		this.setCurrentNode(this.currentNode)
+	}
+
+	sanitizeFileName(name) {
+		return name.split('/').join('-').split('..').join('-')
+	}
+	async _uploadFile(file) {
+		let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(file.name)
+		await this.sink.write(path, file)
+
+	}
+	_cleanupDropDone() {
+		this.overCount = 0
+		this.el.classList.remove('file-dropping')
+	}
+
+	applyFilter(evt, selected) {
+		setTimeout(() => {
+			let value = this.el.querySelector('[name="filter"]').value
+			let allVariants = this.el.querySelectorAll('.choice-boxes .variant-choice-box')
+			for (let variant of allVariants) {
+				variant.classList.remove('hidden')
+				if (value) {
+					let searchString = variant.variant.baseName + variant.variant.extensions.join()
+					if (searchString.indexOf(value) < 0) {
+						variant.classList.add('hidden')
+					}
+				}
+			}
+		})
 	}
 
 	selectVariant(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		for(let sel of currentSelected) {
+		for (let sel of currentSelected) {
 			sel.classList.remove('selected')
 		}
 
 		selected.classList.add('selected')
+	}
+
+	deleteFile(evt, selected) {
+		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+		if(currentSelected.length > 0) {
+			let files = []
+			for (let sel of currentSelected) {
+				if(sel.variant.file) {
+					files.push(sel.variant.file)
+				}
+				if(sel.variant.variants) {
+					files.push(...sel.variant.variants.map(vr => vr.file))
+				}
+			}
+			let names = files.map(file => file.name)
+			let dialog = new FormAnswerDialog({
+				title: 'Delete File' + (files.length > 1 ? 's' : '')
+				, body: '<p>' + names.join(', ') + '</p>'
+			})
+			let prom = dialog.open()
+			prom.then(async data => {
+				if (data) {
+					for(let file of files) {
+						let path = file.relPath 
+						let note
+						if (this.eventNotificationPanel) {
+							note = this.eventNotificationPanel.addNotification({
+								model: {
+									status: 'pending',
+									headline: `deleting ${file.name}`
+								}
+							})
+						}
+						await this.sink.rm(path)
+						if (this.eventNotificationPanel) {
+							note.remove()
+							note = this.eventNotificationPanel.addNotification({
+								model: {
+									status: 'success',
+									headline: `removed ${file.name}`
+								}
+								, ttl: 2000
+							})
+						}
+					}
+					for (let sel of currentSelected) {
+						sel.remove()
+					}
+				}
+			})
+
+		}
+
 	}
 
 	createDirectory(evt, selected) {
@@ -63,22 +213,22 @@ export default class ImageBrowserView extends View {
 		let variant = choiceBox.variant
 
 		let files = []
-		if(variant.variants) {
+		if (variant.variants) {
 			files.push(...variant.variants.map(variant => variant.file))
 		}
 		else {
 			files.push(variant.file)
 		}
-		
+
 
 		let content = '<ul>'
-		for(let file of files) {
+		for (let file of files) {
 			content += '<li><a target="_blank" href="' + file.accessUrl + '">'
 			content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
 			content += '</li>'
 		}
 		content += '</ul>'
-		
+
 		let dialog = new InfoDialog({
 			title: 'File Details: ' + variant.baseName
 			, body: content
@@ -116,6 +266,7 @@ export default class ImageBrowserView extends View {
 		this.el.innerHTML = imageBrowserFrame(this.model)
 		this.data = []
 
+
 		this.rootDirectory = await this.sink.getFullFileInfo('')
 		this.rootDirectory.name = "Files"
 		let rootNode = this.rootNode = this._fileToKalpaNode(this.rootDirectory)
@@ -149,7 +300,19 @@ export default class ImageBrowserView extends View {
 					tree.style.height = '100%'
 				}, 100)
 			})
-			tree.select(1)
+			if (this.startingDirectory) {
+				for (let node of Object.values(this.tree.nodes)) {
+					if (node.file && node.file.relPath && node.file.relPath == this.startingDirectory) {
+						// this.setCurrentNode(node)
+						tree.select(node.id)
+						break
+					}
+				}
+			}
+			else {
+				tree.select(1)
+				// this.setCurrentNode(Object.values(this.tree.nodes)[0])
+			}
 
 		})
 	}
@@ -244,7 +407,7 @@ export default class ImageBrowserView extends View {
 			}
 		}
 
-		if(!this.imagesOnly) {
+		if (!this.imagesOnly) {
 			for (let file of remainingChildren) {
 				let info = {
 					file: file
@@ -263,10 +426,10 @@ export default class ImageBrowserView extends View {
 			item.extensions = this._determineExtensions(item)
 			item.sizes = this._determineSizes(item)
 			if (item.sizes[0] == item.sizes[1]) {
-				item.size = this._formatBytes(item.sizes[0])	
+				item.size = this._formatBytes(item.sizes[0])
 			}
 			else {
-				item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1]) 
+				item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1])
 			}
 		}
 
@@ -289,11 +452,12 @@ export default class ImageBrowserView extends View {
 		let choicesBoxes = this.el.querySelector('.choice-boxes')
 		choicesBoxes.innerHTML = ''
 		choicesBoxes.insertAdjacentHTML('beforeend', content)
-		
-		for(let i = 0; i < choicesBoxes.children.length; i++) {
+
+		for (let i = 0; i < choicesBoxes.children.length; i++) {
 			choicesBoxes.children[i].variant = variantValues[i]
 		}
 		this.el.querySelector('.box-holder').scrollTop = 0
+		this.applyFilter()
 	}
 
 	_join(...parts) {

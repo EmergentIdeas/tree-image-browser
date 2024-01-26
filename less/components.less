@@ -104,12 +104,22 @@
 			&.selected {
 				box-shadow: 1px 1px 10px var(--webhandle-file-tree-image-selected-box-hightlight);
 			}
+			&.hidden {
+				display: none;
+			}
 		}
 		
 		.extension-pill {
 			padding: 3px 5px;
 			border-radius: 5px;
 			background-color: var(--webhandle-file-tree-image-box-background);
+		}
+		
+		.bottom-controls {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			padding-right: 34px;
+			padding-top: 10px;
 		}
 
 

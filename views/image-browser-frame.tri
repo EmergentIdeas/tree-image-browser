@@ -11,11 +11,15 @@
 				<div class="choice-boxes">
 				</div>
 			</div>
-			
-			
 		</div>
-		<div class="directory-controls">
-			<button type="button" class="btn create-directory">Create Directory</button>
+		<div class="bottom-controls">
+			<div class="directory-controls">
+				<button type="button" class="btn create-directory">Create Directory</button>
+			</div>
+			<div class="file-controls">
+				<button type="button" class="btn delete-file">Delete File</button>
+			</div>
+				
 		</div>
 	</div>
 	

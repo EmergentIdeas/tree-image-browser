@@ -24,6 +24,7 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@webhandle/event-notification-panel": "^1.0.0",
 		"browserify": "^14.4.0",
 		"chai": "^4.3.4",
 		"exorcist": "^2.0.0",

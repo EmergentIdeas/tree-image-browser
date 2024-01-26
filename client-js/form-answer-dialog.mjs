@@ -10,12 +10,12 @@ export class FormAnswerDialog extends Dialog {
 						return true
 					},
 					'.mask': () => {
-						console.log('mask')
+						// console.log('mask')
 						this.resolve()
 						return true
 					},
 					'.btn-cancel': () => {
-						console.log('cancel')
+						// console.log('cancel')
 						this.resolve()
 						return true
 					}
