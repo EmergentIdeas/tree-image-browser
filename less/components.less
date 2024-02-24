@@ -11,9 +11,12 @@
 
 	.image-browser {
 		.image-browser-frame {
+			position: relative;
 			display: grid;
 			grid-template-columns: minmax(300px, 30%) 1fr;
 			column-gap: 20px;
+			background-color: white;
+
 			& > .treebox {
 				height: 800px;
 				position: relative;
@@ -122,6 +125,52 @@
 			padding-top: 10px;
 		}
 
+		.img-drop-cover {
+			position: absolute;
+			inset: 0;
+			background-color: rgba(255, 255, 255, .8);
+			z-index: -1;
+			
+			display: grid;
+			column-gap: 30px;
+			row-gap: 30px;
+			grid-template-columns: repeat(3, 1fr);
+			grid-template-rows: repeat(4, 1fr);
+			transition: opacity .3s;
+			opacity: .2;
+			
+			.drop-type {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				
+				border: solid 1px black;
+				border-radius: 5px;
+				box-shadow: 1px 1px 5px #cccccc;
+				background-color: fade(@webhandle-file-tree-image-box-background, 70%);
+			}
+			
+			.guided-upload {
+				grid-row: 1 / span 4;
+				grid-column: 1 / span 2;
+			}
+			.automatic {
+				grid-row: 1 / span 3;
+				grid-column: 3;
+			}
+			.literal {
+				grid-row: 4;
+				grid-column: 3;
+			}
+
+		}
+		
+		&.file-dropping {
+			.img-drop-cover {
+				z-index: 2;
+				opacity: 1;
+			}
+		}
 
 	}
 

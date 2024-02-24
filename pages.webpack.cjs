@@ -45,7 +45,9 @@ module.exports = [{
 		reasons: true
 	},
 
-},
+}
+/*
+,
 {
 	entry: './client-js/index.js',
 	mode: 'production',
@@ -83,4 +85,7 @@ module.exports = [{
 		reasons: true
 	},
 
-}]
+}
+*/
+
+]

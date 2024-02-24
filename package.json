@@ -12,8 +12,8 @@
 		"client-js-browserify-build": "npm run client-js-pages-browserify-build",
 		"client-js-pages-browserify build": "npx browserify client-js/pages.cjs --debug | npx exorcist public/js/pages.cjs.map > public/js/pages.cjs",
 		"dev-less-watch": "onchange 'less/**/*.less' -- npm run less-build",
-		"dev-client-js-watch": "onchange 'client-js/**/*js' -- npm run client-js-build",
-		"dev-server-js-watch": "onchange 'server-js/**/*js' -- pm2 restart $npm_package_name-web",
+		"dev-client-js-watch": "onchange 'client-lib/**/*js' 'views/webhandle-tree-image-browser/**/*tri' 'client-js/**/*js' -- npm run client-js-build",
+		"dev-server-js-watch": "onchange 'server-lib/**/*js' 'server-js/**/*js' -- pm2 restart $npm_package_name-web",
 		"start": "node ./web-server.js",
 		"testDebug": "node --inspect-brk node_modules/mocha/bin/mocha",
 		"bg": "parallelshell 'npm run dev-less-watch' 'npm run dev-client-js-watch'",
@@ -24,9 +24,11 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@dankolz/ei-css-grid": "^1.0.0",
 		"@webhandle/event-notification-panel": "^1.0.0",
 		"browserify": "^14.4.0",
 		"chai": "^4.3.4",
+		"ei-form-styles-1": "^1.0.2",
 		"exorcist": "^2.0.0",
 		"express": "^4.17.1",
 		"file-sink": "^1.0.12",
@@ -52,6 +54,7 @@
 		"@webhandle/backbone-view": "^1.0.1",
 		"ei-dialog": "^1.0.9",
 		"file-sink-remote-http": "^1.0.2",
+		"form-value-injector": "^1.0.6",
 		"kalpa-tree-on-page": "^1.0.2"
 	},
 	"browserify": {

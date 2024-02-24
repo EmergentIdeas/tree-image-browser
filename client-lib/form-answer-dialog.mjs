@@ -1,6 +1,13 @@
 import Dialog from 'ei-dialog'
+import formValueInjector from 'form-value-injector'
 
 export class FormAnswerDialog extends Dialog {
+	/**
+	 * 
+	 * @param {Object} options Properties to create the dialog box. In addition to the properties from Dialog
+	 * there those below.
+	 * @param {Object} options.data The data which will be used to populate the controls in the dialog
+	 */
 	constructor(options) {
 		super(Object.assign({}, options,
 			{
@@ -10,12 +17,10 @@ export class FormAnswerDialog extends Dialog {
 						return true
 					},
 					'.mask': () => {
-						// console.log('mask')
 						this.resolve()
 						return true
 					},
 					'.btn-cancel': () => {
-						// console.log('cancel')
 						this.resolve()
 						return true
 					}
@@ -23,6 +28,17 @@ export class FormAnswerDialog extends Dialog {
 
 			}
 		))
+		if(this.afterOpen) {
+			this.afterOpenOriginal = this.afterOpen
+		}
+		if(this.data) {
+			this.afterOpen = function(bodyElement, self) {
+				bodyElement.innerHTML = formValueInjector(bodyElement.innerHTML, this.data)
+				if(this.afterOpenOriginal) {
+					this.afterOpenOriginal(bodyElement, self)
+				}
+			}
+		}
 	}
 
 	gatherFormData() {

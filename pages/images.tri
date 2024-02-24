@@ -1,0 +1,13 @@
+__::start__
+<div class="page page-landing">
+	<div class="container-wrapper">
+		<div class="container">
+			<div id="event-notifications"></div>
+		</div>
+	</div>
+	
+	<div class="image-holder">
+		
+	</div>
+</div>
+__::end__

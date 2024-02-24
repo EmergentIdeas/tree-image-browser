@@ -1,5 +1,5 @@
 import { View } from '@webhandle/backbone-view'
-import { imageBrowserFrame, variantChoiceBox } from '../views/load-browser-views.js'
+import { imageBrowserFrame, variantChoiceBox, guidedImageUploadForm } from '../views/load-browser-views.js'
 import KalpaTreeOnPage from 'kalpa-tree-on-page'
 import condense from '@dankolz/webp-detection/lib/condense-image-variants.js'
 import basename from '@dankolz/webp-detection/lib/file-basename.js'
@@ -7,9 +7,11 @@ import basename from '@dankolz/webp-detection/lib/file-basename.js'
 import { FormAnswerDialog } from './form-answer-dialog.mjs'
 import { InfoDialog } from './info-dialog.mjs'
 import formatBytes from './format-bytes.mjs'
+import baseImageName from './base-image-name.mjs'
+import makeImageSet from './make-image-set.mjs'
+
 
 export default class ImageBrowserView extends View {
-
 	/**
 	 * Construct a new file browser
 	 * @param {object} options 
@@ -55,10 +57,11 @@ export default class ImageBrowserView extends View {
 		evt.preventDefault()
 	}
 
-	async handleDrop(evt, selected) {
-		console.log('drop')
-		this._cleanupDropDone()
-		evt.preventDefault()
+	_isImageFile(file) {
+		return file.type.startsWith('image')
+	}
+
+	_getFilesFromEvent(evt) {
 		let files = []
 
 		// items is the new interface we should use if that's available
@@ -74,6 +77,10 @@ export default class ImageBrowserView extends View {
 				files.push(file)
 			})
 		}
+		return files
+	}
+	
+	async _uploadFiles(files, { uploadType }={}) {
 		for (let file of files) {
 			let note
 			if (this.eventNotificationPanel) {
@@ -84,7 +91,38 @@ export default class ImageBrowserView extends View {
 					}
 				})
 			}
-			await this._uploadFile(file)
+
+			if (uploadType === 'guided' && this._isImageFile(file)) {
+				let baseFileName = baseImageName(file)
+				let dialog = new FormAnswerDialog({
+					title: 'Upload File'
+					, body: guidedImageUploadForm(file)
+					, data: {
+						name: baseFileName,
+						outputFormat: file.type
+					}
+				})
+				let prom = dialog.open()
+				prom.then(result => {
+					console.log(result)
+				})
+
+			}
+			else if (uploadType === 'automatic' && this._isImageFile(file)) {
+				let baseFileName = baseImageName(file)
+
+				let files = await makeImageSet(file, {
+					baseFileName: baseFileName,
+					outputFormat: file.type
+				})
+
+				for (let fileName of Object.keys(files)) {
+					await this._uploadData(fileName, files[fileName])
+				}
+			}
+			else {
+				await this._uploadData(file.name, file)
+			}
 			if (this.eventNotificationPanel) {
 				note.remove()
 				note = this.eventNotificationPanel.addNotification({
@@ -99,13 +137,27 @@ export default class ImageBrowserView extends View {
 		this.setCurrentNode(this.currentNode)
 	}
 
+	async handleDrop(evt, selected) {
+		let uploadType = 'literal'
+		if (evt.target.classList.contains('guided-upload')) {
+			uploadType = 'guided'
+		}
+		else if (evt.target.classList.contains('automatic')) {
+			uploadType = 'automatic'
+		}
+
+		this._cleanupDropDone()
+		evt.preventDefault()
+		let files = this._getFilesFromEvent(evt)
+		this._uploadFiles(files, {uploadType})
+	}
+
 	sanitizeFileName(name) {
 		return name.split('/').join('-').split('..').join('-')
 	}
-	async _uploadFile(file) {
-		let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(file.name)
-		await this.sink.write(path, file)
-
+	async _uploadData(name, data) {
+		let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(name)
+		await this.sink.write(path, data)
 	}
 	_cleanupDropDone() {
 		this.overCount = 0
@@ -139,13 +191,13 @@ export default class ImageBrowserView extends View {
 
 	deleteFile(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if(currentSelected.length > 0) {
+		if (currentSelected.length > 0) {
 			let files = []
 			for (let sel of currentSelected) {
-				if(sel.variant.file) {
+				if (sel.variant.file) {
 					files.push(sel.variant.file)
 				}
-				if(sel.variant.variants) {
+				if (sel.variant.variants) {
 					files.push(...sel.variant.variants.map(vr => vr.file))
 				}
 			}
@@ -157,8 +209,8 @@ export default class ImageBrowserView extends View {
 			let prom = dialog.open()
 			prom.then(async data => {
 				if (data) {
-					for(let file of files) {
-						let path = file.relPath 
+					for (let file of files) {
+						let path = file.relPath
 						let note
 						if (this.eventNotificationPanel) {
 							note = this.eventNotificationPanel.addNotification({

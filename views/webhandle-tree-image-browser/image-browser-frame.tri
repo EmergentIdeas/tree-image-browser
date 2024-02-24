@@ -22,6 +22,17 @@
 				
 		</div>
 	</div>
-	
+	<div class="img-drop-cover">
+		<div class="drop-type guided-upload">
+			Guided Upload
+		</div>
+		<div class="drop-type automatic">
+			Automatic
+		</div>
+		<div class="drop-type literal">
+			Just Do It
+		</div>
+		
+	</div>
 	
 </div>
