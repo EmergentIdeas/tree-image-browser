@@ -34760,7 +34760,7 @@ module.exports = tri.addTemplate("webhandle-tree-image-browser/extension-pill", 
   \**************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"guided-image-upload-form ei-form\">\n\t<label>\n\t\tSource file name:<br>\n\t\t__name__\n\t<\/label>\n\t<label>\n\t\tAfter uploaded name:\n\t\t<input name=\"name\" type=\"text\" \/>\n\t<\/label>\n\t\n\t\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"guided-image-upload-form ei-form\">\n\t<label>\n\t\tSource file name:<br>\n\t\t__nativeName__\n\t<\/label>\n\t<label>\n\t\tNative resolution:<br>\n\t\t__stats.width__ x __stats.height__\n\t<\/label>\n\t<label>\n\t\tAfter uploaded name (no extension):\n\t\t<input name=\"name\" type=\"text\" \/>\n\t<\/label>\n\t<div class=\"radio-options\">\n\t\tOutput format:\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/png\" \/> <span class=\"extension-pill\">PNG<\/span>\n\t\t<\/label>\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/jpeg\" \/> <span class=\"extension-pill\">JPG<\/span>\n\t\t<\/label>\n\t<\/div>\n\t<label>\n\t\tOn screen width (px):\n\t\t<input name=\"width\" type=\"number\" \/>\n\t<\/label>\n\t\n\t\n<\/div>"; 
 module.exports = tri.addTemplate("webhandle-tree-image-browser/guilded-image-upload-form", t); 
 
 /***/ }),
@@ -35709,6 +35709,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var ei_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ei-dialog */ "./node_modules/ei-dialog/dialog.js");
 /* harmony import */ var form_value_injector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! form-value-injector */ "./node_modules/form-value-injector/form-value-injector.js");
+/* harmony import */ var _webhandle_gather_form_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @webhandle/gather-form-data */ "./node_modules/@webhandle/gather-form-data/gather-form-data.mjs");
+
 
 
 
@@ -35724,7 +35726,7 @@ class FormAnswerDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
 			{
 				on: {
 					'.btn-ok': () => {
-						this.resolve(this.gatherFormData())
+						this.resolve(this.gatherData())
 						return true
 					},
 					'.mask': () => {
@@ -35751,16 +35753,9 @@ class FormAnswerDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
 			}
 		}
 	}
-
-	gatherFormData() {
-		let result = {}
+	gatherData() {
 		let dialogBody = document.querySelector(this.getBodySelector())
-		let controls = dialogBody.querySelectorAll('input, textarea, select')
-		for (let control of controls) {
-			result[control.getAttribute('name')] = control.value
-		}
-		return result
-
+		return (0,_webhandle_gather_form_data__WEBPACK_IMPORTED_MODULE_2__["default"])(dialogBody)
 	}
 
 	async open() {
@@ -35796,6 +35791,70 @@ function formatBytes(bytes, decimals) {
 		sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
 		i = Math.floor(Math.log(bytes) / Math.log(k))
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+}
+
+/***/ }),
+
+/***/ "./client-lib/get-extension-from-mime.mjs":
+/*!************************************************!*\
+  !*** ./client-lib/get-extension-from-mime.mjs ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getExtension)
+/* harmony export */ });
+
+let types = {
+	"image/png": "png"
+	, "image/jpeg": "jpg"
+	, "image/jpg": "jpg"
+	, "image/webp": "webp"
+}
+
+
+function getExtension(mime) {
+	if (mime in types) {
+		return types[mime]
+	}
+
+	let ext = mime.split('/').pop()
+	return ext
+}
+
+
+/***/ }),
+
+/***/ "./client-lib/get-file-image-stats.mjs":
+/*!*********************************************!*\
+  !*** ./client-lib/get-file-image-stats.mjs ***!
+  \*********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getFileImageStats)
+/* harmony export */ });
+/* harmony import */ var _data_to_image_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./data-to-image.mjs */ "./client-lib/data-to-image.mjs");
+/* harmony import */ var _get_image_stats_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./get-image-stats.mjs */ "./client-lib/get-image-stats.mjs");
+/* harmony import */ var _get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./get-extension-from-mime.mjs */ "./client-lib/get-extension-from-mime.mjs");
+
+
+
+
+/**
+ * 
+ * @param {File} file 
+ * @returns 
+ */
+async function getFileImageStats(file) {
+	let source = await (0,_data_to_image_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])(file)
+	let stats = await (0,_get_image_stats_mjs__WEBPACK_IMPORTED_MODULE_1__["default"])(source)
+	stats.ratio = stats.width / stats.height
+	stats.ext = (0,_get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_2__["default"])(file.type)
+
+	return stats
 }
 
 /***/ }),
@@ -35845,6 +35904,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./format-bytes.mjs */ "./client-lib/format-bytes.mjs");
 /* harmony import */ var _base_image_name_mjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./base-image-name.mjs */ "./client-lib/base-image-name.mjs");
 /* harmony import */ var _make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./make-image-set.mjs */ "./client-lib/make-image-set.mjs");
+/* harmony import */ var _name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./name-parts.mjs */ "./client-lib/name-parts.mjs");
+/* harmony import */ var _get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./get-file-image-stats.mjs */ "./client-lib/get-file-image-stats.mjs");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 
 
@@ -35852,6 +35913,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // import Dialog from 'ei-dialog'
+
+
 
 
 
@@ -35868,6 +35931,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	 * @param {boolean} options.allowFileSelection Set to true so that selected files are marked
 	 * @param {EventNotificationPanel} options.eventNotificationPanel The panel which status messages will be added to.
 	 * @param {string} options.startingDirectory
+	 * @param {boolean} options.deleteWithoutConfirm False by default
 	 */
 	constructor(options) {
 		super(options)
@@ -35906,7 +35970,13 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	}
 
 	_isImageFile(file) {
-		return file.type.startsWith('image')
+		if (!file.type.startsWith('image')) {
+			return false
+		}
+		if (file.type.includes('jpeg') || file.type.includes('png') || file.type.includes('webp')) {
+			return true
+		}
+		return false
 	}
 
 	_getFilesFromEvent(evt) {
@@ -35927,49 +35997,68 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 		return files
 	}
-	
-	async _uploadFiles(files, { uploadType }={}) {
+
+	async _uploadFiles(files, { uploadType } = {}) {
 		for (let file of files) {
 			let note
-			if (this.eventNotificationPanel) {
-				note = this.eventNotificationPanel.addNotification({
-					model: {
-						status: 'pending',
-						headline: `uploading ${file.name}`
-					}
-				})
+			let addPending = () => {
+				if (this.eventNotificationPanel) {
+					note = this.eventNotificationPanel.addNotification({
+						model: {
+							status: 'pending',
+							headline: `uploading ${file.name}`
+						}
+					})
+				}
 			}
 
 			if (uploadType === 'guided' && this._isImageFile(file)) {
 				let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file)
+				let stats = await (0,_get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_11__["default"])(file)
+
+				let data = {
+					nativeName: file.name
+					, name: baseFileName
+					, outputFormat: file.type
+					, stats: stats
+					, width: Math.floor(stats.width / 2)
+				}
+
+
 				let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
 					title: 'Upload File'
-					, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedImageUploadForm)(file)
-					, data: {
-						name: baseFileName,
-						outputFormat: file.type
-					}
+					, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedImageUploadForm)(data)
+					, data: data
+					, dialogFrameClass: 'webhandle-file-tree-image-browser'
 				})
 				let prom = dialog.open()
-				prom.then(result => {
-					console.log(result)
-				})
+				let result = await prom
+				console.log(result)
 
-			}
-			else if (uploadType === 'automatic' && this._isImageFile(file)) {
-				let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file)
-
-				let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file, {
-					baseFileName: baseFileName,
-					outputFormat: file.type
-				})
-
-				for (let fileName of Object.keys(files)) {
-					await this._uploadData(fileName, files[fileName])
-				}
+				addPending()
 			}
 			else {
-				await this._uploadData(file.name, file)
+				addPending()
+				if (uploadType === 'automatic' && this._isImageFile(file)) {
+					let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
+					let baseFileName = parts[0]
+
+					let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file, {
+						baseFileName: baseFileName,
+						outputFormat: file.type
+					})
+
+					for (let fileName of Object.keys(files)) {
+						await this._uploadData(fileName, files[fileName])
+					}
+				}
+				else if (uploadType === 'automatic') {
+					let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
+					await this._uploadData(parts.join('.'), file)
+				}
+				else {
+					await this._uploadData(file.name, file)
+				}
 			}
 			if (this.eventNotificationPanel) {
 				note.remove()
@@ -35997,7 +36086,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		this._cleanupDropDone()
 		evt.preventDefault()
 		let files = this._getFilesFromEvent(evt)
-		this._uploadFiles(files, {uploadType})
+		this._uploadFiles(files, { uploadType })
 	}
 
 	sanitizeFileName(name) {
@@ -36030,64 +36119,62 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 
 	selectVariant(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		for (let sel of currentSelected) {
-			sel.classList.remove('selected')
+		if (!evt.ctrlKey) {
+			for (let sel of currentSelected) {
+				sel.classList.remove('selected')
+			}
 		}
 
-		selected.classList.add('selected')
+		selected.classList.toggle('selected')
 	}
 
-	deleteFile(evt, selected) {
+	async deleteFile(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
 		if (currentSelected.length > 0) {
 			let files = []
 			for (let sel of currentSelected) {
-				if (sel.variant.file) {
-					files.push(sel.variant.file)
-				}
-				if (sel.variant.variants) {
-					files.push(...sel.variant.variants.map(vr => vr.file))
-				}
+				files.push(...this._getAssociatedRealFiles(sel.variant))
 			}
 			let names = files.map(file => file.name)
-			let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
-				title: 'Delete File' + (files.length > 1 ? 's' : '')
-				, body: '<p>' + names.join(', ') + '</p>'
-			})
-			let prom = dialog.open()
-			prom.then(async data => {
-				if (data) {
-					for (let file of files) {
-						let path = file.relPath
-						let note
-						if (this.eventNotificationPanel) {
-							note = this.eventNotificationPanel.addNotification({
-								model: {
-									status: 'pending',
-									headline: `deleting ${file.name}`
-								}
-							})
-						}
-						await this.sink.rm(path)
-						if (this.eventNotificationPanel) {
-							note.remove()
-							note = this.eventNotificationPanel.addNotification({
-								model: {
-									status: 'success',
-									headline: `removed ${file.name}`
-								}
-								, ttl: 2000
-							})
-						}
-					}
-					for (let sel of currentSelected) {
-						sel.remove()
-					}
+			if (!this.deleteWithoutConfirm) {
+				let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+					title: 'Delete File' + (files.length > 1 ? 's' : '')
+					, body: '<p>' + names.join(', ') + '</p>'
+				})
+				let prom = dialog.open()
+				let ans = await prom
+				if (!ans) {
+					return
 				}
-			})
+			}
 
+			for (let file of files) {
+				let path = file.relPath
+				let note
+				if (this.eventNotificationPanel) {
+					note = this.eventNotificationPanel.addNotification({
+						model: {
+							status: 'pending',
+							headline: `deleting ${file.name}`
+						}
+					})
+				}
+				await this.sink.rm(path)
+				if (this.eventNotificationPanel) {
+					note.remove()
+					note = this.eventNotificationPanel.addNotification({
+						model: {
+							status: 'success',
+							headline: `removed ${file.name}`
+						}
+						, ttl: 2000
+					})
+				}
+			}
+			for (let sel of currentSelected) {
+				sel.remove()
+			}
 		}
-
 	}
 
 	createDirectory(evt, selected) {
@@ -36108,10 +36195,8 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 
 	}
 
-	showVariantDetails(evt, selected) {
-		let choiceBox = selected.closest('.variant-choice-box')
-		let variant = choiceBox.variant
 
+	_getAssociatedRealFiles(variant) {
 		let files = []
 		if (variant.variants) {
 			files.push(...variant.variants.map(variant => variant.file))
@@ -36119,7 +36204,18 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		else {
 			files.push(variant.file)
 		}
+		if (variant.definitionFile) {
+			files.push(variant.definitionFile)
+		}
 
+		return files
+	}
+
+	showVariantDetails(evt, selected) {
+		let choiceBox = selected.closest('.variant-choice-box')
+		let variant = choiceBox.variant
+
+		let files = this._getAssociatedRealFiles(variant)
 
 		let content = '<ul>'
 		for (let file of files) {
@@ -36286,12 +36382,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 
 		let used = []
 		for (let variant of variantValues) {
-			if (variant.definitionFile) {
-				used.push(variant.definitionFile.name)
-			}
-			for (let imgVariant of variant.variants) {
-				used.push(imgVariant.file.name)
-			}
+			used.push(...this._getAssociatedRealFiles(variant).map(variant => variant.name))
 		}
 
 		let remainingChildren = info.children.filter(item => {
@@ -36518,29 +36609,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _client_lib_image_resize_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../client-lib/image-resize.mjs */ "./client-lib/image-resize.mjs");
 /* harmony import */ var _client_lib_data_to_image_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../client-lib/data-to-image.mjs */ "./client-lib/data-to-image.mjs");
 /* harmony import */ var _client_lib_get_image_stats_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../client-lib/get-image-stats.mjs */ "./client-lib/get-image-stats.mjs");
+/* harmony import */ var _get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./get-extension-from-mime.mjs */ "./client-lib/get-extension-from-mime.mjs");
 
 
 
 
-
-let types = {
-	"image/png": "png"
-	, "image/jpeg": "jpg"
-	, "image/jpg": "jpg"
-	, "image/webp": "webp"
-}
 
 let webpMime = 'image/webp'
-
-function getExtension(mime) {
-
-	if (mime in types) {
-		return types[mime]
-	}
-
-	let ext = mime.split('/').pop()
-	return ext
-}
 
 async function makeImageSet(data,
 	{ singleDensityWidth = null
@@ -36582,14 +36657,14 @@ async function makeImageSet(data,
 			, quality: quality
 			, outputFormat: outputFormat
 		})
-		files[baseFileName + key + '.' + getExtension(outputFormat)] = data
+		files[baseFileName + key + '.' + (0,_get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(outputFormat)] = data
 
 		data = await (0,_client_lib_image_resize_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])(source, {
 			maxWidth: width
 			, quality: quality
 			, outputFormat: webpMime
 		})
-		files[baseFileName + key + '.' + getExtension(webpMime)] = data
+		files[baseFileName + key + '.' + (0,_get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(webpMime)] = data
 	}
 
 
@@ -36597,12 +36672,50 @@ async function makeImageSet(data,
 		"name": baseFileName,
 		"size": doubleDensityWidth + "x" + (doubleDensityWidth / ratio),
 		"displaySize": singleDensityWidth + "x" + (singleDensityWidth / ratio),
-		"fallback": getExtension(outputFormat)
+		"fallback": (0,_get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(outputFormat)
 	}
 	files[baseFileName + '.json'] = JSON.stringify(info, null, '\t')
 
 	return files
 
+}
+
+/***/ }),
+
+/***/ "./client-lib/name-parts.mjs":
+/*!***********************************!*\
+  !*** ./client-lib/name-parts.mjs ***!
+  \***********************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ nameParts)
+/* harmony export */ });
+/* harmony import */ var _base_image_name_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base-image-name.mjs */ "./client-lib/base-image-name.mjs");
+
+
+/**
+ * 
+ * @param {File,string} file 
+ */
+function nameParts(file) {
+	let name
+	if(typeof file === 'string') {
+		name = file
+	}
+	else if(file instanceof File) {
+		name = file.name
+	}
+	
+	let result = [(0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])(name)]
+	
+	let parts = name.split('.')
+	if(parts.length > 1) {
+		result.push(parts.pop())
+	}
+	
+	return result
 }
 
 /***/ }),
@@ -37392,6 +37505,44 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+/***/ }),
+
+/***/ "./node_modules/@webhandle/gather-form-data/gather-form-data.mjs":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@webhandle/gather-form-data/gather-form-data.mjs ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ gatherFormData)
+/* harmony export */ });
+/**
+ * Gathers the data from the form controls.
+ * @param {HTMLElement} formBody The html element containing the controls. Probably
+ * a form tag element, but it really doesn't matter.
+ */
+function gatherFormData(formBody) {
+	let result = {}
+	let controls = formBody.querySelectorAll('input, textarea, select')
+	for (let control of controls) {
+		if (control.type === 'checkbox') {
+			if (!control.checked) {
+				continue
+			}
+		}
+		else if (control.type === 'radio') {
+			if (!control.checked) {
+				continue
+			}
+		}
+		result[control.getAttribute('name')] = control.value
+	}
+	return result
+}
 
 
 
@@ -43079,7 +43230,8 @@ if(treeHolder) {
 		sink: webhandle.sinks.files
 		// , imagesOnly: true
 		, eventNotificationPanel: eventPanel
-		, startingDirectory: 'test2'
+		, startingDirectory: 'empty'
+		, deleteWithoutConfirm: true
 	})
 	imageBrowserView.appendTo(treeHolder)
 	imageBrowserView.render()

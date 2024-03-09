@@ -1,11 +1,28 @@
 <div class="guided-image-upload-form ei-form">
 	<label>
 		Source file name:<br>
-		__name__
+		__nativeName__
 	</label>
 	<label>
-		After uploaded name:
+		Native resolution:<br>
+		__stats.width__ x __stats.height__
+	</label>
+	<label>
+		After uploaded name (no extension):
 		<input name="name" type="text" />
+	</label>
+	<div class="radio-options">
+		Output format:
+		<label>
+			<input type="radio" name="outputFormat" value="image/png" /> <span class="extension-pill">PNG</span>
+		</label>
+		<label>
+			<input type="radio" name="outputFormat" value="image/jpeg" /> <span class="extension-pill">JPG</span>
+		</label>
+	</div>
+	<label>
+		On screen width (px):
+		<input name="width" type="number" />
 	</label>
 	
 	

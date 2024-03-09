@@ -112,11 +112,6 @@
 			}
 		}
 		
-		.extension-pill {
-			padding: 3px 5px;
-			border-radius: 5px;
-			background-color: var(--webhandle-file-tree-image-box-background);
-		}
 		
 		.bottom-controls {
 			display: grid;
@@ -175,4 +170,25 @@
 	}
 
 
+	.extension-pill {
+		padding: 3px 5px;
+		border-radius: 5px;
+		background-color: var(--webhandle-file-tree-image-box-background);
+	}
+	
+	.radio-options {
+		label {
+			display: inline-block;
+			position: relative;
+			input[type=radio] {
+				position: absolute;
+				display: inline-block;
+				left: -10000px;
+			}
+			input[type=radio]:not(:checked) + .extension-pill {
+				background-color: transparent;
+			}
+			
+		}
+	}
 }

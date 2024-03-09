@@ -9,6 +9,8 @@ import { InfoDialog } from './info-dialog.mjs'
 import formatBytes from './format-bytes.mjs'
 import baseImageName from './base-image-name.mjs'
 import makeImageSet from './make-image-set.mjs'
+import nameParts from './name-parts.mjs'
+import getFileImageStats from './get-file-image-stats.mjs'
 
 
 export default class ImageBrowserView extends View {
@@ -20,6 +22,7 @@ export default class ImageBrowserView extends View {
 	 * @param {boolean} options.allowFileSelection Set to true so that selected files are marked
 	 * @param {EventNotificationPanel} options.eventNotificationPanel The panel which status messages will be added to.
 	 * @param {string} options.startingDirectory
+	 * @param {boolean} options.deleteWithoutConfirm False by default
 	 */
 	constructor(options) {
 		super(options)
@@ -58,7 +61,13 @@ export default class ImageBrowserView extends View {
 	}
 
 	_isImageFile(file) {
-		return file.type.startsWith('image')
+		if (!file.type.startsWith('image')) {
+			return false
+		}
+		if (file.type.includes('jpeg') || file.type.includes('png') || file.type.includes('webp')) {
+			return true
+		}
+		return false
 	}
 
 	_getFilesFromEvent(evt) {
@@ -79,49 +88,68 @@ export default class ImageBrowserView extends View {
 		}
 		return files
 	}
-	
-	async _uploadFiles(files, { uploadType }={}) {
+
+	async _uploadFiles(files, { uploadType } = {}) {
 		for (let file of files) {
 			let note
-			if (this.eventNotificationPanel) {
-				note = this.eventNotificationPanel.addNotification({
-					model: {
-						status: 'pending',
-						headline: `uploading ${file.name}`
-					}
-				})
+			let addPending = () => {
+				if (this.eventNotificationPanel) {
+					note = this.eventNotificationPanel.addNotification({
+						model: {
+							status: 'pending',
+							headline: `uploading ${file.name}`
+						}
+					})
+				}
 			}
 
 			if (uploadType === 'guided' && this._isImageFile(file)) {
 				let baseFileName = baseImageName(file)
+				let stats = await getFileImageStats(file)
+
+				let data = {
+					nativeName: file.name
+					, name: baseFileName
+					, outputFormat: file.type
+					, stats: stats
+					, width: Math.floor(stats.width / 2)
+				}
+
+
 				let dialog = new FormAnswerDialog({
 					title: 'Upload File'
-					, body: guidedImageUploadForm(file)
-					, data: {
-						name: baseFileName,
-						outputFormat: file.type
-					}
+					, body: guidedImageUploadForm(data)
+					, data: data
+					, dialogFrameClass: 'webhandle-file-tree-image-browser'
 				})
 				let prom = dialog.open()
-				prom.then(result => {
-					console.log(result)
-				})
+				let result = await prom
+				console.log(result)
 
-			}
-			else if (uploadType === 'automatic' && this._isImageFile(file)) {
-				let baseFileName = baseImageName(file)
-
-				let files = await makeImageSet(file, {
-					baseFileName: baseFileName,
-					outputFormat: file.type
-				})
-
-				for (let fileName of Object.keys(files)) {
-					await this._uploadData(fileName, files[fileName])
-				}
+				addPending()
 			}
 			else {
-				await this._uploadData(file.name, file)
+				addPending()
+				if (uploadType === 'automatic' && this._isImageFile(file)) {
+					let parts = nameParts(file)
+					let baseFileName = parts[0]
+
+					let files = await makeImageSet(file, {
+						baseFileName: baseFileName,
+						outputFormat: file.type
+					})
+
+					for (let fileName of Object.keys(files)) {
+						await this._uploadData(fileName, files[fileName])
+					}
+				}
+				else if (uploadType === 'automatic') {
+					let parts = nameParts(file)
+					await this._uploadData(parts.join('.'), file)
+				}
+				else {
+					await this._uploadData(file.name, file)
+				}
 			}
 			if (this.eventNotificationPanel) {
 				note.remove()
@@ -149,7 +177,7 @@ export default class ImageBrowserView extends View {
 		this._cleanupDropDone()
 		evt.preventDefault()
 		let files = this._getFilesFromEvent(evt)
-		this._uploadFiles(files, {uploadType})
+		this._uploadFiles(files, { uploadType })
 	}
 
 	sanitizeFileName(name) {
@@ -182,64 +210,62 @@ export default class ImageBrowserView extends View {
 
 	selectVariant(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		for (let sel of currentSelected) {
-			sel.classList.remove('selected')
+		if (!evt.ctrlKey) {
+			for (let sel of currentSelected) {
+				sel.classList.remove('selected')
+			}
 		}
 
-		selected.classList.add('selected')
+		selected.classList.toggle('selected')
 	}
 
-	deleteFile(evt, selected) {
+	async deleteFile(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
 		if (currentSelected.length > 0) {
 			let files = []
 			for (let sel of currentSelected) {
-				if (sel.variant.file) {
-					files.push(sel.variant.file)
-				}
-				if (sel.variant.variants) {
-					files.push(...sel.variant.variants.map(vr => vr.file))
-				}
+				files.push(...this._getAssociatedRealFiles(sel.variant))
 			}
 			let names = files.map(file => file.name)
-			let dialog = new FormAnswerDialog({
-				title: 'Delete File' + (files.length > 1 ? 's' : '')
-				, body: '<p>' + names.join(', ') + '</p>'
-			})
-			let prom = dialog.open()
-			prom.then(async data => {
-				if (data) {
-					for (let file of files) {
-						let path = file.relPath
-						let note
-						if (this.eventNotificationPanel) {
-							note = this.eventNotificationPanel.addNotification({
-								model: {
-									status: 'pending',
-									headline: `deleting ${file.name}`
-								}
-							})
-						}
-						await this.sink.rm(path)
-						if (this.eventNotificationPanel) {
-							note.remove()
-							note = this.eventNotificationPanel.addNotification({
-								model: {
-									status: 'success',
-									headline: `removed ${file.name}`
-								}
-								, ttl: 2000
-							})
-						}
-					}
-					for (let sel of currentSelected) {
-						sel.remove()
-					}
+			if (!this.deleteWithoutConfirm) {
+				let dialog = new FormAnswerDialog({
+					title: 'Delete File' + (files.length > 1 ? 's' : '')
+					, body: '<p>' + names.join(', ') + '</p>'
+				})
+				let prom = dialog.open()
+				let ans = await prom
+				if (!ans) {
+					return
 				}
-			})
+			}
 
+			for (let file of files) {
+				let path = file.relPath
+				let note
+				if (this.eventNotificationPanel) {
+					note = this.eventNotificationPanel.addNotification({
+						model: {
+							status: 'pending',
+							headline: `deleting ${file.name}`
+						}
+					})
+				}
+				await this.sink.rm(path)
+				if (this.eventNotificationPanel) {
+					note.remove()
+					note = this.eventNotificationPanel.addNotification({
+						model: {
+							status: 'success',
+							headline: `removed ${file.name}`
+						}
+						, ttl: 2000
+					})
+				}
+			}
+			for (let sel of currentSelected) {
+				sel.remove()
+			}
 		}
-
 	}
 
 	createDirectory(evt, selected) {
@@ -260,10 +286,8 @@ export default class ImageBrowserView extends View {
 
 	}
 
-	showVariantDetails(evt, selected) {
-		let choiceBox = selected.closest('.variant-choice-box')
-		let variant = choiceBox.variant
 
+	_getAssociatedRealFiles(variant) {
 		let files = []
 		if (variant.variants) {
 			files.push(...variant.variants.map(variant => variant.file))
@@ -271,7 +295,18 @@ export default class ImageBrowserView extends View {
 		else {
 			files.push(variant.file)
 		}
+		if (variant.definitionFile) {
+			files.push(variant.definitionFile)
+		}
 
+		return files
+	}
+
+	showVariantDetails(evt, selected) {
+		let choiceBox = selected.closest('.variant-choice-box')
+		let variant = choiceBox.variant
+
+		let files = this._getAssociatedRealFiles(variant)
 
 		let content = '<ul>'
 		for (let file of files) {
@@ -438,12 +473,7 @@ export default class ImageBrowserView extends View {
 
 		let used = []
 		for (let variant of variantValues) {
-			if (variant.definitionFile) {
-				used.push(variant.definitionFile.name)
-			}
-			for (let imgVariant of variant.variants) {
-				used.push(imgVariant.file.name)
-			}
+			used.push(...this._getAssociatedRealFiles(variant).map(variant => variant.name))
 		}
 
 		let remainingChildren = info.children.filter(item => {

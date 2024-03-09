@@ -1516,11 +1516,6 @@ body {
 .webhandle-file-tree-image-browser .image-browser .variant-choice-box.hidden {
   display: none;
 }
-.webhandle-file-tree-image-browser .image-browser .extension-pill {
-  padding: 3px 5px;
-  border-radius: 5px;
-  background-color: var(--webhandle-file-tree-image-box-background);
-}
 .webhandle-file-tree-image-browser .image-browser .bottom-controls {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -1564,5 +1559,22 @@ body {
 .webhandle-file-tree-image-browser .image-browser.file-dropping .img-drop-cover {
   z-index: 2;
   opacity: 1;
+}
+.webhandle-file-tree-image-browser .extension-pill {
+  padding: 3px 5px;
+  border-radius: 5px;
+  background-color: var(--webhandle-file-tree-image-box-background);
+}
+.webhandle-file-tree-image-browser .radio-options label {
+  display: inline-block;
+  position: relative;
+}
+.webhandle-file-tree-image-browser .radio-options label input[type=radio] {
+  position: absolute;
+  display: inline-block;
+  left: -10000px;
+}
+.webhandle-file-tree-image-browser .radio-options label input[type=radio]:not(:checked) + .extension-pill {
+  background-color: transparent;
 }
 /*# sourceMappingURL=pages.css.map */

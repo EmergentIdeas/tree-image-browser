@@ -19,7 +19,8 @@ if(treeHolder) {
 		sink: webhandle.sinks.files
 		// , imagesOnly: true
 		, eventNotificationPanel: eventPanel
-		, startingDirectory: 'test2'
+		, startingDirectory: 'empty'
+		, deleteWithoutConfirm: true
 	})
 	imageBrowserView.appendTo(treeHolder)
 	imageBrowserView.render()

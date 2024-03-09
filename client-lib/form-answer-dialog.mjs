@@ -1,5 +1,6 @@
 import Dialog from 'ei-dialog'
 import formValueInjector from 'form-value-injector'
+import gatherFormData from '@webhandle/gather-form-data'
 
 export class FormAnswerDialog extends Dialog {
 	/**
@@ -13,7 +14,7 @@ export class FormAnswerDialog extends Dialog {
 			{
 				on: {
 					'.btn-ok': () => {
-						this.resolve(this.gatherFormData())
+						this.resolve(this.gatherData())
 						return true
 					},
 					'.mask': () => {
@@ -40,16 +41,9 @@ export class FormAnswerDialog extends Dialog {
 			}
 		}
 	}
-
-	gatherFormData() {
-		let result = {}
+	gatherData() {
 		let dialogBody = document.querySelector(this.getBodySelector())
-		let controls = dialogBody.querySelectorAll('input, textarea, select')
-		for (let control of controls) {
-			result[control.getAttribute('name')] = control.value
-		}
-		return result
-
+		return gatherFormData(dialogBody)
 	}
 
 	async open() {

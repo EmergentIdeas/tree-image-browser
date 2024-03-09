@@ -24,7 +24,7 @@ export default function(app) {
 	})
 	kalpaTreeOnPage(webhandle)
 	let router = express.Router()
-	let sinkServer = new FileSinkServer(new FileSink('/home/kolz/data/sites-repo/kraemer/public'))
+	let sinkServer = new FileSinkServer(new FileSink('/home/kolz/data/test-data/image-files'))
 	sinkServer.addToRouter(router)
 	app.use('/files', router)
 

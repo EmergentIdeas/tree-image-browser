@@ -1,26 +1,9 @@
 import resizeImage from '../client-lib/image-resize.mjs'
 import dataToImage from '../client-lib/data-to-image.mjs'
 import getImageStats from '../client-lib/get-image-stats.mjs'
-
-
-let types = {
-	"image/png": "png"
-	, "image/jpeg": "jpg"
-	, "image/jpg": "jpg"
-	, "image/webp": "webp"
-}
+import getExtension from './get-extension-from-mime.mjs'
 
 let webpMime = 'image/webp'
-
-function getExtension(mime) {
-
-	if (mime in types) {
-		return types[mime]
-	}
-
-	let ext = mime.split('/').pop()
-	return ext
-}
 
 export default async function makeImageSet(data,
 	{ singleDensityWidth = null
