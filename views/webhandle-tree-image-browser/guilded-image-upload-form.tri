@@ -25,5 +25,9 @@
 		<input name="width" type="number" />
 	</label>
 	
+	<label>
+		Alt text:
+		<textarea name="altText"></textarea>
+	</label>
 	
 </div>

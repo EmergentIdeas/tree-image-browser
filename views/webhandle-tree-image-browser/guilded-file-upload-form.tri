@@ -1,0 +1,11 @@
+<div class="guided-image-upload-form ei-form">
+	<label>
+		Source file name:<br>
+		__nativeName__
+	</label>
+	<label>
+		After uploaded name (with extension):
+		<input name="name" type="text" />
+	</label>
+	
+</div>

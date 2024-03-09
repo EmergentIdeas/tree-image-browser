@@ -1471,6 +1471,10 @@ body {
   padding: 10px;
   border-radius: 5px;
   box-shadow: 1px 1px 5px #cccccc;
+  -webkit-user-select: none;
+  /* Safari */
+  user-select: none;
+  /* Standard syntax */
 }
 .webhandle-file-tree-image-browser .image-browser .variant-choice-box .img {
   display: grid;

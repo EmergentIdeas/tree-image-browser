@@ -1,5 +1,5 @@
 import { View } from '@webhandle/backbone-view'
-import { imageBrowserFrame, variantChoiceBox, guidedImageUploadForm } from '../views/load-browser-views.js'
+import { imageBrowserFrame, variantChoiceBox, guidedImageUploadForm, guidedFileUploadForm } from '../views/load-browser-views.js'
 import KalpaTreeOnPage from 'kalpa-tree-on-page'
 import condense from '@dankolz/webp-detection/lib/condense-image-variants.js'
 import basename from '@dankolz/webp-detection/lib/file-basename.js'
@@ -11,6 +11,7 @@ import baseImageName from './base-image-name.mjs'
 import makeImageSet from './make-image-set.mjs'
 import nameParts from './name-parts.mjs'
 import getFileImageStats from './get-file-image-stats.mjs'
+import getExtension from './get-extension-from-mime.mjs'
 
 
 export default class ImageBrowserView extends View {
@@ -88,72 +89,143 @@ export default class ImageBrowserView extends View {
 		}
 		return files
 	}
+	
+	_addPending(file) {
+		let note
+		if (this.eventNotificationPanel) {
+			note = this.eventNotificationPanel.addNotification({
+				model: {
+					status: 'pending',
+					headline: `uploading ${file.name}`
+				}
+			})
+		}
+		return note
+	}
+	
+	async _uploadGuidedImageFile(file) {
+		let baseFileName = baseImageName(file)
+		let stats = await getFileImageStats(file)
+
+		let data = {
+			nativeName: file.name
+			, name: baseFileName
+			, outputFormat: file.type
+			, stats: stats
+			, width: Math.floor(stats.width / 2)
+		}
+
+
+		let dialog = new FormAnswerDialog({
+			title: 'Upload File'
+			, body: guidedImageUploadForm(data)
+			, data: data
+			, dialogFrameClass: 'webhandle-file-tree-image-browser'
+		})
+		let prom = dialog.open()
+		let result = await prom
+		
+		if(result) {
+			let makeImageData = {
+				baseFileName: result.name 
+				, outputFormat: result.outputFormat
+				, singleDensityWidth: parseInt(result.width)
+				, altText: result.altText
+			}
+
+			let note = this._addPending(file)
+			let files = await makeImageSet(file, makeImageData)
+
+			for (let fileName of Object.keys(files)) {
+				await this._uploadData(fileName, files[fileName])
+			}
+
+			if(note){
+				note.remove()
+			}
+			return true
+		}
+	}
+	
+	async _uploadGuidedFile(file) {
+		let parts = nameParts(file)
+
+		let data = {
+			nativeName: file.name
+			, name: parts.join('.')
+		}
+
+
+		let dialog = new FormAnswerDialog({
+			title: 'Upload File'
+			, body: guidedFileUploadForm(data)
+			, data: data
+			, dialogFrameClass: 'webhandle-file-tree-image-browser'
+		})
+		let prom = dialog.open()
+		let result = await prom
+		
+		if(result) {
+			let note = this._addPending(file)
+
+			await this._uploadData(result.name, file)
+
+			if(note){
+				note.remove()
+			}
+			return true
+		}
+	}
+	
+	async _uploadAutomaticImageFile(file) {
+		let note = this._addPending(file)
+		let parts = nameParts(file)
+		let baseFileName = parts[0]
+
+		let files = await makeImageSet(file, {
+			baseFileName: baseFileName,
+			outputFormat: file.type
+		})
+
+		for (let fileName of Object.keys(files)) {
+			await this._uploadData(fileName, files[fileName])
+		}
+
+		if(note){
+			note.remove()
+		}
+		return true
+	}
 
 	async _uploadFiles(files, { uploadType } = {}) {
 		for (let file of files) {
-			let note
-			let addPending = () => {
-				if (this.eventNotificationPanel) {
-					note = this.eventNotificationPanel.addNotification({
-						model: {
-							status: 'pending',
-							headline: `uploading ${file.name}`
-						}
-					})
-				}
-			}
 
+			let uploaded = false
 			if (uploadType === 'guided' && this._isImageFile(file)) {
-				let baseFileName = baseImageName(file)
-				let stats = await getFileImageStats(file)
-
-				let data = {
-					nativeName: file.name
-					, name: baseFileName
-					, outputFormat: file.type
-					, stats: stats
-					, width: Math.floor(stats.width / 2)
-				}
-
-
-				let dialog = new FormAnswerDialog({
-					title: 'Upload File'
-					, body: guidedImageUploadForm(data)
-					, data: data
-					, dialogFrameClass: 'webhandle-file-tree-image-browser'
-				})
-				let prom = dialog.open()
-				let result = await prom
-				console.log(result)
-
-				addPending()
+				uploaded = await this._uploadGuidedImageFile(file)
+			}
+			else if (uploadType === 'guided') {
+				uploaded = await this._uploadGuidedFile(file)
+			}
+			else if (uploadType === 'automatic' && this._isImageFile(file)) {
+				uploaded = await this._uploadAutomaticImageFile(file)
 			}
 			else {
-				addPending()
-				if (uploadType === 'automatic' && this._isImageFile(file)) {
-					let parts = nameParts(file)
-					let baseFileName = parts[0]
-
-					let files = await makeImageSet(file, {
-						baseFileName: baseFileName,
-						outputFormat: file.type
-					})
-
-					for (let fileName of Object.keys(files)) {
-						await this._uploadData(fileName, files[fileName])
-					}
-				}
-				else if (uploadType === 'automatic') {
+				let note = this._addPending(file)
+				if (uploadType === 'automatic') {
 					let parts = nameParts(file)
 					await this._uploadData(parts.join('.'), file)
 				}
 				else {
 					await this._uploadData(file.name, file)
 				}
+				if(note){
+					note.remove()
+				}
+				uploaded = true
 			}
-			if (this.eventNotificationPanel) {
-				note.remove()
-				note = this.eventNotificationPanel.addNotification({
+			if (this.eventNotificationPanel && uploaded) {
+				this.eventNotificationPanel.addNotification({
 					model: {
 						status: 'success',
 						headline: `uploaded ${file.name}`

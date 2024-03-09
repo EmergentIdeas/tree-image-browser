@@ -6,11 +6,14 @@ import getExtension from './get-extension-from-mime.mjs'
 let webpMime = 'image/webp'
 
 export default async function makeImageSet(data,
-	{ singleDensityWidth = null
+	{ 
+		singleDensityWidth = null
 		, quality = .7
 		, outputFormat = "image/png"
 		, doubleDensityInput = true
-		, baseFileName } = {}
+		, baseFileName 
+		, altText		
+	} = {}
 ) {
 	let source = await dataToImage(data)
 	let stats = await getImageStats(source)
@@ -60,8 +63,11 @@ export default async function makeImageSet(data,
 		"name": baseFileName,
 		"size": doubleDensityWidth + "x" + (doubleDensityWidth / ratio),
 		"displaySize": singleDensityWidth + "x" + (singleDensityWidth / ratio),
-		"fallback": getExtension(outputFormat)
+		"fallback": getExtension(outputFormat),
+		"altText": altText || baseFileName
 	}
+	
+	
 	files[baseFileName + '.json'] = JSON.stringify(info, null, '\t')
 
 	return files

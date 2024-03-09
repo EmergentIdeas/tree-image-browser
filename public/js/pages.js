@@ -34754,13 +34754,24 @@ module.exports = tri.addTemplate("webhandle-tree-image-browser/extension-pill", 
 
 /***/ }),
 
+/***/ "./views/webhandle-tree-image-browser/guilded-file-upload-form.tri":
+/*!*************************************************************************!*\
+  !*** ./views/webhandle-tree-image-browser/guilded-file-upload-form.tri ***!
+  \*************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"guided-image-upload-form ei-form\">\n\t<label>\n\t\tSource file name:<br>\n\t\t__nativeName__\n\t<\/label>\n\t<label>\n\t\tAfter uploaded name (with extension):\n\t\t<input name=\"name\" type=\"text\" \/>\n\t<\/label>\n\t\n<\/div>"; 
+module.exports = tri.addTemplate("webhandle-tree-image-browser/guilded-file-upload-form", t); 
+
+/***/ }),
+
 /***/ "./views/webhandle-tree-image-browser/guilded-image-upload-form.tri":
 /*!**************************************************************************!*\
   !*** ./views/webhandle-tree-image-browser/guilded-image-upload-form.tri ***!
   \**************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"guided-image-upload-form ei-form\">\n\t<label>\n\t\tSource file name:<br>\n\t\t__nativeName__\n\t<\/label>\n\t<label>\n\t\tNative resolution:<br>\n\t\t__stats.width__ x __stats.height__\n\t<\/label>\n\t<label>\n\t\tAfter uploaded name (no extension):\n\t\t<input name=\"name\" type=\"text\" \/>\n\t<\/label>\n\t<div class=\"radio-options\">\n\t\tOutput format:\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/png\" \/> <span class=\"extension-pill\">PNG<\/span>\n\t\t<\/label>\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/jpeg\" \/> <span class=\"extension-pill\">JPG<\/span>\n\t\t<\/label>\n\t<\/div>\n\t<label>\n\t\tOn screen width (px):\n\t\t<input name=\"width\" type=\"number\" \/>\n\t<\/label>\n\t\n\t\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"guided-image-upload-form ei-form\">\n\t<label>\n\t\tSource file name:<br>\n\t\t__nativeName__\n\t<\/label>\n\t<label>\n\t\tNative resolution:<br>\n\t\t__stats.width__ x __stats.height__\n\t<\/label>\n\t<label>\n\t\tAfter uploaded name (no extension):\n\t\t<input name=\"name\" type=\"text\" \/>\n\t<\/label>\n\t<div class=\"radio-options\">\n\t\tOutput format:\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/png\" \/> <span class=\"extension-pill\">PNG<\/span>\n\t\t<\/label>\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/jpeg\" \/> <span class=\"extension-pill\">JPG<\/span>\n\t\t<\/label>\n\t<\/div>\n\t<label>\n\t\tOn screen width (px):\n\t\t<input name=\"width\" type=\"number\" \/>\n\t<\/label>\n\t\n\t<label>\n\t\tAlt text:\n\t\t<textarea name=\"altText\"><\/textarea>\n\t<\/label>\n\t\n<\/div>"; 
 module.exports = tri.addTemplate("webhandle-tree-image-browser/guilded-image-upload-form", t); 
 
 /***/ }),
@@ -35906,13 +35917,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./make-image-set.mjs */ "./client-lib/make-image-set.mjs");
 /* harmony import */ var _name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./name-parts.mjs */ "./client-lib/name-parts.mjs");
 /* harmony import */ var _get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./get-file-image-stats.mjs */ "./client-lib/get-file-image-stats.mjs");
-/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
+/* harmony import */ var _get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./get-extension-from-mime.mjs */ "./client-lib/get-extension-from-mime.mjs");
 
 
 
 
 
 // import Dialog from 'ei-dialog'
+
 
 
 
@@ -35997,72 +36009,143 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 		return files
 	}
+	
+	_addPending(file) {
+		let note
+		if (this.eventNotificationPanel) {
+			note = this.eventNotificationPanel.addNotification({
+				model: {
+					status: 'pending',
+					headline: `uploading ${file.name}`
+				}
+			})
+		}
+		return note
+	}
+	
+	async _uploadGuidedImageFile(file) {
+		let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file)
+		let stats = await (0,_get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_11__["default"])(file)
+
+		let data = {
+			nativeName: file.name
+			, name: baseFileName
+			, outputFormat: file.type
+			, stats: stats
+			, width: Math.floor(stats.width / 2)
+		}
+
+
+		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+			title: 'Upload File'
+			, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedImageUploadForm)(data)
+			, data: data
+			, dialogFrameClass: 'webhandle-file-tree-image-browser'
+		})
+		let prom = dialog.open()
+		let result = await prom
+		
+		if(result) {
+			let makeImageData = {
+				baseFileName: result.name 
+				, outputFormat: result.outputFormat
+				, singleDensityWidth: parseInt(result.width)
+				, altText: result.altText
+			}
+
+			let note = this._addPending(file)
+			let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file, makeImageData)
+
+			for (let fileName of Object.keys(files)) {
+				await this._uploadData(fileName, files[fileName])
+			}
+
+			if(note){
+				note.remove()
+			}
+			return true
+		}
+	}
+	
+	async _uploadGuidedFile(file) {
+		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
+
+		let data = {
+			nativeName: file.name
+			, name: parts.join('.')
+		}
+
+
+		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+			title: 'Upload File'
+			, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedFileUploadForm)(data)
+			, data: data
+			, dialogFrameClass: 'webhandle-file-tree-image-browser'
+		})
+		let prom = dialog.open()
+		let result = await prom
+		
+		if(result) {
+			let note = this._addPending(file)
+
+			await this._uploadData(result.name, file)
+
+			if(note){
+				note.remove()
+			}
+			return true
+		}
+	}
+	
+	async _uploadAutomaticImageFile(file) {
+		let note = this._addPending(file)
+		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
+		let baseFileName = parts[0]
+
+		let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file, {
+			baseFileName: baseFileName,
+			outputFormat: file.type
+		})
+
+		for (let fileName of Object.keys(files)) {
+			await this._uploadData(fileName, files[fileName])
+		}
+
+		if(note){
+			note.remove()
+		}
+		return true
+	}
 
 	async _uploadFiles(files, { uploadType } = {}) {
 		for (let file of files) {
-			let note
-			let addPending = () => {
-				if (this.eventNotificationPanel) {
-					note = this.eventNotificationPanel.addNotification({
-						model: {
-							status: 'pending',
-							headline: `uploading ${file.name}`
-						}
-					})
-				}
-			}
 
+			let uploaded = false
 			if (uploadType === 'guided' && this._isImageFile(file)) {
-				let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file)
-				let stats = await (0,_get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_11__["default"])(file)
-
-				let data = {
-					nativeName: file.name
-					, name: baseFileName
-					, outputFormat: file.type
-					, stats: stats
-					, width: Math.floor(stats.width / 2)
-				}
-
-
-				let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
-					title: 'Upload File'
-					, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedImageUploadForm)(data)
-					, data: data
-					, dialogFrameClass: 'webhandle-file-tree-image-browser'
-				})
-				let prom = dialog.open()
-				let result = await prom
-				console.log(result)
-
-				addPending()
+				uploaded = await this._uploadGuidedImageFile(file)
+			}
+			else if (uploadType === 'guided') {
+				uploaded = await this._uploadGuidedFile(file)
+			}
+			else if (uploadType === 'automatic' && this._isImageFile(file)) {
+				uploaded = await this._uploadAutomaticImageFile(file)
 			}
 			else {
-				addPending()
-				if (uploadType === 'automatic' && this._isImageFile(file)) {
-					let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
-					let baseFileName = parts[0]
-
-					let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file, {
-						baseFileName: baseFileName,
-						outputFormat: file.type
-					})
-
-					for (let fileName of Object.keys(files)) {
-						await this._uploadData(fileName, files[fileName])
-					}
-				}
-				else if (uploadType === 'automatic') {
+				let note = this._addPending(file)
+				if (uploadType === 'automatic') {
 					let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
 					await this._uploadData(parts.join('.'), file)
 				}
 				else {
 					await this._uploadData(file.name, file)
 				}
+				if(note){
+					note.remove()
+				}
+				uploaded = true
 			}
-			if (this.eventNotificationPanel) {
-				note.remove()
-				note = this.eventNotificationPanel.addNotification({
+			if (this.eventNotificationPanel && uploaded) {
+				this.eventNotificationPanel.addNotification({
 					model: {
 						status: 'success',
 						headline: `uploaded ${file.name}`
@@ -36618,11 +36701,14 @@ __webpack_require__.r(__webpack_exports__);
 let webpMime = 'image/webp'
 
 async function makeImageSet(data,
-	{ singleDensityWidth = null
+	{ 
+		singleDensityWidth = null
 		, quality = .7
 		, outputFormat = "image/png"
 		, doubleDensityInput = true
-		, baseFileName } = {}
+		, baseFileName 
+		, altText		
+	} = {}
 ) {
 	let source = await (0,_client_lib_data_to_image_mjs__WEBPACK_IMPORTED_MODULE_1__["default"])(data)
 	let stats = await (0,_client_lib_get_image_stats_mjs__WEBPACK_IMPORTED_MODULE_2__["default"])(source)
@@ -36672,8 +36758,11 @@ async function makeImageSet(data,
 		"name": baseFileName,
 		"size": doubleDensityWidth + "x" + (doubleDensityWidth / ratio),
 		"displaySize": singleDensityWidth + "x" + (singleDensityWidth / ratio),
-		"fallback": (0,_get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(outputFormat)
+		"fallback": (0,_get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(outputFormat),
+		"altText": altText || baseFileName
 	}
+	
+	
 	files[baseFileName + '.json'] = JSON.stringify(info, null, '\t')
 
 	return files
@@ -43085,6 +43174,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   extensionPill: () => (/* binding */ extensionPill),
+/* harmony export */   guidedFileUploadForm: () => (/* binding */ guidedFileUploadForm),
 /* harmony export */   guidedImageUploadForm: () => (/* binding */ guidedImageUploadForm),
 /* harmony export */   imageBrowserFrame: () => (/* binding */ imageBrowserFrame),
 /* harmony export */   test1: () => (/* binding */ test1),
@@ -43097,6 +43187,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _webhandle_tree_image_browser_variant_choice_box_tri__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./webhandle-tree-image-browser/variant-choice-box.tri */ "./views/webhandle-tree-image-browser/variant-choice-box.tri");
 /* harmony import */ var _webhandle_tree_image_browser_extension_pill_tri__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./webhandle-tree-image-browser/extension-pill.tri */ "./views/webhandle-tree-image-browser/extension-pill.tri");
 /* harmony import */ var _webhandle_tree_image_browser_guilded_image_upload_form_tri__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./webhandle-tree-image-browser/guilded-image-upload-form.tri */ "./views/webhandle-tree-image-browser/guilded-image-upload-form.tri");
+/* harmony import */ var _webhandle_tree_image_browser_guilded_file_upload_form_tri__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./webhandle-tree-image-browser/guilded-file-upload-form.tri */ "./views/webhandle-tree-image-browser/guilded-file-upload-form.tri");
+
 
 
 
@@ -43112,6 +43204,7 @@ let imageBrowserFrame = _webhandle_tree_image_browser_image_browser_frame_tri__W
 let variantChoiceBox = _webhandle_tree_image_browser_variant_choice_box_tri__WEBPACK_IMPORTED_MODULE_3__
 let extensionPill = _webhandle_tree_image_browser_extension_pill_tri__WEBPACK_IMPORTED_MODULE_4__
 let guidedImageUploadForm = _webhandle_tree_image_browser_guilded_image_upload_form_tri__WEBPACK_IMPORTED_MODULE_5__
+let guidedFileUploadForm = _webhandle_tree_image_browser_guilded_file_upload_form_tri__WEBPACK_IMPORTED_MODULE_6__
 
 /***/ })
 
