@@ -2,7 +2,7 @@ import { View } from '@webhandle/backbone-view'
 import { imageBrowserFrame, variantChoiceBox, guidedImageUploadForm, guidedFileUploadForm } from '../views/load-browser-views.js'
 import KalpaTreeOnPage from 'kalpa-tree-on-page'
 import condense from '@dankolz/webp-detection/lib/condense-image-variants.js'
-import basename from '@dankolz/webp-detection/lib/file-basename.js'
+// import basename from '@dankolz/webp-detection/lib/file-basename.js'
 // import Dialog from 'ei-dialog'
 import { FormAnswerDialog } from './form-answer-dialog.mjs'
 import { InfoDialog } from './info-dialog.mjs'
@@ -11,7 +11,9 @@ import baseImageName from './base-image-name.mjs'
 import makeImageSet from './make-image-set.mjs'
 import nameParts from './name-parts.mjs'
 import getFileImageStats from './get-file-image-stats.mjs'
-import getExtension from './get-extension-from-mime.mjs'
+// import getExtension from './get-extension-from-mime.mjs'
+
+import Emitter from '@webhandle/minimal-browser-event-emitter'
 
 
 export default class ImageBrowserView extends View {
@@ -24,6 +26,7 @@ export default class ImageBrowserView extends View {
 	 * @param {EventNotificationPanel} options.eventNotificationPanel The panel which status messages will be added to.
 	 * @param {string} options.startingDirectory
 	 * @param {boolean} options.deleteWithoutConfirm False by default
+	 * @param {Emitter} options.emitter Emitter for various file events
 	 */
 	constructor(options) {
 		super(options)
@@ -35,26 +38,81 @@ export default class ImageBrowserView extends View {
 		this.events = {
 			'click .create-directory': 'createDirectory'
 			, 'click .delete-file': 'deleteFile'
+			, 'click .delete-directory': 'deleteDirectory'
 			, 'click .variant-choice-box .details': 'showVariantDetails'
 			, 'dblclick .variant-choice-box': 'showVariantDetails'
 			, 'click .variant-choice-box': 'selectVariant'
+			, 'click .view-icons button': 'changeFilesView'
 			, 'keyup [name="filter"]': 'applyFilter'
 			, 'change [name="filter"]': 'applyFilter'
+			, 'click .clear-filter': 'clearFilter'
 			, 'dragenter .': 'dragEnter'
 			, 'dragleave .': 'dragLeave'
 			, 'dragover .': 'dragOver'
 			, 'drop .': 'handleDrop'
 		}
 		this.overCount = 0
+		
+		if(!this.emitter) {
+			this.emitter = new Emitter()
+		}
 	}
+
+	changeFilesView(evt, selected) {
+		let choiceBoxes = this.el.querySelector('.choice-boxes')
+		let classes = [...selected.closest('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
+		classes.forEach(item => {
+			choiceBoxes.classList.remove(item)
+		})
+		choiceBoxes.classList.add(selected.getAttribute('data-show-class'))
+	}
+
+	getDropCoverSelector() {
+		return '.img-drop-cover'
+	}
+
+	async handleDrop(evt, selected) {
+		let uploadType = 'literal'
+		let dropSquare = evt.target.closest('.drop-type')
+		if (dropSquare) {
+			if (dropSquare.classList.contains('guided-upload')) {
+				uploadType = 'guided'
+			}
+			else if (dropSquare.classList.contains('automatic')) {
+				uploadType = 'automatic'
+			}
+		}
+
+		this._cleanupDropDone()
+		evt.preventDefault()
+		let files = await this._getFilesFromEvent(evt)
+		this._uploadFiles(files, { uploadType })
+	}
+
+	isFileTypeDrag(evt) {
+		let fileType = true
+		if(evt.dataTransfer) {
+			if(evt.dataTransfer.items[0].kind === 'string') {
+				fileType = false
+			}
+		}
+
+		return fileType
+	}
+
 	dragEnter(evt, selected) {
-		this.overCount++
-		this.el.classList.add('file-dropping')
+		let overlay = this.isFileTypeDrag(evt)
+		if(overlay) {
+			this.overCount++
+			this.el.querySelector(this.getDropCoverSelector()).classList.add('file-dropping')
+		}
 	}
 	dragLeave(evt, selected) {
-		this.overCount--
-		if (this.overCount == 0) {
-			this._cleanupDropDone()
+		if(this.isFileTypeDrag(evt)) {
+			this.overCount--
+			if (this.overCount == 0) {
+				this._cleanupDropDone()
+			}
 		}
 	}
 	dragOver(evt, selected) {
@@ -71,17 +129,43 @@ export default class ImageBrowserView extends View {
 		return false
 	}
 
-	_getFilesFromEvent(evt) {
+	async _getFilesFromEvent(evt) {
 		let files = []
 
 		// items is the new interface we should use if that's available
 		if (evt.dataTransfer.items) {
+			let foundItems = [];
 			[...evt.dataTransfer.items].forEach((item, i) => {
-				if (item.kind === "file") {
-					const file = item.getAsFile()
-					files.push(file)
-				}
+				foundItems.push(item)
 			})
+			for (let item of foundItems) {
+				if (item.kind === "file") {
+					if (item.webkitGetAsEntry) {
+						let entry = item.webkitGetAsEntry()
+						if(entry) {
+							// if there's no entry, it's probably not a file, so we'll just ignore
+							if (entry.isDirectory) {
+								continue
+								
+								// Evenually we'll want to handle directories too, but for now we'll just go
+								// on with the other items
+
+								// var dirReader = entry.createReader()
+								// dirReader.readEntries(function (entries) {
+								// 	console.log(entries)
+								// })
+							}
+							else {
+								files.push(item.getAsFile())
+							}
+
+						}
+					}
+					else {
+						files.push(item.getAsFile())
+					}
+				}
+			}
 		} else {
 			[...evt.dataTransfer.files].forEach((file, i) => {
 				files.push(file)
@@ -89,7 +173,7 @@ export default class ImageBrowserView extends View {
 		}
 		return files
 	}
-	
+
 	_addPending(file) {
 		let note
 		if (this.eventNotificationPanel) {
@@ -102,7 +186,7 @@ export default class ImageBrowserView extends View {
 		}
 		return note
 	}
-	
+
 	async _uploadGuidedImageFile(file) {
 		let baseFileName = baseImageName(file)
 		let stats = await getFileImageStats(file)
@@ -124,10 +208,10 @@ export default class ImageBrowserView extends View {
 		})
 		let prom = dialog.open()
 		let result = await prom
-		
-		if(result) {
+
+		if (result) {
 			let makeImageData = {
-				baseFileName: result.name 
+				baseFileName: result.name
 				, outputFormat: result.outputFormat
 				, singleDensityWidth: parseInt(result.width)
 				, altText: result.altText
@@ -140,13 +224,13 @@ export default class ImageBrowserView extends View {
 				await this._uploadData(fileName, files[fileName])
 			}
 
-			if(note){
+			if (note) {
 				note.remove()
 			}
 			return true
 		}
 	}
-	
+
 	async _uploadGuidedFile(file) {
 		let parts = nameParts(file)
 
@@ -164,19 +248,19 @@ export default class ImageBrowserView extends View {
 		})
 		let prom = dialog.open()
 		let result = await prom
-		
-		if(result) {
+
+		if (result) {
 			let note = this._addPending(file)
 
 			await this._uploadData(result.name, file)
 
-			if(note){
+			if (note) {
 				note.remove()
 			}
 			return true
 		}
 	}
-	
+
 	async _uploadAutomaticImageFile(file) {
 		let note = this._addPending(file)
 		let parts = nameParts(file)
@@ -191,7 +275,7 @@ export default class ImageBrowserView extends View {
 			await this._uploadData(fileName, files[fileName])
 		}
 
-		if(note){
+		if (note) {
 			note.remove()
 		}
 		return true
@@ -219,7 +303,7 @@ export default class ImageBrowserView extends View {
 				else {
 					await this._uploadData(file.name, file)
 				}
-				if(note){
+				if (note) {
 					note.remove()
 				}
 				uploaded = true
@@ -237,20 +321,6 @@ export default class ImageBrowserView extends View {
 		this.setCurrentNode(this.currentNode)
 	}
 
-	async handleDrop(evt, selected) {
-		let uploadType = 'literal'
-		if (evt.target.classList.contains('guided-upload')) {
-			uploadType = 'guided'
-		}
-		else if (evt.target.classList.contains('automatic')) {
-			uploadType = 'automatic'
-		}
-
-		this._cleanupDropDone()
-		evt.preventDefault()
-		let files = this._getFilesFromEvent(evt)
-		this._uploadFiles(files, { uploadType })
-	}
 
 	sanitizeFileName(name) {
 		return name.split('/').join('-').split('..').join('-')
@@ -260,8 +330,8 @@ export default class ImageBrowserView extends View {
 		await this.sink.write(path, data)
 	}
 	_cleanupDropDone() {
-		this.overCount = 0
-		this.el.classList.remove('file-dropping')
+		this.overCount = 0;
+		[...this.el.querySelectorAll('.file-dropping')].forEach(cover => cover.classList.remove('file-dropping'))
 	}
 
 	applyFilter(evt, selected) {
@@ -280,25 +350,71 @@ export default class ImageBrowserView extends View {
 		})
 	}
 
+	clearFilter(evt, selected) {
+		this.el.querySelector('[name="filter"]').value = ''
+		this.applyFilter()
+	}
+
 	selectVariant(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (!evt.ctrlKey) {
+		if (!evt.ctrlKey && !evt.shiftKey) {
 			for (let sel of currentSelected) {
 				sel.classList.remove('selected')
 			}
 		}
 
-		selected.classList.toggle('selected')
+		if (evt.shiftKey) {
+			let cur = selected
+			do {
+				if (cur.classList.contains('selected')) {
+					break
+				}
+				cur.classList.add('selected')
+				cur = cur.previousElementSibling
+			}
+			while (cur);
+		}
+		else {
+			selected.classList.toggle('selected')
+		}
+		
+		
+		let sel = this.getSelectedFiles()
+		this.emitter.emit('select', {
+			type: 'select'
+			, selected: sel
+		})
+	}
+	
+	getSelectedFiles() {
+		let result = {
+			boxes: []
+			, variants: []
+			, files: []
+			, names: []
+		}
+		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+		if (currentSelected.length > 0) {
+			for (let sel of currentSelected) {
+				result.boxes.push(sel)
+				result.variants.push(sel.variant)
+				result.files.push(...this._getAssociatedRealFiles(sel.variant))
+			}
+			let names = result.files.map(file => file.name)
+			result.names.push(...names)
+		}
+
+		return result
 	}
 
 	async deleteFile(evt, selected) {
-		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (currentSelected.length > 0) {
-			let files = []
-			for (let sel of currentSelected) {
-				files.push(...this._getAssociatedRealFiles(sel.variant))
-			}
-			let names = files.map(file => file.name)
+		let sel = this.getSelectedFiles()
+
+		if (sel.files.length > 0) {
+
+			let files = sel.files
+			let names = sel.names
+
 			if (!this.deleteWithoutConfirm) {
 				let dialog = new FormAnswerDialog({
 					title: 'Delete File' + (files.length > 1 ? 's' : '')
@@ -334,9 +450,59 @@ export default class ImageBrowserView extends View {
 					})
 				}
 			}
-			for (let sel of currentSelected) {
-				sel.remove()
+			for (let item of sel.boxes) {
+				item.remove()
 			}
+		}
+		this.emitter.emit('delete', {
+			type: 'delete'
+			, selected: sel
+		})
+	}
+
+	async deleteDirectory(evt, selected) {
+		let path = this.currentNode.file.relPath
+		let name = this.currentNode.file.name
+
+		if (!path) {
+			// probably the root, just cancel
+			return
+		}
+
+		let dialog = new FormAnswerDialog({
+			title: 'Delete Directory'
+			, body: '<p>' + name + '</p>'
+		})
+		let prom = dialog.open()
+		let ans = await prom
+		if (!ans) {
+			return
+		}
+		let note
+		if (this.eventNotificationPanel) {
+			note = this.eventNotificationPanel.addNotification({
+				model: {
+					status: 'pending',
+					headline: `deleting ${name}`
+				}
+			})
+		}
+		await this.sink.rm(path, { recursive: true })
+		let curSelected = this.tree.selected()
+		let parent = this.tree.parent(curSelected)
+
+		this.tree.removeNode(curSelected)
+		this.tree.select(parent.id)
+
+		if (this.eventNotificationPanel) {
+			note.remove()
+			note = this.eventNotificationPanel.addNotification({
+				model: {
+					status: 'success',
+					headline: `removed ${name}`
+				}
+				, ttl: 2000
+			})
 		}
 	}
 
@@ -353,6 +519,10 @@ export default class ImageBrowserView extends View {
 				let file = await this.sink.getFullFileInfo(directoryPath)
 				let node = this._fileToKalpaNode(file)
 				this.tree.options.stream.emit('data', node)
+				let cur = this.tree.selected()
+				if (cur) {
+					this.tree.expand(cur.id)
+				}
 			}
 		})
 

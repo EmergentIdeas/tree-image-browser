@@ -20,7 +20,7 @@ if(treeHolder) {
 		// , imagesOnly: true
 		, eventNotificationPanel: eventPanel
 		, startingDirectory: 'empty'
-		, deleteWithoutConfirm: true
+		// , deleteWithoutConfirm: true
 	})
 	imageBrowserView.appendTo(treeHolder)
 	imageBrowserView.render()
@@ -31,6 +31,11 @@ if(treeHolder) {
 	// 		headline: 'Page started'
 	// 	}
 	// })
+	
+	imageBrowserView.emitter.on('select', function(evt) {
+
+		console.log(evt)
+	})
 }
 
 

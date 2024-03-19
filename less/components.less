@@ -8,6 +8,72 @@
 .webhandle-file-tree-image-browser {
 	--webhandle-file-tree-image-box-background: @webhandle-file-tree-image-box-background;
 	--webhandle-file-tree-image-selected-box-hightlight: @webhandle-file-tree-image-selected-box-hightlight;
+	
+	@box-padding-right: 20px;
+	
+
+	.file-lines {
+		grid-auto-flow: row dense;
+		grid-template-columns: 100px 1fr auto auto auto;
+		overflow-x: hidden;
+
+		.variant-choice-box {
+			display: contents;
+			.bottom {
+				display: contents;
+				
+				.content {
+					display: contents;
+				}
+			}
+			
+			&.selected {
+				.extensions, .basename, .size-line, .actions, .img {
+					z-index: 2;
+				}
+
+				.img:before {
+					content: '\00a0';
+					position: absolute;
+					top: -3px;
+					bottom: 0px;
+					left: -3px;
+					width: 100vw;
+					background-color: #f0f0f0;
+				}
+			}
+		}
+		
+		.extensions {
+			// align-self: start;
+			display: block !important;
+			grid-column: 3;
+			padding-top: 3px;
+			.extension-pill {
+				display: inline-block;
+				margin-right: 2px;
+			}
+			
+		}
+		.basename {
+			grid-column: 2;
+		}
+		.size-line {
+			grid-column: 4;
+		}
+		.img {
+			max-width: 100px;
+			
+			.thumbnail-icon {
+				font-size: 30px;
+				position: relative;
+				z-index: 2;
+			}
+		}
+		.actions {
+			grid-column: 5;
+		}
+	}
 
 	.image-browser {
 		.image-browser-frame {
@@ -17,9 +83,21 @@
 			column-gap: 20px;
 			background-color: white;
 
-			& > .treebox {
+			& > .directory-side {
 				height: 800px;
 				position: relative;
+				
+				display: grid;
+				grid-template-rows: 1fr auto;
+				
+				button {
+					border: none;
+					background-color: transparent;
+					color: white;
+				}
+				.directory-controls {
+					background-color: #393C40;
+				}
 			}
 		}
 
@@ -35,7 +113,7 @@
 			top: 0;
 			left: 0;
 			overflow: auto;
-			padding-right: 20px;
+			padding-right: @box-padding-right;
 			padding-bottom: 20px;
 			padding-top: 3px;
 			padding-left: 3px;
@@ -44,6 +122,27 @@
 		.node-view {
 			display: grid;
 			grid-template-rows: auto 1fr auto;
+			row-gap: 12px;
+			
+			.view-controls {
+				display: grid;
+				grid-template-columns: auto auto;
+				padding-right: @box-padding-right;
+				padding-top: 4px;
+				
+				.right {
+					text-align: right;
+					-webkit-user-select: none; /* Safari */
+					user-select: none; /* Standard syntax */
+				}
+				
+				
+				button {
+					border: none;
+					background: none;
+				}
+
+			}
 		}
 		
 		.choice-boxes {
@@ -51,6 +150,28 @@
 			grid-template-columns: repeat(3, 1fr);
 			column-gap: 20px;
 			row-gap: 20px;
+			
+			&.grid-small {
+				grid-template-columns: repeat(5, 1fr);
+			}
+			&.rows {
+				.webhandle-file-tree-image-browser.file-lines();
+			}
+			
+			&.list-text {
+				.webhandle-file-tree-image-browser.file-lines();
+				grid-template-columns: auto 1fr auto auto auto;
+				row-gap: 5px;
+				.img {
+					aspect-ratio: auto;
+					img {
+						display: none;
+					}
+					.thumbnail-icon {
+						font-size: 0;
+					}
+				}
+			}
 		}
 		
 		.variant-choice-box {
@@ -112,6 +233,9 @@
 			}
 			&.hidden {
 				display: none;
+				& > * {
+					display: none !important;
+				}
 			}
 		}
 		
@@ -121,32 +245,57 @@
 			grid-template-columns: 1fr auto;
 			padding-right: 34px;
 			padding-top: 10px;
+			
+			button {
+				border: none;
+				background-color: transparent;
+			}
 		}
 
-		.img-drop-cover {
+		.drop-cover {
 			position: absolute;
 			inset: 0;
 			background-color: rgba(255, 255, 255, .8);
 			z-index: -1;
-			
+
 			display: grid;
 			column-gap: 30px;
 			row-gap: 30px;
-			grid-template-columns: repeat(3, 1fr);
-			grid-template-rows: repeat(4, 1fr);
 			transition: opacity .3s;
 			opacity: .2;
-			
+
 			.drop-type {
 				display: flex;
 				align-items: center;
-				justify-content: center;
+				text-align: center;
 				
+				padding: 12px;
 				border: solid 1px black;
 				border-radius: 5px;
 				box-shadow: 1px 1px 5px #cccccc;
 				background-color: fade(@webhandle-file-tree-image-box-background, 70%);
+				
+				.msg {
+					width: 100%;
+				}
+				
+				&:hover {
+					background-color: @webhandle-file-tree-image-box-background;
+
+				}
 			}
+			
+			&.file-dropping {
+				z-index: 2;
+				opacity: 1;
+			}
+		}
+
+		.img-drop-cover {
+			
+			grid-template-columns: repeat(3, 1fr);
+			grid-template-rows: repeat(4, 1fr);
+			
 			
 			.guided-upload {
 				grid-row: 1 / span 4;
@@ -163,12 +312,6 @@
 
 		}
 		
-		&.file-dropping {
-			.img-drop-cover {
-				z-index: 2;
-				opacity: 1;
-			}
-		}
 
 	}
 

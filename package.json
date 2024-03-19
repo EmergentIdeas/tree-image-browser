@@ -53,6 +53,7 @@
 		"@dankolz/webp-detection": "^1.0.11",
 		"@webhandle/backbone-view": "^1.0.1",
 		"@webhandle/gather-form-data": "^1.0.0",
+		"@webhandle/minimal-browser-event-emitter": "^1.0.2",
 		"ei-dialog": "^1.0.9",
 		"file-sink-remote-http": "^1.0.2",
 		"form-value-injector": "^1.0.6",

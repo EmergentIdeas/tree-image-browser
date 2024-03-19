@@ -29,15 +29,20 @@ export class FormAnswerDialog extends Dialog {
 
 			}
 		))
-		if(this.afterOpen) {
+		if (this.afterOpen) {
 			this.afterOpenOriginal = this.afterOpen
 		}
-		if(this.data) {
-			this.afterOpen = function(bodyElement, self) {
+		this.afterOpen = function (bodyElement, self) {
+			if (this.data) {
 				bodyElement.innerHTML = formValueInjector(bodyElement.innerHTML, this.data)
-				if(this.afterOpenOriginal) {
-					this.afterOpenOriginal(bodyElement, self)
-				}
+			}
+			let firstInput = bodyElement.querySelector('input, textarea')
+			if (firstInput) {
+				firstInput.focus()
+			}
+
+			if (this.afterOpenOriginal) {
+				this.afterOpenOriginal(bodyElement, self)
 			}
 		}
 	}

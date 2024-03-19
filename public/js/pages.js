@@ -34782,7 +34782,7 @@ module.exports = tri.addTemplate("webhandle-tree-image-browser/guilded-image-upl
   \********************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"treebox\">\n\t\t\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"view-controls\">\n\t\t\t<input name=\"filter\" type=\"text\" placeholder=\"filter\"\/>\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"bottom-controls\">\n\t\t\t<div class=\"directory-controls\">\n\t\t\t\t<button type=\"button\" class=\"btn create-directory\">Create Directory<\/button>\n\t\t\t<\/div>\n\t\t\t<div class=\"file-controls\">\n\t\t\t\t<button type=\"button\" class=\"btn delete-file\">Delete File<\/button>\n\t\t\t<\/div>\n\t\t\t\t\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"img-drop-cover\">\n\t\t<div class=\"drop-type guided-upload\">\n\t\t\tGuided Upload\n\t\t<\/div>\n\t\t<div class=\"drop-type automatic\">\n\t\t\tAutomatic\n\t\t<\/div>\n\t\t<div class=\"drop-type literal\">\n\t\t\tJust Do It\n\t\t<\/div>\n\t\t\n\t<\/div>\n\t\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"directory-side\">\n\t\t<div class=\"treebox\">\n\n\t\t<\/div>\n\t\t<div class=\"directory-controls\">\n\t\t\t<button type=\"button\" class=\"btn create-directory\" title=\"create new directory\">\n\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\tcreate_new_folder\n\t\t\t\t<\/span>\n\t\t\t<\/button>\n\t\t\t<button type=\"button\" class=\"btn delete-directory\" title=\"delete selected directory\">\n\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\tfolder_delete\n\t\t\t\t<\/span>\n\t\t\t<\/button>\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"view-controls\">\n\t\t\t<div class=\"left\">\n\t\t\t\t<input name=\"filter\" type=\"text\" placeholder=\"filter\" \/>\n\t\t\t\t<button class=\"clear-filter\">&times;<\/button>\n\t\t\t<\/div>\n\t\t\t<div class=\"right\">\n\t\t\t\t<span class=\"view-icons\">\n\t\t\t\t\t<button type=\"button\" class=\"show-large-tiles\" title=\"show big tiles\" data-show-class=\"grid-large\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tgrid_view\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-small-tiles\" title=\"show small tiles\"\n\t\t\t\t\t\tdata-show-class=\"grid-small\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tgrid_on\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-list-rows\" title=\"show as rows\" data-show-class=\"rows\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tlist\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-list-text\" title=\"show as list\" data-show-class=\"list-text\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\ttable_rows\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t<\/span>\n\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"bottom-controls\">\n\t\t\t<div class=\"file-controls\">\n\t\t\t\t<button type=\"button\" class=\"btn delete-file\" title=\"delete selected file(s)\">\n\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\tdelete\n\t\t\t\t\t<\/span>\n\t\t\t\t<\/button>\n\t\t\t<\/div>\n\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"drop-cover file-drop-cover\">\n\t\t<div class=\"drop-type guided-upload\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>Guided Upload<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tLet us help you rename, and resize (if needed), the files by asking you questions\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type automatic\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tWeb Safe\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe'll rename the files so they fit better with the web and create multiple formats images.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type literal\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tJust Do It\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe won't mess the files at all, just upload them.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\n\t<\/div>\n\t<div class=\"drop-cover img-drop-cover\">\n\t\t<div class=\"drop-type guided-upload\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>Guided Upload<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tLet us help you rename, and resize (if needed), the files by asking you questions\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type automatic\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tWeb Safe\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe'll rename the files so they fit better with the web and create multiple formats images.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type literal\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tJust Do It\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe won't mess the files at all, just upload them.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\n\t<\/div>\n\n<\/div>"; 
 module.exports = tri.addTemplate("webhandle-tree-image-browser/image-browser-frame", t); 
 
 /***/ }),
@@ -35752,15 +35752,20 @@ class FormAnswerDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
 
 			}
 		))
-		if(this.afterOpen) {
+		if (this.afterOpen) {
 			this.afterOpenOriginal = this.afterOpen
 		}
-		if(this.data) {
-			this.afterOpen = function(bodyElement, self) {
+		this.afterOpen = function (bodyElement, self) {
+			if (this.data) {
 				bodyElement.innerHTML = form_value_injector__WEBPACK_IMPORTED_MODULE_1__(bodyElement.innerHTML, this.data)
-				if(this.afterOpenOriginal) {
-					this.afterOpenOriginal(bodyElement, self)
-				}
+			}
+			let firstInput = bodyElement.querySelector('input, textarea')
+			if (firstInput) {
+				firstInput.focus()
+			}
+
+			if (this.afterOpenOriginal) {
+				this.afterOpenOriginal(bodyElement, self)
 			}
 		}
 	}
@@ -35909,20 +35914,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/load-browser-views.js */ "./views/load-browser-views.js");
 /* harmony import */ var kalpa_tree_on_page__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! kalpa-tree-on-page */ "./node_modules/kalpa-tree-on-page/client-js/kalpa-tree-loader.js");
 /* harmony import */ var _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @dankolz/webp-detection/lib/condense-image-variants.js */ "./node_modules/@dankolz/webp-detection/lib/condense-image-variants.js");
-/* harmony import */ var _dankolz_webp_detection_lib_file_basename_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @dankolz/webp-detection/lib/file-basename.js */ "./node_modules/@dankolz/webp-detection/lib/file-basename.js");
-/* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./form-answer-dialog.mjs */ "./client-lib/form-answer-dialog.mjs");
-/* harmony import */ var _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./info-dialog.mjs */ "./client-lib/info-dialog.mjs");
-/* harmony import */ var _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./format-bytes.mjs */ "./client-lib/format-bytes.mjs");
-/* harmony import */ var _base_image_name_mjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./base-image-name.mjs */ "./client-lib/base-image-name.mjs");
-/* harmony import */ var _make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./make-image-set.mjs */ "./client-lib/make-image-set.mjs");
-/* harmony import */ var _name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./name-parts.mjs */ "./client-lib/name-parts.mjs");
-/* harmony import */ var _get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./get-file-image-stats.mjs */ "./client-lib/get-file-image-stats.mjs");
-/* harmony import */ var _get_extension_from_mime_mjs__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./get-extension-from-mime.mjs */ "./client-lib/get-extension-from-mime.mjs");
+/* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./form-answer-dialog.mjs */ "./client-lib/form-answer-dialog.mjs");
+/* harmony import */ var _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./info-dialog.mjs */ "./client-lib/info-dialog.mjs");
+/* harmony import */ var _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./format-bytes.mjs */ "./client-lib/format-bytes.mjs");
+/* harmony import */ var _base_image_name_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./base-image-name.mjs */ "./client-lib/base-image-name.mjs");
+/* harmony import */ var _make_image_set_mjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./make-image-set.mjs */ "./client-lib/make-image-set.mjs");
+/* harmony import */ var _name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./name-parts.mjs */ "./client-lib/name-parts.mjs");
+/* harmony import */ var _get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./get-file-image-stats.mjs */ "./client-lib/get-file-image-stats.mjs");
+/* harmony import */ var _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @webhandle/minimal-browser-event-emitter */ "./node_modules/@webhandle/minimal-browser-event-emitter/client-js/index.js");
 
 
 
 
-
+// import basename from '@dankolz/webp-detection/lib/file-basename.js'
 // import Dialog from 'ei-dialog'
 
 
@@ -35930,6 +35934,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+// import getExtension from './get-extension-from-mime.mjs'
 
 
 
@@ -35944,6 +35950,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	 * @param {EventNotificationPanel} options.eventNotificationPanel The panel which status messages will be added to.
 	 * @param {string} options.startingDirectory
 	 * @param {boolean} options.deleteWithoutConfirm False by default
+	 * @param {Emitter} options.emitter Emitter for various file events
 	 */
 	constructor(options) {
 		super(options)
@@ -35955,26 +35962,81 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		this.events = {
 			'click .create-directory': 'createDirectory'
 			, 'click .delete-file': 'deleteFile'
+			, 'click .delete-directory': 'deleteDirectory'
 			, 'click .variant-choice-box .details': 'showVariantDetails'
 			, 'dblclick .variant-choice-box': 'showVariantDetails'
 			, 'click .variant-choice-box': 'selectVariant'
+			, 'click .view-icons button': 'changeFilesView'
 			, 'keyup [name="filter"]': 'applyFilter'
 			, 'change [name="filter"]': 'applyFilter'
+			, 'click .clear-filter': 'clearFilter'
 			, 'dragenter .': 'dragEnter'
 			, 'dragleave .': 'dragLeave'
 			, 'dragover .': 'dragOver'
 			, 'drop .': 'handleDrop'
 		}
 		this.overCount = 0
+		
+		if(!this.emitter) {
+			this.emitter = new _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_11__["default"]()
+		}
 	}
+
+	changeFilesView(evt, selected) {
+		let choiceBoxes = this.el.querySelector('.choice-boxes')
+		let classes = [...selected.closest('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
+		classes.forEach(item => {
+			choiceBoxes.classList.remove(item)
+		})
+		choiceBoxes.classList.add(selected.getAttribute('data-show-class'))
+	}
+
+	getDropCoverSelector() {
+		return '.img-drop-cover'
+	}
+
+	async handleDrop(evt, selected) {
+		let uploadType = 'literal'
+		let dropSquare = evt.target.closest('.drop-type')
+		if (dropSquare) {
+			if (dropSquare.classList.contains('guided-upload')) {
+				uploadType = 'guided'
+			}
+			else if (dropSquare.classList.contains('automatic')) {
+				uploadType = 'automatic'
+			}
+		}
+
+		this._cleanupDropDone()
+		evt.preventDefault()
+		let files = await this._getFilesFromEvent(evt)
+		this._uploadFiles(files, { uploadType })
+	}
+
+	isFileTypeDrag(evt) {
+		let fileType = true
+		if(evt.dataTransfer) {
+			if(evt.dataTransfer.items[0].kind === 'string') {
+				fileType = false
+			}
+		}
+
+		return fileType
+	}
+
 	dragEnter(evt, selected) {
-		this.overCount++
-		this.el.classList.add('file-dropping')
+		let overlay = this.isFileTypeDrag(evt)
+		if(overlay) {
+			this.overCount++
+			this.el.querySelector(this.getDropCoverSelector()).classList.add('file-dropping')
+		}
 	}
 	dragLeave(evt, selected) {
-		this.overCount--
-		if (this.overCount == 0) {
-			this._cleanupDropDone()
+		if(this.isFileTypeDrag(evt)) {
+			this.overCount--
+			if (this.overCount == 0) {
+				this._cleanupDropDone()
+			}
 		}
 	}
 	dragOver(evt, selected) {
@@ -35991,17 +36053,43 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		return false
 	}
 
-	_getFilesFromEvent(evt) {
+	async _getFilesFromEvent(evt) {
 		let files = []
 
 		// items is the new interface we should use if that's available
 		if (evt.dataTransfer.items) {
+			let foundItems = [];
 			[...evt.dataTransfer.items].forEach((item, i) => {
-				if (item.kind === "file") {
-					const file = item.getAsFile()
-					files.push(file)
-				}
+				foundItems.push(item)
 			})
+			for (let item of foundItems) {
+				if (item.kind === "file") {
+					if (item.webkitGetAsEntry) {
+						let entry = item.webkitGetAsEntry()
+						if(entry) {
+							// if there's no entry, it's probably not a file, so we'll just ignore
+							if (entry.isDirectory) {
+								continue
+								
+								// Evenually we'll want to handle directories too, but for now we'll just go
+								// on with the other items
+
+								// var dirReader = entry.createReader()
+								// dirReader.readEntries(function (entries) {
+								// 	console.log(entries)
+								// })
+							}
+							else {
+								files.push(item.getAsFile())
+							}
+
+						}
+					}
+					else {
+						files.push(item.getAsFile())
+					}
+				}
+			}
 		} else {
 			[...evt.dataTransfer.files].forEach((file, i) => {
 				files.push(file)
@@ -36009,7 +36097,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 		return files
 	}
-	
+
 	_addPending(file) {
 		let note
 		if (this.eventNotificationPanel) {
@@ -36022,10 +36110,10 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 		return note
 	}
-	
+
 	async _uploadGuidedImageFile(file) {
-		let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file)
-		let stats = await (0,_get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_11__["default"])(file)
+		let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_7__["default"])(file)
+		let stats = await (0,_get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
 
 		let data = {
 			nativeName: file.name
@@ -36036,7 +36124,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 
 
-		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
 			title: 'Upload File'
 			, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedImageUploadForm)(data)
 			, data: data
@@ -36044,31 +36132,31 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		})
 		let prom = dialog.open()
 		let result = await prom
-		
-		if(result) {
+
+		if (result) {
 			let makeImageData = {
-				baseFileName: result.name 
+				baseFileName: result.name
 				, outputFormat: result.outputFormat
 				, singleDensityWidth: parseInt(result.width)
 				, altText: result.altText
 			}
 
 			let note = this._addPending(file)
-			let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file, makeImageData)
+			let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file, makeImageData)
 
 			for (let fileName of Object.keys(files)) {
 				await this._uploadData(fileName, files[fileName])
 			}
 
-			if(note){
+			if (note) {
 				note.remove()
 			}
 			return true
 		}
 	}
-	
+
 	async _uploadGuidedFile(file) {
-		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
+		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file)
 
 		let data = {
 			nativeName: file.name
@@ -36076,7 +36164,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 
 
-		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
 			title: 'Upload File'
 			, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedFileUploadForm)(data)
 			, data: data
@@ -36084,25 +36172,25 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		})
 		let prom = dialog.open()
 		let result = await prom
-		
-		if(result) {
+
+		if (result) {
 			let note = this._addPending(file)
 
 			await this._uploadData(result.name, file)
 
-			if(note){
+			if (note) {
 				note.remove()
 			}
 			return true
 		}
 	}
-	
+
 	async _uploadAutomaticImageFile(file) {
 		let note = this._addPending(file)
-		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
+		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file)
 		let baseFileName = parts[0]
 
-		let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file, {
+		let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file, {
 			baseFileName: baseFileName,
 			outputFormat: file.type
 		})
@@ -36111,7 +36199,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			await this._uploadData(fileName, files[fileName])
 		}
 
-		if(note){
+		if (note) {
 			note.remove()
 		}
 		return true
@@ -36133,13 +36221,13 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			else {
 				let note = this._addPending(file)
 				if (uploadType === 'automatic') {
-					let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
+					let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file)
 					await this._uploadData(parts.join('.'), file)
 				}
 				else {
 					await this._uploadData(file.name, file)
 				}
-				if(note){
+				if (note) {
 					note.remove()
 				}
 				uploaded = true
@@ -36157,20 +36245,6 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		this.setCurrentNode(this.currentNode)
 	}
 
-	async handleDrop(evt, selected) {
-		let uploadType = 'literal'
-		if (evt.target.classList.contains('guided-upload')) {
-			uploadType = 'guided'
-		}
-		else if (evt.target.classList.contains('automatic')) {
-			uploadType = 'automatic'
-		}
-
-		this._cleanupDropDone()
-		evt.preventDefault()
-		let files = this._getFilesFromEvent(evt)
-		this._uploadFiles(files, { uploadType })
-	}
 
 	sanitizeFileName(name) {
 		return name.split('/').join('-').split('..').join('-')
@@ -36180,8 +36254,8 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		await this.sink.write(path, data)
 	}
 	_cleanupDropDone() {
-		this.overCount = 0
-		this.el.classList.remove('file-dropping')
+		this.overCount = 0;
+		[...this.el.querySelectorAll('.file-dropping')].forEach(cover => cover.classList.remove('file-dropping'))
 	}
 
 	applyFilter(evt, selected) {
@@ -36200,27 +36274,73 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		})
 	}
 
+	clearFilter(evt, selected) {
+		this.el.querySelector('[name="filter"]').value = ''
+		this.applyFilter()
+	}
+
 	selectVariant(evt, selected) {
 		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (!evt.ctrlKey) {
+		if (!evt.ctrlKey && !evt.shiftKey) {
 			for (let sel of currentSelected) {
 				sel.classList.remove('selected')
 			}
 		}
 
-		selected.classList.toggle('selected')
+		if (evt.shiftKey) {
+			let cur = selected
+			do {
+				if (cur.classList.contains('selected')) {
+					break
+				}
+				cur.classList.add('selected')
+				cur = cur.previousElementSibling
+			}
+			while (cur);
+		}
+		else {
+			selected.classList.toggle('selected')
+		}
+		
+		
+		let sel = this.getSelectedFiles()
+		this.emitter.emit('select', {
+			type: 'select'
+			, selected: sel
+		})
+	}
+	
+	getSelectedFiles() {
+		let result = {
+			boxes: []
+			, variants: []
+			, files: []
+			, names: []
+		}
+		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+		if (currentSelected.length > 0) {
+			for (let sel of currentSelected) {
+				result.boxes.push(sel)
+				result.variants.push(sel.variant)
+				result.files.push(...this._getAssociatedRealFiles(sel.variant))
+			}
+			let names = result.files.map(file => file.name)
+			result.names.push(...names)
+		}
+
+		return result
 	}
 
 	async deleteFile(evt, selected) {
-		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (currentSelected.length > 0) {
-			let files = []
-			for (let sel of currentSelected) {
-				files.push(...this._getAssociatedRealFiles(sel.variant))
-			}
-			let names = files.map(file => file.name)
+		let sel = this.getSelectedFiles()
+
+		if (sel.files.length > 0) {
+
+			let files = sel.files
+			let names = sel.names
+
 			if (!this.deleteWithoutConfirm) {
-				let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+				let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
 					title: 'Delete File' + (files.length > 1 ? 's' : '')
 					, body: '<p>' + names.join(', ') + '</p>'
 				})
@@ -36254,14 +36374,64 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 					})
 				}
 			}
-			for (let sel of currentSelected) {
-				sel.remove()
+			for (let item of sel.boxes) {
+				item.remove()
 			}
+		}
+		this.emitter.emit('delete', {
+			type: 'delete'
+			, selected: sel
+		})
+	}
+
+	async deleteDirectory(evt, selected) {
+		let path = this.currentNode.file.relPath
+		let name = this.currentNode.file.name
+
+		if (!path) {
+			// probably the root, just cancel
+			return
+		}
+
+		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
+			title: 'Delete Directory'
+			, body: '<p>' + name + '</p>'
+		})
+		let prom = dialog.open()
+		let ans = await prom
+		if (!ans) {
+			return
+		}
+		let note
+		if (this.eventNotificationPanel) {
+			note = this.eventNotificationPanel.addNotification({
+				model: {
+					status: 'pending',
+					headline: `deleting ${name}`
+				}
+			})
+		}
+		await this.sink.rm(path, { recursive: true })
+		let curSelected = this.tree.selected()
+		let parent = this.tree.parent(curSelected)
+
+		this.tree.removeNode(curSelected)
+		this.tree.select(parent.id)
+
+		if (this.eventNotificationPanel) {
+			note.remove()
+			note = this.eventNotificationPanel.addNotification({
+				model: {
+					status: 'success',
+					headline: `removed ${name}`
+				}
+				, ttl: 2000
+			})
 		}
 	}
 
 	createDirectory(evt, selected) {
-		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.FormAnswerDialog({
+		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
 			title: 'Create Directory'
 			, body: '<label>Directory name <input type="text" name="name" /></label>'
 		})
@@ -36273,6 +36443,10 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 				let file = await this.sink.getFullFileInfo(directoryPath)
 				let node = this._fileToKalpaNode(file)
 				this.tree.options.stream.emit('data', node)
+				let cur = this.tree.selected()
+				if (cur) {
+					this.tree.expand(cur.id)
+				}
 			}
 		})
 
@@ -36308,7 +36482,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 		content += '</ul>'
 
-		let dialog = new _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__.InfoDialog({
+		let dialog = new _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.InfoDialog({
 			title: 'File Details: ' + variant.baseName
 			, body: content
 			, buttons: [
@@ -36456,7 +36630,7 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		return [min, max]
 	}
 
-	_formatBytes = _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_7__["default"]
+	_formatBytes = _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_6__["default"]
 
 
 	createVariantValues(info) {
@@ -43302,6 +43476,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _client_lib_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../client-lib/make-image-set.mjs */ "./client-lib/make-image-set.mjs");
 /* harmony import */ var _client_lib_image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../client-lib/image-browser-view.mjs */ "./client-lib/image-browser-view.mjs");
 /* harmony import */ var _webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @webhandle/event-notification-panel */ "./node_modules/@webhandle/event-notification-panel/client-js/index.mjs");
+/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 
 (0,_sink_setup_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()
 
@@ -43324,7 +43499,7 @@ if(treeHolder) {
 		// , imagesOnly: true
 		, eventNotificationPanel: eventPanel
 		, startingDirectory: 'empty'
-		, deleteWithoutConfirm: true
+		// , deleteWithoutConfirm: true
 	})
 	imageBrowserView.appendTo(treeHolder)
 	imageBrowserView.render()
@@ -43335,6 +43510,11 @@ if(treeHolder) {
 	// 		headline: 'Page started'
 	// 	}
 	// })
+	
+	imageBrowserView.emitter.on('select', function(evt) {
+
+		console.log(evt)
+	})
 }
 
 
