@@ -1,0 +1,16 @@
+__::start__
+<div class="page page-landing">
+	<div class="container-wrapper">
+		<div class="container">
+			<div id="event-notifications"></div>
+		</div>
+	</div>
+	
+	<div class="select-button-holder">
+		<button class="select-image">Select Image</button>	
+	</div>
+	<div class="image-selection-result">
+		
+	</div>
+</div>
+__::end__

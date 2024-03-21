@@ -7,6 +7,9 @@ import getImageStats from '../client-lib/get-image-stats.mjs'
 import makeImageSet from '../client-lib/make-image-set.mjs'
 
 import ImageBrowserView from '../client-lib/image-browser-view.mjs'
+
+import { FileSelectDialog } from '../client-lib/file-select-dialog.mjs'
+
 import {setup as panelSetup} from '@webhandle/event-notification-panel'
 let eventPanel = panelSetup({
 	notificationHolder: '#event-notifications' /* Optional. The selector of the element to which the
@@ -67,5 +70,20 @@ if(imageHolder) {
 }
 
 
+let selectButton = document.querySelector('.select-image')
+if(selectButton) {
+	selectButton.addEventListener('click', async function(evt) {
+		evt.preventDefault()
+		
+		let diag = new FileSelectDialog({
+			sink: webhandle.sinks.files
+			, startingDirectory: 'img'
+			, imagesOnly: true
+		})
+		let result = await diag.open()
+		console.log(result)
+		
+	})
+}
 
 

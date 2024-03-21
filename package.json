@@ -49,6 +49,7 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
+		"@dankolz/escape-html-attribute-value": "^1.0.0",
 		"@dankolz/webhandle-admin-icons": "^1.0.1",
 		"@dankolz/webp-detection": "^1.0.12",
 		"@webhandle/backbone-view": "^1.0.1",

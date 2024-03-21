@@ -35739,6 +35739,86 @@ async function dataToImage(data) {
 
 /***/ }),
 
+/***/ "./client-lib/file-select-dialog.mjs":
+/*!*******************************************!*\
+  !*** ./client-lib/file-select-dialog.mjs ***!
+  \*******************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FileSelectDialog: () => (/* binding */ FileSelectDialog)
+/* harmony export */ });
+/* harmony import */ var ei_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ei-dialog */ "./node_modules/ei-dialog/dialog.js");
+/* harmony import */ var _image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./image-browser-view.mjs */ "./client-lib/image-browser-view.mjs");
+
+
+
+class FileSelectDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
+	constructor(options) {
+		super(Object.assign({
+			title: 'Select A File'
+			, body: `<div class="webhandle-file-tree-image-browser" style="width: 87vw;"> </div>`
+			, afterOpen: function (bodyElement, dialog) {
+
+				let treeHolder = bodyElement.querySelector('.webhandle-file-tree-image-browser')
+				if (treeHolder) {
+					let imageBrowserView = this.imageBrowserView = new _image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_1__["default"]({
+						sink: dialog.sink
+						, imagesOnly: dialog.imagesOnly
+						, eventNotificationPanel: dialog.eventNotificationPanel
+						, startingDirectory: dialog.startingDirectory
+						, deleteWithoutConfirm: dialog.deleteWithoutConfirm
+					})
+					imageBrowserView.appendTo(treeHolder)
+					imageBrowserView.render()
+
+					imageBrowserView.emitter.on('select', async function (evt) {
+
+					})
+				}
+
+			}
+		}, options,
+			{
+				on: {
+					'.btn-ok': async () => {
+						let result = {
+							selection: this.imageBrowserView.getSelectedFiles()
+						}
+						result.url = await this.imageBrowserView.getSelectedUrl(result.selection)
+						this.resolve(result)
+
+						return true
+					},
+					'.mask': () => {
+						this.resolve()
+						return true
+					},
+					'.btn-cancel': () => {
+						this.resolve()
+						return true
+					}
+				}
+
+			}
+		))
+	}
+
+	async open() {
+		this.promise = new Promise((resolve, reject) => {
+			this.resolve = resolve
+			this.reject = reject
+		})
+		super.open()
+
+		return this.promise
+	}
+
+}
+
+/***/ }),
+
 /***/ "./client-lib/form-answer-dialog.mjs":
 /*!*******************************************!*\
   !*** ./client-lib/form-answer-dialog.mjs ***!
@@ -43759,7 +43839,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _client_lib_get_image_stats_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../client-lib/get-image-stats.mjs */ "./client-lib/get-image-stats.mjs");
 /* harmony import */ var _client_lib_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../client-lib/make-image-set.mjs */ "./client-lib/make-image-set.mjs");
 /* harmony import */ var _client_lib_image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../client-lib/image-browser-view.mjs */ "./client-lib/image-browser-view.mjs");
-/* harmony import */ var _webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @webhandle/event-notification-panel */ "./node_modules/@webhandle/event-notification-panel/client-js/index.mjs");
+/* harmony import */ var _client_lib_file_select_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../client-lib/file-select-dialog.mjs */ "./client-lib/file-select-dialog.mjs");
+/* harmony import */ var _webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @webhandle/event-notification-panel */ "./node_modules/@webhandle/event-notification-panel/client-js/index.mjs");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 
 (0,_sink_setup_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()
@@ -43771,7 +43852,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let eventPanel = (0,_webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_6__.setup)({
+
+
+
+let eventPanel = (0,_webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_7__.setup)({
 	notificationHolder: '#event-notifications' /* Optional. The selector of the element to which the
 												  panel should be added. */
 })
@@ -43830,6 +43914,21 @@ if(imageHolder) {
 }
 
 
+let selectButton = document.querySelector('.select-image')
+if(selectButton) {
+	selectButton.addEventListener('click', async function(evt) {
+		evt.preventDefault()
+		
+		let diag = new _client_lib_file_select_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__.FileSelectDialog({
+			sink: webhandle.sinks.files
+			, startingDirectory: 'img'
+			, imagesOnly: true
+		})
+		let result = await diag.open()
+		console.log(result)
+		
+	})
+}
 
 
 
