@@ -11,6 +11,7 @@ const findPreviewVariant = __webpack_require__(/*! ./find-preview-variant */ "./
 const isFileImage = __webpack_require__(/*! ./is-file-image */ "./node_modules/@dankolz/webp-detection/lib/is-file-image.js")
 const makeVariantImage = __webpack_require__(/*! ./make-variant-image */ "./node_modules/@dankolz/webp-detection/lib/make-variant-image.js")
 const fileBasename = __webpack_require__(/*! ./file-basename */ "./node_modules/@dankolz/webp-detection/lib/file-basename.js")
+const findPrimaryVariant = __webpack_require__(/*! ./find-primary-variant */ "./node_modules/@dankolz/webp-detection/lib/find-primary-variant.js")
 
 /**
  * Condenses an array of files into logical images with their variants. This works on a set of image files which all share
@@ -62,14 +63,17 @@ function condenseImageVaraints(directoryContents) {
 	}
 	
 	// set the preview variant
-	Object.values(variants).forEach(setPreviewVariant)
+	Object.values(variants).forEach(setSpecialVariants)
 
 	return variants
 }
 
-function setPreviewVariant(variantDefinition) {
+function setSpecialVariants(variantDefinition) {
 	let preview = findPreviewVariant(variantDefinition.variants)
 	variantDefinition.preview = preview
+	
+	let primary = findPrimaryVariant(variantDefinition.variants)
+	variantDefinition.primary = primary
 }
 
 
@@ -129,6 +133,33 @@ function findPreviewVariant(variants) {
 }
 
 module.exports = findPreviewVariant
+
+/***/ }),
+
+/***/ "./node_modules/@dankolz/webp-detection/lib/find-primary-variant.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/@dankolz/webp-detection/lib/find-primary-variant.js ***!
+  \**************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+let {imageExtensions, smallerSizeExt, imageSizeExt} = __webpack_require__(/*! ./definitions */ "./node_modules/@dankolz/webp-detection/lib/definitions.js")
+
+let fallbackSizeExt = ['std', '2x', ...smallerSizeExt]
+let fallbackImgageExtensions = imageExtensions.filter(item => item != 'webp')
+
+function findPrimaryVariant(variants) {
+	for(let size of fallbackSizeExt) {
+		for(img of fallbackImgageExtensions) {
+			for(let variant of variants) {
+				if(variant.size == size && variant.ext == img) {
+					return variant
+				}
+			}
+		}
+	}
+}
+
+module.exports = findPrimaryVariant
 
 /***/ }),
 
@@ -35900,6 +35931,878 @@ async function getImageStats(data) {
 
 /***/ }),
 
+/***/ "./client-lib/image-browser-view-methods/create-directory.mjs":
+/*!********************************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/create-directory.mjs ***!
+  \********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createDirectory: () => (/* binding */ createDirectory)
+/* harmony export */ });
+/* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../form-answer-dialog.mjs */ "./client-lib/form-answer-dialog.mjs");
+
+
+function createDirectory(evt, selected) {
+	let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__.FormAnswerDialog({
+		title: 'Create Directory'
+		, body: '<label>Directory name <input type="text" name="name" /></label>'
+	})
+	let prom = dialog.open()
+	prom.then(async data => {
+		if (data) {
+			let directoryPath = this.currentNode.file.relPath + '/' + data.name
+			await this.sink.mkdir(directoryPath)
+			let file = await this.sink.getFullFileInfo(directoryPath)
+			let node = this._fileToKalpaNode(file)
+			this.tree.options.stream.emit('data', node)
+			let cur = this.tree.selected()
+			if (cur) {
+				this.tree.expand(cur.id)
+			}
+		}
+	})
+
+}
+
+/***/ }),
+
+/***/ "./client-lib/image-browser-view-methods/delete.mjs":
+/*!**********************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/delete.mjs ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deleteDirectory: () => (/* binding */ deleteDirectory),
+/* harmony export */   deleteFile: () => (/* binding */ deleteFile)
+/* harmony export */ });
+/* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../form-answer-dialog.mjs */ "./client-lib/form-answer-dialog.mjs");
+
+
+async function deleteFile(evt, selected) {
+	let sel = this.getSelectedFiles()
+
+	if (sel.files.length > 0) {
+
+		let files = sel.files
+		let names = sel.names
+
+		if (!this.deleteWithoutConfirm) {
+			let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__.FormAnswerDialog({
+				title: 'Delete File' + (files.length > 1 ? 's' : '')
+				, body: '<p>' + names.join(', ') + '</p>'
+			})
+			let prom = dialog.open()
+			let ans = await prom
+			if (!ans) {
+				return
+			}
+		}
+
+		for (let file of files) {
+			let path = file.relPath
+			let note
+			if (this.eventNotificationPanel) {
+				note = this.eventNotificationPanel.addNotification({
+					model: {
+						status: 'pending',
+						headline: `deleting ${file.name}`
+					}
+				})
+			}
+			await this.sink.rm(path)
+			if (this.eventNotificationPanel) {
+				note.remove()
+				note = this.eventNotificationPanel.addNotification({
+					model: {
+						status: 'success',
+						headline: `removed ${file.name}`
+					}
+					, ttl: 2000
+				})
+			}
+		}
+		for (let item of sel.boxes) {
+			item.remove()
+		}
+	}
+	this.emitter.emit('delete', {
+		type: 'delete'
+		, selected: sel
+	})
+}
+
+async function deleteDirectory(evt, selected) {
+	let path = this.currentNode.file.relPath
+	let name = this.currentNode.file.name
+
+	if (!path) {
+		// probably the root, just cancel
+		return
+	}
+
+	let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__.FormAnswerDialog({
+		title: 'Delete Directory'
+		, body: '<p>' + name + '</p>'
+	})
+	let prom = dialog.open()
+	let ans = await prom
+	if (!ans) {
+		return
+	}
+	let note
+	if (this.eventNotificationPanel) {
+		note = this.eventNotificationPanel.addNotification({
+			model: {
+				status: 'pending',
+				headline: `deleting ${name}`
+			}
+		})
+	}
+	await this.sink.rm(path, { recursive: true })
+	let curSelected = this.tree.selected()
+	let parent = this.tree.parent(curSelected)
+
+	this.tree.removeNode(curSelected)
+	this.tree.select(parent.id)
+
+	if (this.eventNotificationPanel) {
+		note.remove()
+		note = this.eventNotificationPanel.addNotification({
+			model: {
+				status: 'success',
+				headline: `removed ${name}`
+			}
+			, ttl: 2000
+		})
+	}
+}
+
+
+/***/ }),
+
+/***/ "./client-lib/image-browser-view-methods/drag-and-drop.mjs":
+/*!*****************************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/drag-and-drop.mjs ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   _cleanupDropDone: () => (/* binding */ _cleanupDropDone),
+/* harmony export */   dragEnter: () => (/* binding */ dragEnter),
+/* harmony export */   dragLeave: () => (/* binding */ dragLeave),
+/* harmony export */   dragOver: () => (/* binding */ dragOver),
+/* harmony export */   getDropCoverSelector: () => (/* binding */ getDropCoverSelector),
+/* harmony export */   handleDrop: () => (/* binding */ handleDrop),
+/* harmony export */   isFileTypeDrag: () => (/* binding */ isFileTypeDrag)
+/* harmony export */ });
+
+function getDropCoverSelector() {
+	return '.img-drop-cover'
+}
+
+async function handleDrop(evt, selected) {
+	let uploadType = 'literal'
+	let dropSquare = evt.target.closest('.drop-type')
+	if (dropSquare) {
+		if (dropSquare.classList.contains('guided-upload')) {
+			uploadType = 'guided'
+		}
+		else if (dropSquare.classList.contains('automatic')) {
+			uploadType = 'automatic'
+		}
+	}
+
+	this._cleanupDropDone()
+	evt.preventDefault()
+	let files = await this._getFilesFromEvent(evt)
+	this._uploadFiles(files, { uploadType })
+}
+
+function isFileTypeDrag(evt) {
+	let fileType = true
+	if (evt.dataTransfer) {
+		if (evt.dataTransfer.items[0].kind === 'string') {
+			fileType = false
+		}
+	}
+
+	return fileType
+}
+
+function dragEnter(evt, selected) {
+	let overlay = this.isFileTypeDrag(evt)
+	if (overlay) {
+		this.overCount++
+		this.el.querySelector(this.getDropCoverSelector()).classList.add('file-dropping')
+	}
+}
+function dragLeave(evt, selected) {
+	if (this.isFileTypeDrag(evt)) {
+		this.overCount--
+		if (this.overCount == 0) {
+			this._cleanupDropDone()
+		}
+	}
+}
+function dragOver(evt, selected) {
+	evt.preventDefault()
+}
+
+function _cleanupDropDone() {
+	this.overCount = 0;
+	[...this.el.querySelectorAll('.file-dropping')].forEach(cover => cover.classList.remove('file-dropping'))
+}
+
+/***/ }),
+
+/***/ "./client-lib/image-browser-view-methods/file-obj-manipulation.mjs":
+/*!*************************************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/file-obj-manipulation.mjs ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   _createAccessUrl: () => (/* binding */ _createAccessUrl),
+/* harmony export */   _getAssociatedRealFiles: () => (/* binding */ _getAssociatedRealFiles),
+/* harmony export */   _getFilesFromEvent: () => (/* binding */ _getFilesFromEvent),
+/* harmony export */   _transformRelativeUrlToPublic: () => (/* binding */ _transformRelativeUrlToPublic),
+/* harmony export */   createVariantValues: () => (/* binding */ createVariantValues),
+/* harmony export */   getSelectedFiles: () => (/* binding */ getSelectedFiles),
+/* harmony export */   getSelectedUrl: () => (/* binding */ getSelectedUrl)
+/* harmony export */ });
+/* harmony import */ var _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @dankolz/webp-detection/lib/condense-image-variants.js */ "./node_modules/@dankolz/webp-detection/lib/condense-image-variants.js");
+
+
+function createVariantValues(info) {
+	let variants = _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_0__(info.children)
+	let variantValues = Object.values(variants)
+
+	let used = []
+	for (let variant of variantValues) {
+		used.push(...this._getAssociatedRealFiles(variant).map(variant => variant.name))
+	}
+
+	let remainingChildren = info.children.filter(item => {
+		return !used.includes(item.name)
+	})
+		.filter(item => !item.directory)
+
+	// Add thumbnails
+	for (let child of variantValues) {
+		child.thumbnailIcon = 'image'
+		if (child.preview) {
+			child.thumbnail = this._createAccessUrl(child.preview.file)
+		}
+	}
+
+	if (!this.imagesOnly) {
+		for (let file of remainingChildren) {
+			let info = {
+				file: file
+				, thumbnailIcon: 'description'
+			}
+			let name = file.name
+			info.ext = name.substring(name.lastIndexOf('.') + 1)
+			info.baseName = name.substring(0, name.lastIndexOf('.'))
+			variantValues.push(info)
+		}
+	}
+
+
+	// Determine extensions
+	for (let item of variantValues) {
+		item.extensions = this._determineExtensions(item)
+		item.sizes = this._determineSizes(item)
+		if (item.sizes[0] == item.sizes[1]) {
+			item.size = this._formatBytes(item.sizes[0])
+		}
+		else {
+			item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1])
+		}
+	}
+
+	variantValues.sort(this._compareVariants)
+	return variantValues
+}
+async function _getFilesFromEvent(evt) {
+	let files = []
+
+	// items is the new interface we should use if that's available
+	if (evt.dataTransfer.items) {
+		let foundItems = [];
+		[...evt.dataTransfer.items].forEach((item, i) => {
+			foundItems.push(item)
+		})
+		for (let item of foundItems) {
+			if (item.kind === "file") {
+				if (item.webkitGetAsEntry) {
+					let entry = item.webkitGetAsEntry()
+					if (entry) {
+						// if there's no entry, it's probably not a file, so we'll just ignore
+						if (entry.isDirectory) {
+							continue
+
+							// Evenually we'll want to handle directories too, but for now we'll just go
+							// on with the other items
+
+							// var dirReader = entry.createReader()
+							// dirReader.readEntries(function (entries) {
+							// 	console.log(entries)
+							// })
+						}
+						else {
+							files.push(item.getAsFile())
+						}
+
+					}
+				}
+				else {
+					files.push(item.getAsFile())
+				}
+			}
+		}
+	} else {
+		[...evt.dataTransfer.files].forEach((file, i) => {
+			files.push(file)
+		})
+	}
+	return files
+}
+
+function _getAssociatedRealFiles(variant) {
+	let files = []
+	if (variant.variants) {
+		files.push(...variant.variants.map(variant => variant.file))
+	}
+	else {
+		files.push(variant.file)
+	}
+	if (variant.definitionFile) {
+		files.push(variant.definitionFile)
+	}
+
+	return files
+}
+
+function _createAccessUrl(file) {
+	return file.accessUrl
+}
+
+
+function getSelectedFiles() {
+	let result = {
+		boxes: []
+		, variants: []
+		, files: []
+		, names: []
+	}
+	let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+	if (currentSelected.length > 0) {
+		for (let sel of currentSelected) {
+			result.boxes.push(sel)
+			result.variants.push(sel.variant)
+			result.files.push(...this._getAssociatedRealFiles(sel.variant))
+		}
+		let names = result.files.map(file => file.name)
+		result.names.push(...names)
+	}
+
+	return result
+}
+
+function _transformRelativeUrlToPublic(url) {
+	if(url.startsWith('/') == false) {
+		url = '/' + url
+	}
+	return url	
+}
+
+async function getSelectedUrl() {
+	let selected = this.getSelectedFiles()
+	
+	if(selected.variants.length == 0) {
+		return
+	}
+	
+	let variant = selected.variants[0]
+	let chosen
+	if(variant.primary) {
+		chosen = variant.primary.file
+	}
+	else {
+		chosen = variant.file
+	}
+	
+	let base = this._transformRelativeUrlToPublic(chosen.relPath)
+	
+	if(variant.definitionFile) {
+		let defData = await this.sink.read(variant.definitionFile.relPath)
+		try {
+			let data = JSON.parse(defData)
+			let sizes = data.displaySize.split('x')
+			base += `#format=webp2x&width=${sizes[0]}&height=${sizes[1]}`
+			
+			if(data.altText) {
+				base += '&alt=' + encodeURIComponent(data.altText)
+			}
+		}
+		catch(e) {
+
+		}
+	}
+	
+	return base
+
+}
+
+/***/ }),
+
+/***/ "./client-lib/image-browser-view-methods/sink.mjs":
+/*!********************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/sink.mjs ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   _uploadData: () => (/* binding */ _uploadData),
+/* harmony export */   findDirectories: () => (/* binding */ findDirectories)
+/* harmony export */ });
+
+async function _uploadData(name, data) {
+	let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(name)
+	await this.sink.write(path, data)
+}
+
+async function findDirectories() {
+	return new Promise((resolve, reject) => {
+		let results = []
+		let events = this.sink.find({
+			file: false
+		})
+		events.on('data', (item) => {
+			results.push(item)
+		})
+		events.on('done', () => {
+			resolve(results)
+		})
+	})
+}
+
+/***/ }),
+
+/***/ "./client-lib/image-browser-view-methods/upload.mjs":
+/*!**********************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/upload.mjs ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   _uploadAutomaticImageFile: () => (/* binding */ _uploadAutomaticImageFile),
+/* harmony export */   _uploadFiles: () => (/* binding */ _uploadFiles),
+/* harmony export */   _uploadGuidedFile: () => (/* binding */ _uploadGuidedFile),
+/* harmony export */   _uploadGuidedImageFile: () => (/* binding */ _uploadGuidedImageFile)
+/* harmony export */ });
+/* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../form-answer-dialog.mjs */ "./client-lib/form-answer-dialog.mjs");
+/* harmony import */ var _base_image_name_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../base-image-name.mjs */ "./client-lib/base-image-name.mjs");
+/* harmony import */ var _make_image_set_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../make-image-set.mjs */ "./client-lib/make-image-set.mjs");
+/* harmony import */ var _name_parts_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../name-parts.mjs */ "./client-lib/name-parts.mjs");
+/* harmony import */ var _get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../get-file-image-stats.mjs */ "./client-lib/get-file-image-stats.mjs");
+/* harmony import */ var _views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../views/load-browser-views.js */ "./views/load-browser-views.js");
+
+
+
+
+
+
+
+
+async function _uploadGuidedImageFile(file) {
+	let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_1__["default"])(file)
+	let stats = await (0,_get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_4__["default"])(file)
+
+	let data = {
+		nativeName: file.name
+		, name: baseFileName
+		, outputFormat: file.type
+		, stats: stats
+		, width: Math.floor(stats.width / 2)
+	}
+
+
+	let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__.FormAnswerDialog({
+		title: 'Upload File'
+		, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_5__.guidedImageUploadForm)(data)
+		, data: data
+		, dialogFrameClass: 'webhandle-file-tree-image-browser'
+	})
+	let prom = dialog.open()
+	let result = await prom
+
+	if (result) {
+		let makeImageData = {
+			baseFileName: result.name
+			, outputFormat: result.outputFormat
+			, singleDensityWidth: parseInt(result.width)
+			, altText: result.altText
+		}
+
+		let note = this._addPending(file)
+		let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_2__["default"])(file, makeImageData)
+
+		for (let fileName of Object.keys(files)) {
+			await this._uploadData(fileName, files[fileName])
+		}
+
+		if (note) {
+			note.remove()
+		}
+		return true
+	}
+}
+
+async function _uploadGuidedFile(file) {
+	let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(file)
+
+	let data = {
+		nativeName: file.name
+		, name: parts.join('.')
+	}
+
+
+	let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__.FormAnswerDialog({
+		title: 'Upload File'
+		, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_5__.guidedFileUploadForm)(data)
+		, data: data
+		, dialogFrameClass: 'webhandle-file-tree-image-browser'
+	})
+	let prom = dialog.open()
+	let result = await prom
+
+	if (result) {
+		let note = this._addPending(file)
+
+		await this._uploadData(result.name, file)
+
+		if (note) {
+			note.remove()
+		}
+		return true
+	}
+}
+
+async function _uploadAutomaticImageFile(file) {
+	let note = this._addPending(file)
+	let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(file)
+	let baseFileName = parts[0]
+
+	let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_2__["default"])(file, {
+		baseFileName: baseFileName,
+		outputFormat: file.type
+	})
+
+	for (let fileName of Object.keys(files)) {
+		await this._uploadData(fileName, files[fileName])
+	}
+
+	if (note) {
+		note.remove()
+	}
+	return true
+}
+
+async function _uploadFiles(files, { uploadType } = {}) {
+	for (let file of files) {
+
+		let uploaded = false
+		if (uploadType === 'guided' && this._isImageFile(file)) {
+			uploaded = await this._uploadGuidedImageFile(file)
+		}
+		else if (uploadType === 'guided') {
+			uploaded = await this._uploadGuidedFile(file)
+		}
+		else if (uploadType === 'automatic' && this._isImageFile(file)) {
+			uploaded = await this._uploadAutomaticImageFile(file)
+		}
+		else {
+			let note = this._addPending(file)
+			if (uploadType === 'automatic') {
+				let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(file)
+				await this._uploadData(parts.join('.'), file)
+			}
+			else {
+				await this._uploadData(file.name, file)
+			}
+			if (note) {
+				note.remove()
+			}
+			uploaded = true
+		}
+		if (this.eventNotificationPanel && uploaded) {
+			this.eventNotificationPanel.addNotification({
+				model: {
+					status: 'success',
+					headline: `uploaded ${file.name}`
+				}
+				, ttl: 2000
+			})
+		}
+	}
+	this.setCurrentNode(this.currentNode)
+}
+
+
+
+/***/ }),
+
+/***/ "./client-lib/image-browser-view-methods/utils.mjs":
+/*!*********************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/utils.mjs ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   _compareVariants: () => (/* binding */ _compareVariants),
+/* harmony export */   _determineExtensions: () => (/* binding */ _determineExtensions),
+/* harmony export */   _determineParentPath: () => (/* binding */ _determineParentPath),
+/* harmony export */   _determineSizes: () => (/* binding */ _determineSizes),
+/* harmony export */   _fileToKalpaNode: () => (/* binding */ _fileToKalpaNode),
+/* harmony export */   _isImageFile: () => (/* binding */ _isImageFile),
+/* harmony export */   _join: () => (/* binding */ _join),
+/* harmony export */   _sortFiles: () => (/* binding */ _sortFiles),
+/* harmony export */   sanitizeFileName: () => (/* binding */ sanitizeFileName)
+/* harmony export */ });
+
+function _join(...parts) {
+	parts = parts.filter(part => !!part)
+	let path = parts.join('/')
+	return path
+}
+
+function _determineParentPath(path) {
+	let parts = path.split('/')
+	parts.pop()
+	return parts.join('/')
+}
+
+function _fileToKalpaNode(file) {
+	let node = {
+		id: this.idInd++
+		, label: file.name
+		, directory: file.directory
+		, file: file
+		, loaded: false
+	}
+
+	let parent = this.nodes[this._determineParentPath(file.relPath)]
+	this.nodes[file.relPath] = node
+
+	if (parent) {
+		node.parentId = parent.id
+		node.path = file.relPath
+	}
+
+	file.path = node.path
+	return node
+}
+
+function _determineExtensions(variant) {
+	let extensions = new Set()
+	if (variant.variants) {
+		for (let imgVariant of variant.variants) {
+			extensions.add(imgVariant.ext)
+		}
+	}
+	else {
+		extensions.add(variant.ext)
+	}
+
+	let result = Array.from(extensions).filter(item => !!item)
+	result.sort((a, b) => {
+		return a.toLowerCase().localeCompare(b.toLowerCase())
+	})
+
+	return result
+}
+
+function _determineSizes(variant) {
+	let min = 2000000000
+	let max = 0
+	if (variant.variants) {
+		for (let imgVariant of variant.variants) {
+			let size = imgVariant.file.stat.size
+			if (size > max) {
+				max = size
+			}
+			if (size < min) {
+				min = size
+			}
+		}
+	}
+	else {
+		let size = variant.file.stat.size
+		if (size > max) {
+			max = size
+		}
+		if (size < min) {
+			min = size
+		}
+	}
+	return [min, max]
+}
+
+function _sortFiles(files) {
+	files.sort((one, two) => {
+		return one.relPath.toLowerCase().localeCompare(two.relPath.toLowerCase())
+	})
+
+	return files
+}
+
+function _compareVariants(one, two) {
+	return one.baseName.toLowerCase().localeCompare(two.baseName.toLowerCase())
+}
+
+function sanitizeFileName(name) {
+	return name.split('/').join('-').split('..').join('-')
+}
+
+
+function _isImageFile(file) {
+	if (!file.type.startsWith('image')) {
+		return false
+	}
+	if (file.type.includes('jpeg') || file.type.includes('png') || file.type.includes('webp')) {
+		return true
+	}
+	return false
+}
+
+
+/***/ }),
+
+/***/ "./client-lib/image-browser-view-methods/view-interactions.mjs":
+/*!*********************************************************************!*\
+  !*** ./client-lib/image-browser-view-methods/view-interactions.mjs ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyFilter: () => (/* binding */ applyFilter),
+/* harmony export */   changeFilesView: () => (/* binding */ changeFilesView),
+/* harmony export */   clearFilter: () => (/* binding */ clearFilter),
+/* harmony export */   selectVariant: () => (/* binding */ selectVariant),
+/* harmony export */   showVariantDetails: () => (/* binding */ showVariantDetails)
+/* harmony export */ });
+/* harmony import */ var _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../info-dialog.mjs */ "./client-lib/info-dialog.mjs");
+
+
+function changeFilesView(evt, selected) {
+	let choiceBoxes = this.el.querySelector('.choice-boxes')
+	let classes = [...selected.closest('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
+	classes.forEach(item => {
+		choiceBoxes.classList.remove(item)
+	})
+	choiceBoxes.classList.add(selected.getAttribute('data-show-class'))
+}
+
+function applyFilter(evt, selected) {
+	setTimeout(() => {
+		let value = this.el.querySelector('[name="filter"]').value
+		let allVariants = this.el.querySelectorAll('.choice-boxes .variant-choice-box')
+		for (let variant of allVariants) {
+			variant.classList.remove('hidden')
+			if (value) {
+				let searchString = variant.variant.baseName + variant.variant.extensions.join()
+				if (searchString.indexOf(value) < 0) {
+					variant.classList.add('hidden')
+				}
+			}
+		}
+	})
+}
+
+function clearFilter(evt, selected) {
+	this.el.querySelector('[name="filter"]').value = ''
+	this.applyFilter()
+}
+
+function selectVariant(evt, selected) {
+	let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
+	if (!evt.ctrlKey && !evt.shiftKey) {
+		for (let sel of currentSelected) {
+			sel.classList.remove('selected')
+		}
+	}
+
+	if (evt.shiftKey) {
+		let cur = selected
+		do {
+			if (cur.classList.contains('selected')) {
+				break
+			}
+			cur.classList.add('selected')
+			cur = cur.previousElementSibling
+		}
+		while (cur);
+	}
+	else {
+		selected.classList.toggle('selected')
+	}
+
+
+	let sel = this.getSelectedFiles()
+	this.emitter.emit('select', {
+		type: 'select'
+		, selected: sel
+	})
+}
+
+
+
+function showVariantDetails(evt, selected) {
+	let choiceBox = selected.closest('.variant-choice-box')
+	let variant = choiceBox.variant
+
+	let files = this._getAssociatedRealFiles(variant)
+
+	let content = '<ul>'
+	for (let file of files) {
+		content += '<li><a target="_blank" href="' + file.accessUrl + '">'
+		content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
+		content += '</li>'
+	}
+	content += '</ul>'
+
+	let dialog = new _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__.InfoDialog({
+		title: 'File Details: ' + variant.baseName
+		, body: content
+		, buttons: [
+			{
+				classes: 'btn btn-primary btn-ok',
+				label: 'OK'
+			}
+		]
+	})
+	let prom = dialog.open()
+	prom.then(async data => {
+		if (data) {
+		}
+	})
+
+}
+
+/***/ }),
+
 /***/ "./client-lib/image-browser-view.mjs":
 /*!*******************************************!*\
   !*** ./client-lib/image-browser-view.mjs ***!
@@ -35913,29 +36816,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @webhandle/backbone-view */ "./node_modules/@webhandle/backbone-view/client-js/index.js");
 /* harmony import */ var _views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../views/load-browser-views.js */ "./views/load-browser-views.js");
 /* harmony import */ var kalpa_tree_on_page__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! kalpa-tree-on-page */ "./node_modules/kalpa-tree-on-page/client-js/kalpa-tree-loader.js");
-/* harmony import */ var _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @dankolz/webp-detection/lib/condense-image-variants.js */ "./node_modules/@dankolz/webp-detection/lib/condense-image-variants.js");
-/* harmony import */ var _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./form-answer-dialog.mjs */ "./client-lib/form-answer-dialog.mjs");
-/* harmony import */ var _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./info-dialog.mjs */ "./client-lib/info-dialog.mjs");
-/* harmony import */ var _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./format-bytes.mjs */ "./client-lib/format-bytes.mjs");
-/* harmony import */ var _base_image_name_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./base-image-name.mjs */ "./client-lib/base-image-name.mjs");
-/* harmony import */ var _make_image_set_mjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./make-image-set.mjs */ "./client-lib/make-image-set.mjs");
-/* harmony import */ var _name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./name-parts.mjs */ "./client-lib/name-parts.mjs");
-/* harmony import */ var _get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./get-file-image-stats.mjs */ "./client-lib/get-file-image-stats.mjs");
-/* harmony import */ var _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @webhandle/minimal-browser-event-emitter */ "./node_modules/@webhandle/minimal-browser-event-emitter/client-js/index.js");
-
+/* harmony import */ var _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./format-bytes.mjs */ "./client-lib/format-bytes.mjs");
+/* harmony import */ var _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @webhandle/minimal-browser-event-emitter */ "./node_modules/@webhandle/minimal-browser-event-emitter/client-js/index.js");
+/* harmony import */ var _image_browser_view_methods_delete_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./image-browser-view-methods/delete.mjs */ "./client-lib/image-browser-view-methods/delete.mjs");
+/* harmony import */ var _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./image-browser-view-methods/utils.mjs */ "./client-lib/image-browser-view-methods/utils.mjs");
+/* harmony import */ var _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./image-browser-view-methods/view-interactions.mjs */ "./client-lib/image-browser-view-methods/view-interactions.mjs");
+/* harmony import */ var _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./image-browser-view-methods/drag-and-drop.mjs */ "./client-lib/image-browser-view-methods/drag-and-drop.mjs");
+/* harmony import */ var _image_browser_view_methods_create_directory_mjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./image-browser-view-methods/create-directory.mjs */ "./client-lib/image-browser-view-methods/create-directory.mjs");
+/* harmony import */ var _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./image-browser-view-methods/file-obj-manipulation.mjs */ "./client-lib/image-browser-view-methods/file-obj-manipulation.mjs");
+/* harmony import */ var _image_browser_view_methods_upload_mjs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./image-browser-view-methods/upload.mjs */ "./client-lib/image-browser-view-methods/upload.mjs");
+/* harmony import */ var _image_browser_view_methods_sink_mjs__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./image-browser-view-methods/sink.mjs */ "./client-lib/image-browser-view-methods/sink.mjs");
 
 
 
 // import basename from '@dankolz/webp-detection/lib/file-basename.js'
 // import Dialog from 'ei-dialog'
 
-
-
-
-
-
-
+// import baseImageName from './base-image-name.mjs'
+// import makeImageSet from './make-image-set.mjs'
+// import nameParts from './name-parts.mjs'
+// import getFileImageStats from './get-file-image-stats.mjs'
 // import getExtension from './get-extension-from-mime.mjs'
+
+
+
+
+// method imports
+
+
+
+
+
+
 
 
 
@@ -35976,126 +36888,10 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			, 'drop .': 'handleDrop'
 		}
 		this.overCount = 0
-		
-		if(!this.emitter) {
-			this.emitter = new _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_11__["default"]()
+
+		if (!this.emitter) {
+			this.emitter = new _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_4__["default"]()
 		}
-	}
-
-	changeFilesView(evt, selected) {
-		let choiceBoxes = this.el.querySelector('.choice-boxes')
-		let classes = [...selected.closest('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
-		classes.forEach(item => {
-			choiceBoxes.classList.remove(item)
-		})
-		choiceBoxes.classList.add(selected.getAttribute('data-show-class'))
-	}
-
-	getDropCoverSelector() {
-		return '.img-drop-cover'
-	}
-
-	async handleDrop(evt, selected) {
-		let uploadType = 'literal'
-		let dropSquare = evt.target.closest('.drop-type')
-		if (dropSquare) {
-			if (dropSquare.classList.contains('guided-upload')) {
-				uploadType = 'guided'
-			}
-			else if (dropSquare.classList.contains('automatic')) {
-				uploadType = 'automatic'
-			}
-		}
-
-		this._cleanupDropDone()
-		evt.preventDefault()
-		let files = await this._getFilesFromEvent(evt)
-		this._uploadFiles(files, { uploadType })
-	}
-
-	isFileTypeDrag(evt) {
-		let fileType = true
-		if(evt.dataTransfer) {
-			if(evt.dataTransfer.items[0].kind === 'string') {
-				fileType = false
-			}
-		}
-
-		return fileType
-	}
-
-	dragEnter(evt, selected) {
-		let overlay = this.isFileTypeDrag(evt)
-		if(overlay) {
-			this.overCount++
-			this.el.querySelector(this.getDropCoverSelector()).classList.add('file-dropping')
-		}
-	}
-	dragLeave(evt, selected) {
-		if(this.isFileTypeDrag(evt)) {
-			this.overCount--
-			if (this.overCount == 0) {
-				this._cleanupDropDone()
-			}
-		}
-	}
-	dragOver(evt, selected) {
-		evt.preventDefault()
-	}
-
-	_isImageFile(file) {
-		if (!file.type.startsWith('image')) {
-			return false
-		}
-		if (file.type.includes('jpeg') || file.type.includes('png') || file.type.includes('webp')) {
-			return true
-		}
-		return false
-	}
-
-	async _getFilesFromEvent(evt) {
-		let files = []
-
-		// items is the new interface we should use if that's available
-		if (evt.dataTransfer.items) {
-			let foundItems = [];
-			[...evt.dataTransfer.items].forEach((item, i) => {
-				foundItems.push(item)
-			})
-			for (let item of foundItems) {
-				if (item.kind === "file") {
-					if (item.webkitGetAsEntry) {
-						let entry = item.webkitGetAsEntry()
-						if(entry) {
-							// if there's no entry, it's probably not a file, so we'll just ignore
-							if (entry.isDirectory) {
-								continue
-								
-								// Evenually we'll want to handle directories too, but for now we'll just go
-								// on with the other items
-
-								// var dirReader = entry.createReader()
-								// dirReader.readEntries(function (entries) {
-								// 	console.log(entries)
-								// })
-							}
-							else {
-								files.push(item.getAsFile())
-							}
-
-						}
-					}
-					else {
-						files.push(item.getAsFile())
-					}
-				}
-			}
-		} else {
-			[...evt.dataTransfer.files].forEach((file, i) => {
-				files.push(file)
-			})
-		}
-		return files
 	}
 
 	_addPending(file) {
@@ -36111,420 +36907,14 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		return note
 	}
 
-	async _uploadGuidedImageFile(file) {
-		let baseFileName = (0,_base_image_name_mjs__WEBPACK_IMPORTED_MODULE_7__["default"])(file)
-		let stats = await (0,_get_file_image_stats_mjs__WEBPACK_IMPORTED_MODULE_10__["default"])(file)
-
-		let data = {
-			nativeName: file.name
-			, name: baseFileName
-			, outputFormat: file.type
-			, stats: stats
-			, width: Math.floor(stats.width / 2)
-		}
-
-
-		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
-			title: 'Upload File'
-			, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedImageUploadForm)(data)
-			, data: data
-			, dialogFrameClass: 'webhandle-file-tree-image-browser'
-		})
-		let prom = dialog.open()
-		let result = await prom
-
-		if (result) {
-			let makeImageData = {
-				baseFileName: result.name
-				, outputFormat: result.outputFormat
-				, singleDensityWidth: parseInt(result.width)
-				, altText: result.altText
-			}
-
-			let note = this._addPending(file)
-			let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file, makeImageData)
-
-			for (let fileName of Object.keys(files)) {
-				await this._uploadData(fileName, files[fileName])
-			}
-
-			if (note) {
-				note.remove()
-			}
-			return true
-		}
-	}
-
-	async _uploadGuidedFile(file) {
-		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file)
-
-		let data = {
-			nativeName: file.name
-			, name: parts.join('.')
-		}
-
-
-		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
-			title: 'Upload File'
-			, body: (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.guidedFileUploadForm)(data)
-			, data: data
-			, dialogFrameClass: 'webhandle-file-tree-image-browser'
-		})
-		let prom = dialog.open()
-		let result = await prom
-
-		if (result) {
-			let note = this._addPending(file)
-
-			await this._uploadData(result.name, file)
-
-			if (note) {
-				note.remove()
-			}
-			return true
-		}
-	}
-
-	async _uploadAutomaticImageFile(file) {
-		let note = this._addPending(file)
-		let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file)
-		let baseFileName = parts[0]
-
-		let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_8__["default"])(file, {
-			baseFileName: baseFileName,
-			outputFormat: file.type
-		})
-
-		for (let fileName of Object.keys(files)) {
-			await this._uploadData(fileName, files[fileName])
-		}
-
-		if (note) {
-			note.remove()
-		}
-		return true
-	}
-
-	async _uploadFiles(files, { uploadType } = {}) {
-		for (let file of files) {
-
-			let uploaded = false
-			if (uploadType === 'guided' && this._isImageFile(file)) {
-				uploaded = await this._uploadGuidedImageFile(file)
-			}
-			else if (uploadType === 'guided') {
-				uploaded = await this._uploadGuidedFile(file)
-			}
-			else if (uploadType === 'automatic' && this._isImageFile(file)) {
-				uploaded = await this._uploadAutomaticImageFile(file)
-			}
-			else {
-				let note = this._addPending(file)
-				if (uploadType === 'automatic') {
-					let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_9__["default"])(file)
-					await this._uploadData(parts.join('.'), file)
-				}
-				else {
-					await this._uploadData(file.name, file)
-				}
-				if (note) {
-					note.remove()
-				}
-				uploaded = true
-			}
-			if (this.eventNotificationPanel && uploaded) {
-				this.eventNotificationPanel.addNotification({
-					model: {
-						status: 'success',
-						headline: `uploaded ${file.name}`
-					}
-					, ttl: 2000
-				})
-			}
-		}
-		this.setCurrentNode(this.currentNode)
-	}
-
-
-	sanitizeFileName(name) {
-		return name.split('/').join('-').split('..').join('-')
-	}
-	async _uploadData(name, data) {
-		let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(name)
-		await this.sink.write(path, data)
-	}
-	_cleanupDropDone() {
-		this.overCount = 0;
-		[...this.el.querySelectorAll('.file-dropping')].forEach(cover => cover.classList.remove('file-dropping'))
-	}
-
-	applyFilter(evt, selected) {
-		setTimeout(() => {
-			let value = this.el.querySelector('[name="filter"]').value
-			let allVariants = this.el.querySelectorAll('.choice-boxes .variant-choice-box')
-			for (let variant of allVariants) {
-				variant.classList.remove('hidden')
-				if (value) {
-					let searchString = variant.variant.baseName + variant.variant.extensions.join()
-					if (searchString.indexOf(value) < 0) {
-						variant.classList.add('hidden')
-					}
-				}
-			}
-		})
-	}
-
-	clearFilter(evt, selected) {
-		this.el.querySelector('[name="filter"]').value = ''
-		this.applyFilter()
-	}
-
-	selectVariant(evt, selected) {
-		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (!evt.ctrlKey && !evt.shiftKey) {
-			for (let sel of currentSelected) {
-				sel.classList.remove('selected')
-			}
-		}
-
-		if (evt.shiftKey) {
-			let cur = selected
-			do {
-				if (cur.classList.contains('selected')) {
-					break
-				}
-				cur.classList.add('selected')
-				cur = cur.previousElementSibling
-			}
-			while (cur);
-		}
-		else {
-			selected.classList.toggle('selected')
-		}
-		
-		
-		let sel = this.getSelectedFiles()
-		this.emitter.emit('select', {
-			type: 'select'
-			, selected: sel
-		})
-	}
-	
-	getSelectedFiles() {
-		let result = {
-			boxes: []
-			, variants: []
-			, files: []
-			, names: []
-		}
-		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (currentSelected.length > 0) {
-			for (let sel of currentSelected) {
-				result.boxes.push(sel)
-				result.variants.push(sel.variant)
-				result.files.push(...this._getAssociatedRealFiles(sel.variant))
-			}
-			let names = result.files.map(file => file.name)
-			result.names.push(...names)
-		}
-
-		return result
-	}
-
-	async deleteFile(evt, selected) {
-		let sel = this.getSelectedFiles()
-
-		if (sel.files.length > 0) {
-
-			let files = sel.files
-			let names = sel.names
-
-			if (!this.deleteWithoutConfirm) {
-				let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
-					title: 'Delete File' + (files.length > 1 ? 's' : '')
-					, body: '<p>' + names.join(', ') + '</p>'
-				})
-				let prom = dialog.open()
-				let ans = await prom
-				if (!ans) {
-					return
-				}
-			}
-
-			for (let file of files) {
-				let path = file.relPath
-				let note
-				if (this.eventNotificationPanel) {
-					note = this.eventNotificationPanel.addNotification({
-						model: {
-							status: 'pending',
-							headline: `deleting ${file.name}`
-						}
-					})
-				}
-				await this.sink.rm(path)
-				if (this.eventNotificationPanel) {
-					note.remove()
-					note = this.eventNotificationPanel.addNotification({
-						model: {
-							status: 'success',
-							headline: `removed ${file.name}`
-						}
-						, ttl: 2000
-					})
-				}
-			}
-			for (let item of sel.boxes) {
-				item.remove()
-			}
-		}
-		this.emitter.emit('delete', {
-			type: 'delete'
-			, selected: sel
-		})
-	}
-
-	async deleteDirectory(evt, selected) {
-		let path = this.currentNode.file.relPath
-		let name = this.currentNode.file.name
-
-		if (!path) {
-			// probably the root, just cancel
-			return
-		}
-
-		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
-			title: 'Delete Directory'
-			, body: '<p>' + name + '</p>'
-		})
-		let prom = dialog.open()
-		let ans = await prom
-		if (!ans) {
-			return
-		}
-		let note
-		if (this.eventNotificationPanel) {
-			note = this.eventNotificationPanel.addNotification({
-				model: {
-					status: 'pending',
-					headline: `deleting ${name}`
-				}
-			})
-		}
-		await this.sink.rm(path, { recursive: true })
-		let curSelected = this.tree.selected()
-		let parent = this.tree.parent(curSelected)
-
-		this.tree.removeNode(curSelected)
-		this.tree.select(parent.id)
-
-		if (this.eventNotificationPanel) {
-			note.remove()
-			note = this.eventNotificationPanel.addNotification({
-				model: {
-					status: 'success',
-					headline: `removed ${name}`
-				}
-				, ttl: 2000
-			})
-		}
-	}
-
-	createDirectory(evt, selected) {
-		let dialog = new _form_answer_dialog_mjs__WEBPACK_IMPORTED_MODULE_4__.FormAnswerDialog({
-			title: 'Create Directory'
-			, body: '<label>Directory name <input type="text" name="name" /></label>'
-		})
-		let prom = dialog.open()
-		prom.then(async data => {
-			if (data) {
-				let directoryPath = this.currentNode.file.relPath + '/' + data.name
-				await this.sink.mkdir(directoryPath)
-				let file = await this.sink.getFullFileInfo(directoryPath)
-				let node = this._fileToKalpaNode(file)
-				this.tree.options.stream.emit('data', node)
-				let cur = this.tree.selected()
-				if (cur) {
-					this.tree.expand(cur.id)
-				}
-			}
-		})
-
-	}
-
-
-	_getAssociatedRealFiles(variant) {
-		let files = []
-		if (variant.variants) {
-			files.push(...variant.variants.map(variant => variant.file))
-		}
-		else {
-			files.push(variant.file)
-		}
-		if (variant.definitionFile) {
-			files.push(variant.definitionFile)
-		}
-
-		return files
-	}
-
-	showVariantDetails(evt, selected) {
-		let choiceBox = selected.closest('.variant-choice-box')
-		let variant = choiceBox.variant
-
-		let files = this._getAssociatedRealFiles(variant)
-
-		let content = '<ul>'
-		for (let file of files) {
-			content += '<li><a target="_blank" href="' + file.accessUrl + '">'
-			content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
-			content += '</li>'
-		}
-		content += '</ul>'
-
-		let dialog = new _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_5__.InfoDialog({
-			title: 'File Details: ' + variant.baseName
-			, body: content
-			, buttons: [
-				{
-					classes: 'btn btn-primary btn-ok',
-					label: 'OK'
-				}
-			]
-		})
-		let prom = dialog.open()
-		prom.then(async data => {
-			if (data) {
-			}
-		})
-
-	}
-
-	async findDirectories() {
-		return new Promise((resolve, reject) => {
-			let results = []
-			let events = this.sink.find({
-				file: false
-			})
-			events.on('data', (item) => {
-				results.push(item)
-			})
-			events.on('done', () => {
-				resolve(results)
-			})
-		})
-	}
-
 	async render() {
 		this.el.innerHTML = (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.imageBrowserFrame)(this.model)
 		this.data = []
-
 
 		this.rootDirectory = await this.sink.getFullFileInfo('')
 		this.rootDirectory.name = "Files"
 		let rootNode = this.rootNode = this._fileToKalpaNode(this.rootDirectory)
 		this.data.push(rootNode)
-
 
 		let directories = await this.findDirectories()
 		this._sortFiles(directories)
@@ -36556,7 +36946,6 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			if (this.startingDirectory) {
 				for (let node of Object.values(this.tree.nodes)) {
 					if (node.file && node.file.relPath && node.file.relPath == this.startingDirectory) {
-						// this.setCurrentNode(node)
 						tree.select(node.id)
 						break
 					}
@@ -36564,125 +36953,8 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			}
 			else {
 				tree.select(1)
-				// this.setCurrentNode(Object.values(this.tree.nodes)[0])
 			}
-
 		})
-	}
-
-	_sortFiles(files) {
-		files.sort((one, two) => {
-			return one.relPath.toLowerCase().localeCompare(two.relPath.toLowerCase())
-		})
-
-		return files
-	}
-	_compareVariants(one, two) {
-		return one.baseName.toLowerCase().localeCompare(two.baseName.toLowerCase())
-	}
-
-	_createAccessUrl(file) {
-		return file.accessUrl
-	}
-
-	_determineExtensions(variant) {
-		let extensions = new Set()
-		if (variant.variants) {
-			for (let imgVariant of variant.variants) {
-				extensions.add(imgVariant.ext)
-			}
-		}
-		else {
-			extensions.add(variant.ext)
-		}
-
-		let result = Array.from(extensions).filter(item => !!item)
-		result.sort((a, b) => {
-			return a.toLowerCase().localeCompare(b.toLowerCase())
-		})
-
-		return result
-	}
-
-	_determineSizes(variant) {
-		let min = 2000000000
-		let max = 0
-		if (variant.variants) {
-			for (let imgVariant of variant.variants) {
-				let size = imgVariant.file.stat.size
-				if (size > max) {
-					max = size
-				}
-				if (size < min) {
-					min = size
-				}
-			}
-		}
-		else {
-			let size = variant.file.stat.size
-			if (size > max) {
-				max = size
-			}
-			if (size < min) {
-				min = size
-			}
-		}
-		return [min, max]
-	}
-
-	_formatBytes = _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_6__["default"]
-
-
-	createVariantValues(info) {
-		let variants = _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_3__(info.children)
-		let variantValues = Object.values(variants)
-
-		let used = []
-		for (let variant of variantValues) {
-			used.push(...this._getAssociatedRealFiles(variant).map(variant => variant.name))
-		}
-
-		let remainingChildren = info.children.filter(item => {
-			return !used.includes(item.name)
-		})
-			.filter(item => !item.directory)
-
-		// Add thumbnails
-		for (let child of variantValues) {
-			child.thumbnailIcon = 'image'
-			if (child.preview) {
-				child.thumbnail = this._createAccessUrl(child.preview.file)
-			}
-		}
-
-		if (!this.imagesOnly) {
-			for (let file of remainingChildren) {
-				let info = {
-					file: file
-					, thumbnailIcon: 'description'
-				}
-				let name = file.name
-				info.ext = name.substring(name.lastIndexOf('.') + 1)
-				info.baseName = name.substring(0, name.lastIndexOf('.'))
-				variantValues.push(info)
-			}
-		}
-
-
-		// Determine extensions
-		for (let item of variantValues) {
-			item.extensions = this._determineExtensions(item)
-			item.sizes = this._determineSizes(item)
-			if (item.sizes[0] == item.sizes[1]) {
-				item.size = this._formatBytes(item.sizes[0])
-			}
-			else {
-				item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1])
-			}
-		}
-
-		variantValues.sort(this._compareVariants)
-		return variantValues
 	}
 
 	async setCurrentNode(node) {
@@ -36708,47 +36980,59 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		this.applyFilter()
 	}
 
-	_join(...parts) {
-		parts = parts.filter(part => !!part)
-		let path = parts.join('/')
-		return path
-	}
+	// uploads
+	_uploadGuidedImageFile = _image_browser_view_methods_upload_mjs__WEBPACK_IMPORTED_MODULE_11__._uploadGuidedImageFile
+	_uploadGuidedFile = _image_browser_view_methods_upload_mjs__WEBPACK_IMPORTED_MODULE_11__._uploadGuidedFile
+	_uploadAutomaticImageFile = _image_browser_view_methods_upload_mjs__WEBPACK_IMPORTED_MODULE_11__._uploadAutomaticImageFile
+	_uploadFiles = _image_browser_view_methods_upload_mjs__WEBPACK_IMPORTED_MODULE_11__._uploadFiles
 
-	_determineParentPath(path) {
-		let parts = path.split('/')
-		parts.pop()
-		return parts.join('/')
-	}
+	// file-obj-manipulation
+	createVariantValues = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__.createVariantValues
+	_getFilesFromEvent = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._getFilesFromEvent
+	_getAssociatedRealFiles = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._getAssociatedRealFiles
+	_createAccessUrl = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._createAccessUrl
+	getSelectedFiles = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__.getSelectedFiles
+	_transformRelativeUrlToPublic = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._transformRelativeUrlToPublic
+	getSelectedUrl = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__.getSelectedUrl
 
-	_fileToKalpaNode(file) {
-		let node = {
-			id: this.idInd++
-			, label: file.name
-			, directory: file.directory
-			, file: file
-			, loaded: false
-		}
+	// create-directory 
+	createDirectory = _image_browser_view_methods_create_directory_mjs__WEBPACK_IMPORTED_MODULE_9__.createDirectory
 
-		let parent = this.nodes[this._determineParentPath(file.relPath)]
-		this.nodes[file.relPath] = node
+	// drag-and-drop
+	getDropCoverSelector = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.getDropCoverSelector
+	handleDrop = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.handleDrop
+	isFileTypeDrag = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.isFileTypeDrag
+	dragEnter = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.dragEnter
+	dragLeave = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.dragLeave
+	dragOver = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.dragOver
+	_cleanupDropDone = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__._cleanupDropDone
 
-		if (parent) {
-			node.parentId = parent.id
-			node.path = file.relPath
-		}
+	// view-interactions
+	changeFilesView = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.changeFilesView
+	applyFilter = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.applyFilter
+	clearFilter = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.clearFilter
+	selectVariant = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.selectVariant
+	showVariantDetails = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.showVariantDetails
 
-		file.path = node.path
-		return node
-	}
+	// utils
+	sanitizeFileName = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__.sanitizeFileName
+	_sortFiles = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._sortFiles
+	_compareVariants = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._compareVariants
+	_determineExtensions = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._determineExtensions
+	_determineSizes = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._determineSizes
+	_join = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._join
+	_determineParentPath = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._determineParentPath
+	_fileToKalpaNode = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._fileToKalpaNode
+	_formatBytes = _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_3__["default"]
+	_isImageFile = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._isImageFile
 
-	/*
-	makeLocatedFileToKalpaNode(parent) {
-		let self = this
-		return function (file) {
-			return self.fileToKalpaNode(file, parent)
-		}
-	}
-	*/
+	// delete
+	deleteFile = _image_browser_view_methods_delete_mjs__WEBPACK_IMPORTED_MODULE_5__.deleteFile
+	deleteDirectory = _image_browser_view_methods_delete_mjs__WEBPACK_IMPORTED_MODULE_5__.deleteDirectory
+
+	// sink
+	_uploadData = _image_browser_view_methods_sink_mjs__WEBPACK_IMPORTED_MODULE_12__._uploadData
+	findDirectories = _image_browser_view_methods_sink_mjs__WEBPACK_IMPORTED_MODULE_12__.findDirectories
 
 }
 
@@ -43511,9 +43795,10 @@ if(treeHolder) {
 	// 	}
 	// })
 	
-	imageBrowserView.emitter.on('select', function(evt) {
+	imageBrowserView.emitter.on('select', async function(evt) {
 
-		console.log(evt)
+		// console.log(evt)
+		console.log(await imageBrowserView.getSelectedUrl())
 	})
 }
 

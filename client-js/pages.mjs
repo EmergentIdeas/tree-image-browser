@@ -32,9 +32,10 @@ if(treeHolder) {
 	// 	}
 	// })
 	
-	imageBrowserView.emitter.on('select', function(evt) {
+	imageBrowserView.emitter.on('select', async function(evt) {
 
-		console.log(evt)
+		// console.log(evt)
+		console.log(await imageBrowserView.getSelectedUrl())
 	})
 }
 

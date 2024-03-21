@@ -1,19 +1,31 @@
 import { View } from '@webhandle/backbone-view'
-import { imageBrowserFrame, variantChoiceBox, guidedImageUploadForm, guidedFileUploadForm } from '../views/load-browser-views.js'
+import { imageBrowserFrame, variantChoiceBox } from '../views/load-browser-views.js'
 import KalpaTreeOnPage from 'kalpa-tree-on-page'
-import condense from '@dankolz/webp-detection/lib/condense-image-variants.js'
 // import basename from '@dankolz/webp-detection/lib/file-basename.js'
 // import Dialog from 'ei-dialog'
-import { FormAnswerDialog } from './form-answer-dialog.mjs'
-import { InfoDialog } from './info-dialog.mjs'
 import formatBytes from './format-bytes.mjs'
-import baseImageName from './base-image-name.mjs'
-import makeImageSet from './make-image-set.mjs'
-import nameParts from './name-parts.mjs'
-import getFileImageStats from './get-file-image-stats.mjs'
+// import baseImageName from './base-image-name.mjs'
+// import makeImageSet from './make-image-set.mjs'
+// import nameParts from './name-parts.mjs'
+// import getFileImageStats from './get-file-image-stats.mjs'
 // import getExtension from './get-extension-from-mime.mjs'
 
 import Emitter from '@webhandle/minimal-browser-event-emitter'
+
+
+// method imports
+import { deleteFile, deleteDirectory } from './image-browser-view-methods/delete.mjs'
+import {
+	_join, _determineParentPath, _fileToKalpaNode, _determineExtensions,
+	_determineSizes, _sortFiles, _compareVariants, sanitizeFileName, _isImageFile
+} from './image-browser-view-methods/utils.mjs'
+import { changeFilesView, applyFilter, clearFilter, selectVariant, showVariantDetails } from './image-browser-view-methods/view-interactions.mjs'
+import { getDropCoverSelector, handleDrop, isFileTypeDrag, dragEnter, dragLeave, dragOver, _cleanupDropDone } from './image-browser-view-methods/drag-and-drop.mjs'
+import { createDirectory } from './image-browser-view-methods/create-directory.mjs'
+import { createVariantValues, _getFilesFromEvent, _getAssociatedRealFiles, _createAccessUrl, 
+	getSelectedFiles, _transformRelativeUrlToPublic, getSelectedUrl } from './image-browser-view-methods/file-obj-manipulation.mjs'
+import { _uploadGuidedImageFile, _uploadGuidedFile, _uploadAutomaticImageFile, _uploadFiles } from './image-browser-view-methods/upload.mjs'
+import { _uploadData, findDirectories } from './image-browser-view-methods/sink.mjs'
 
 
 export default class ImageBrowserView extends View {
@@ -52,126 +64,10 @@ export default class ImageBrowserView extends View {
 			, 'drop .': 'handleDrop'
 		}
 		this.overCount = 0
-		
-		if(!this.emitter) {
+
+		if (!this.emitter) {
 			this.emitter = new Emitter()
 		}
-	}
-
-	changeFilesView(evt, selected) {
-		let choiceBoxes = this.el.querySelector('.choice-boxes')
-		let classes = [...selected.closest('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
-		classes.forEach(item => {
-			choiceBoxes.classList.remove(item)
-		})
-		choiceBoxes.classList.add(selected.getAttribute('data-show-class'))
-	}
-
-	getDropCoverSelector() {
-		return '.img-drop-cover'
-	}
-
-	async handleDrop(evt, selected) {
-		let uploadType = 'literal'
-		let dropSquare = evt.target.closest('.drop-type')
-		if (dropSquare) {
-			if (dropSquare.classList.contains('guided-upload')) {
-				uploadType = 'guided'
-			}
-			else if (dropSquare.classList.contains('automatic')) {
-				uploadType = 'automatic'
-			}
-		}
-
-		this._cleanupDropDone()
-		evt.preventDefault()
-		let files = await this._getFilesFromEvent(evt)
-		this._uploadFiles(files, { uploadType })
-	}
-
-	isFileTypeDrag(evt) {
-		let fileType = true
-		if(evt.dataTransfer) {
-			if(evt.dataTransfer.items[0].kind === 'string') {
-				fileType = false
-			}
-		}
-
-		return fileType
-	}
-
-	dragEnter(evt, selected) {
-		let overlay = this.isFileTypeDrag(evt)
-		if(overlay) {
-			this.overCount++
-			this.el.querySelector(this.getDropCoverSelector()).classList.add('file-dropping')
-		}
-	}
-	dragLeave(evt, selected) {
-		if(this.isFileTypeDrag(evt)) {
-			this.overCount--
-			if (this.overCount == 0) {
-				this._cleanupDropDone()
-			}
-		}
-	}
-	dragOver(evt, selected) {
-		evt.preventDefault()
-	}
-
-	_isImageFile(file) {
-		if (!file.type.startsWith('image')) {
-			return false
-		}
-		if (file.type.includes('jpeg') || file.type.includes('png') || file.type.includes('webp')) {
-			return true
-		}
-		return false
-	}
-
-	async _getFilesFromEvent(evt) {
-		let files = []
-
-		// items is the new interface we should use if that's available
-		if (evt.dataTransfer.items) {
-			let foundItems = [];
-			[...evt.dataTransfer.items].forEach((item, i) => {
-				foundItems.push(item)
-			})
-			for (let item of foundItems) {
-				if (item.kind === "file") {
-					if (item.webkitGetAsEntry) {
-						let entry = item.webkitGetAsEntry()
-						if(entry) {
-							// if there's no entry, it's probably not a file, so we'll just ignore
-							if (entry.isDirectory) {
-								continue
-								
-								// Evenually we'll want to handle directories too, but for now we'll just go
-								// on with the other items
-
-								// var dirReader = entry.createReader()
-								// dirReader.readEntries(function (entries) {
-								// 	console.log(entries)
-								// })
-							}
-							else {
-								files.push(item.getAsFile())
-							}
-
-						}
-					}
-					else {
-						files.push(item.getAsFile())
-					}
-				}
-			}
-		} else {
-			[...evt.dataTransfer.files].forEach((file, i) => {
-				files.push(file)
-			})
-		}
-		return files
 	}
 
 	_addPending(file) {
@@ -187,420 +83,14 @@ export default class ImageBrowserView extends View {
 		return note
 	}
 
-	async _uploadGuidedImageFile(file) {
-		let baseFileName = baseImageName(file)
-		let stats = await getFileImageStats(file)
-
-		let data = {
-			nativeName: file.name
-			, name: baseFileName
-			, outputFormat: file.type
-			, stats: stats
-			, width: Math.floor(stats.width / 2)
-		}
-
-
-		let dialog = new FormAnswerDialog({
-			title: 'Upload File'
-			, body: guidedImageUploadForm(data)
-			, data: data
-			, dialogFrameClass: 'webhandle-file-tree-image-browser'
-		})
-		let prom = dialog.open()
-		let result = await prom
-
-		if (result) {
-			let makeImageData = {
-				baseFileName: result.name
-				, outputFormat: result.outputFormat
-				, singleDensityWidth: parseInt(result.width)
-				, altText: result.altText
-			}
-
-			let note = this._addPending(file)
-			let files = await makeImageSet(file, makeImageData)
-
-			for (let fileName of Object.keys(files)) {
-				await this._uploadData(fileName, files[fileName])
-			}
-
-			if (note) {
-				note.remove()
-			}
-			return true
-		}
-	}
-
-	async _uploadGuidedFile(file) {
-		let parts = nameParts(file)
-
-		let data = {
-			nativeName: file.name
-			, name: parts.join('.')
-		}
-
-
-		let dialog = new FormAnswerDialog({
-			title: 'Upload File'
-			, body: guidedFileUploadForm(data)
-			, data: data
-			, dialogFrameClass: 'webhandle-file-tree-image-browser'
-		})
-		let prom = dialog.open()
-		let result = await prom
-
-		if (result) {
-			let note = this._addPending(file)
-
-			await this._uploadData(result.name, file)
-
-			if (note) {
-				note.remove()
-			}
-			return true
-		}
-	}
-
-	async _uploadAutomaticImageFile(file) {
-		let note = this._addPending(file)
-		let parts = nameParts(file)
-		let baseFileName = parts[0]
-
-		let files = await makeImageSet(file, {
-			baseFileName: baseFileName,
-			outputFormat: file.type
-		})
-
-		for (let fileName of Object.keys(files)) {
-			await this._uploadData(fileName, files[fileName])
-		}
-
-		if (note) {
-			note.remove()
-		}
-		return true
-	}
-
-	async _uploadFiles(files, { uploadType } = {}) {
-		for (let file of files) {
-
-			let uploaded = false
-			if (uploadType === 'guided' && this._isImageFile(file)) {
-				uploaded = await this._uploadGuidedImageFile(file)
-			}
-			else if (uploadType === 'guided') {
-				uploaded = await this._uploadGuidedFile(file)
-			}
-			else if (uploadType === 'automatic' && this._isImageFile(file)) {
-				uploaded = await this._uploadAutomaticImageFile(file)
-			}
-			else {
-				let note = this._addPending(file)
-				if (uploadType === 'automatic') {
-					let parts = nameParts(file)
-					await this._uploadData(parts.join('.'), file)
-				}
-				else {
-					await this._uploadData(file.name, file)
-				}
-				if (note) {
-					note.remove()
-				}
-				uploaded = true
-			}
-			if (this.eventNotificationPanel && uploaded) {
-				this.eventNotificationPanel.addNotification({
-					model: {
-						status: 'success',
-						headline: `uploaded ${file.name}`
-					}
-					, ttl: 2000
-				})
-			}
-		}
-		this.setCurrentNode(this.currentNode)
-	}
-
-
-	sanitizeFileName(name) {
-		return name.split('/').join('-').split('..').join('-')
-	}
-	async _uploadData(name, data) {
-		let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(name)
-		await this.sink.write(path, data)
-	}
-	_cleanupDropDone() {
-		this.overCount = 0;
-		[...this.el.querySelectorAll('.file-dropping')].forEach(cover => cover.classList.remove('file-dropping'))
-	}
-
-	applyFilter(evt, selected) {
-		setTimeout(() => {
-			let value = this.el.querySelector('[name="filter"]').value
-			let allVariants = this.el.querySelectorAll('.choice-boxes .variant-choice-box')
-			for (let variant of allVariants) {
-				variant.classList.remove('hidden')
-				if (value) {
-					let searchString = variant.variant.baseName + variant.variant.extensions.join()
-					if (searchString.indexOf(value) < 0) {
-						variant.classList.add('hidden')
-					}
-				}
-			}
-		})
-	}
-
-	clearFilter(evt, selected) {
-		this.el.querySelector('[name="filter"]').value = ''
-		this.applyFilter()
-	}
-
-	selectVariant(evt, selected) {
-		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (!evt.ctrlKey && !evt.shiftKey) {
-			for (let sel of currentSelected) {
-				sel.classList.remove('selected')
-			}
-		}
-
-		if (evt.shiftKey) {
-			let cur = selected
-			do {
-				if (cur.classList.contains('selected')) {
-					break
-				}
-				cur.classList.add('selected')
-				cur = cur.previousElementSibling
-			}
-			while (cur);
-		}
-		else {
-			selected.classList.toggle('selected')
-		}
-		
-		
-		let sel = this.getSelectedFiles()
-		this.emitter.emit('select', {
-			type: 'select'
-			, selected: sel
-		})
-	}
-	
-	getSelectedFiles() {
-		let result = {
-			boxes: []
-			, variants: []
-			, files: []
-			, names: []
-		}
-		let currentSelected = this.el.querySelectorAll('.choice-boxes .variant-choice-box.selected')
-		if (currentSelected.length > 0) {
-			for (let sel of currentSelected) {
-				result.boxes.push(sel)
-				result.variants.push(sel.variant)
-				result.files.push(...this._getAssociatedRealFiles(sel.variant))
-			}
-			let names = result.files.map(file => file.name)
-			result.names.push(...names)
-		}
-
-		return result
-	}
-
-	async deleteFile(evt, selected) {
-		let sel = this.getSelectedFiles()
-
-		if (sel.files.length > 0) {
-
-			let files = sel.files
-			let names = sel.names
-
-			if (!this.deleteWithoutConfirm) {
-				let dialog = new FormAnswerDialog({
-					title: 'Delete File' + (files.length > 1 ? 's' : '')
-					, body: '<p>' + names.join(', ') + '</p>'
-				})
-				let prom = dialog.open()
-				let ans = await prom
-				if (!ans) {
-					return
-				}
-			}
-
-			for (let file of files) {
-				let path = file.relPath
-				let note
-				if (this.eventNotificationPanel) {
-					note = this.eventNotificationPanel.addNotification({
-						model: {
-							status: 'pending',
-							headline: `deleting ${file.name}`
-						}
-					})
-				}
-				await this.sink.rm(path)
-				if (this.eventNotificationPanel) {
-					note.remove()
-					note = this.eventNotificationPanel.addNotification({
-						model: {
-							status: 'success',
-							headline: `removed ${file.name}`
-						}
-						, ttl: 2000
-					})
-				}
-			}
-			for (let item of sel.boxes) {
-				item.remove()
-			}
-		}
-		this.emitter.emit('delete', {
-			type: 'delete'
-			, selected: sel
-		})
-	}
-
-	async deleteDirectory(evt, selected) {
-		let path = this.currentNode.file.relPath
-		let name = this.currentNode.file.name
-
-		if (!path) {
-			// probably the root, just cancel
-			return
-		}
-
-		let dialog = new FormAnswerDialog({
-			title: 'Delete Directory'
-			, body: '<p>' + name + '</p>'
-		})
-		let prom = dialog.open()
-		let ans = await prom
-		if (!ans) {
-			return
-		}
-		let note
-		if (this.eventNotificationPanel) {
-			note = this.eventNotificationPanel.addNotification({
-				model: {
-					status: 'pending',
-					headline: `deleting ${name}`
-				}
-			})
-		}
-		await this.sink.rm(path, { recursive: true })
-		let curSelected = this.tree.selected()
-		let parent = this.tree.parent(curSelected)
-
-		this.tree.removeNode(curSelected)
-		this.tree.select(parent.id)
-
-		if (this.eventNotificationPanel) {
-			note.remove()
-			note = this.eventNotificationPanel.addNotification({
-				model: {
-					status: 'success',
-					headline: `removed ${name}`
-				}
-				, ttl: 2000
-			})
-		}
-	}
-
-	createDirectory(evt, selected) {
-		let dialog = new FormAnswerDialog({
-			title: 'Create Directory'
-			, body: '<label>Directory name <input type="text" name="name" /></label>'
-		})
-		let prom = dialog.open()
-		prom.then(async data => {
-			if (data) {
-				let directoryPath = this.currentNode.file.relPath + '/' + data.name
-				await this.sink.mkdir(directoryPath)
-				let file = await this.sink.getFullFileInfo(directoryPath)
-				let node = this._fileToKalpaNode(file)
-				this.tree.options.stream.emit('data', node)
-				let cur = this.tree.selected()
-				if (cur) {
-					this.tree.expand(cur.id)
-				}
-			}
-		})
-
-	}
-
-
-	_getAssociatedRealFiles(variant) {
-		let files = []
-		if (variant.variants) {
-			files.push(...variant.variants.map(variant => variant.file))
-		}
-		else {
-			files.push(variant.file)
-		}
-		if (variant.definitionFile) {
-			files.push(variant.definitionFile)
-		}
-
-		return files
-	}
-
-	showVariantDetails(evt, selected) {
-		let choiceBox = selected.closest('.variant-choice-box')
-		let variant = choiceBox.variant
-
-		let files = this._getAssociatedRealFiles(variant)
-
-		let content = '<ul>'
-		for (let file of files) {
-			content += '<li><a target="_blank" href="' + file.accessUrl + '">'
-			content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
-			content += '</li>'
-		}
-		content += '</ul>'
-
-		let dialog = new InfoDialog({
-			title: 'File Details: ' + variant.baseName
-			, body: content
-			, buttons: [
-				{
-					classes: 'btn btn-primary btn-ok',
-					label: 'OK'
-				}
-			]
-		})
-		let prom = dialog.open()
-		prom.then(async data => {
-			if (data) {
-			}
-		})
-
-	}
-
-	async findDirectories() {
-		return new Promise((resolve, reject) => {
-			let results = []
-			let events = this.sink.find({
-				file: false
-			})
-			events.on('data', (item) => {
-				results.push(item)
-			})
-			events.on('done', () => {
-				resolve(results)
-			})
-		})
-	}
-
 	async render() {
 		this.el.innerHTML = imageBrowserFrame(this.model)
 		this.data = []
-
 
 		this.rootDirectory = await this.sink.getFullFileInfo('')
 		this.rootDirectory.name = "Files"
 		let rootNode = this.rootNode = this._fileToKalpaNode(this.rootDirectory)
 		this.data.push(rootNode)
-
 
 		let directories = await this.findDirectories()
 		this._sortFiles(directories)
@@ -632,7 +122,6 @@ export default class ImageBrowserView extends View {
 			if (this.startingDirectory) {
 				for (let node of Object.values(this.tree.nodes)) {
 					if (node.file && node.file.relPath && node.file.relPath == this.startingDirectory) {
-						// this.setCurrentNode(node)
 						tree.select(node.id)
 						break
 					}
@@ -640,125 +129,8 @@ export default class ImageBrowserView extends View {
 			}
 			else {
 				tree.select(1)
-				// this.setCurrentNode(Object.values(this.tree.nodes)[0])
 			}
-
 		})
-	}
-
-	_sortFiles(files) {
-		files.sort((one, two) => {
-			return one.relPath.toLowerCase().localeCompare(two.relPath.toLowerCase())
-		})
-
-		return files
-	}
-	_compareVariants(one, two) {
-		return one.baseName.toLowerCase().localeCompare(two.baseName.toLowerCase())
-	}
-
-	_createAccessUrl(file) {
-		return file.accessUrl
-	}
-
-	_determineExtensions(variant) {
-		let extensions = new Set()
-		if (variant.variants) {
-			for (let imgVariant of variant.variants) {
-				extensions.add(imgVariant.ext)
-			}
-		}
-		else {
-			extensions.add(variant.ext)
-		}
-
-		let result = Array.from(extensions).filter(item => !!item)
-		result.sort((a, b) => {
-			return a.toLowerCase().localeCompare(b.toLowerCase())
-		})
-
-		return result
-	}
-
-	_determineSizes(variant) {
-		let min = 2000000000
-		let max = 0
-		if (variant.variants) {
-			for (let imgVariant of variant.variants) {
-				let size = imgVariant.file.stat.size
-				if (size > max) {
-					max = size
-				}
-				if (size < min) {
-					min = size
-				}
-			}
-		}
-		else {
-			let size = variant.file.stat.size
-			if (size > max) {
-				max = size
-			}
-			if (size < min) {
-				min = size
-			}
-		}
-		return [min, max]
-	}
-
-	_formatBytes = formatBytes
-
-
-	createVariantValues(info) {
-		let variants = condense(info.children)
-		let variantValues = Object.values(variants)
-
-		let used = []
-		for (let variant of variantValues) {
-			used.push(...this._getAssociatedRealFiles(variant).map(variant => variant.name))
-		}
-
-		let remainingChildren = info.children.filter(item => {
-			return !used.includes(item.name)
-		})
-			.filter(item => !item.directory)
-
-		// Add thumbnails
-		for (let child of variantValues) {
-			child.thumbnailIcon = 'image'
-			if (child.preview) {
-				child.thumbnail = this._createAccessUrl(child.preview.file)
-			}
-		}
-
-		if (!this.imagesOnly) {
-			for (let file of remainingChildren) {
-				let info = {
-					file: file
-					, thumbnailIcon: 'description'
-				}
-				let name = file.name
-				info.ext = name.substring(name.lastIndexOf('.') + 1)
-				info.baseName = name.substring(0, name.lastIndexOf('.'))
-				variantValues.push(info)
-			}
-		}
-
-
-		// Determine extensions
-		for (let item of variantValues) {
-			item.extensions = this._determineExtensions(item)
-			item.sizes = this._determineSizes(item)
-			if (item.sizes[0] == item.sizes[1]) {
-				item.size = this._formatBytes(item.sizes[0])
-			}
-			else {
-				item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1])
-			}
-		}
-
-		variantValues.sort(this._compareVariants)
-		return variantValues
 	}
 
 	async setCurrentNode(node) {
@@ -784,46 +156,58 @@ export default class ImageBrowserView extends View {
 		this.applyFilter()
 	}
 
-	_join(...parts) {
-		parts = parts.filter(part => !!part)
-		let path = parts.join('/')
-		return path
-	}
+	// uploads
+	_uploadGuidedImageFile = _uploadGuidedImageFile
+	_uploadGuidedFile = _uploadGuidedFile
+	_uploadAutomaticImageFile = _uploadAutomaticImageFile
+	_uploadFiles = _uploadFiles
 
-	_determineParentPath(path) {
-		let parts = path.split('/')
-		parts.pop()
-		return parts.join('/')
-	}
+	// file-obj-manipulation
+	createVariantValues = createVariantValues
+	_getFilesFromEvent = _getFilesFromEvent
+	_getAssociatedRealFiles = _getAssociatedRealFiles
+	_createAccessUrl = _createAccessUrl
+	getSelectedFiles = getSelectedFiles
+	_transformRelativeUrlToPublic = _transformRelativeUrlToPublic
+	getSelectedUrl = getSelectedUrl
 
-	_fileToKalpaNode(file) {
-		let node = {
-			id: this.idInd++
-			, label: file.name
-			, directory: file.directory
-			, file: file
-			, loaded: false
-		}
+	// create-directory 
+	createDirectory = createDirectory
 
-		let parent = this.nodes[this._determineParentPath(file.relPath)]
-		this.nodes[file.relPath] = node
+	// drag-and-drop
+	getDropCoverSelector = getDropCoverSelector
+	handleDrop = handleDrop
+	isFileTypeDrag = isFileTypeDrag
+	dragEnter = dragEnter
+	dragLeave = dragLeave
+	dragOver = dragOver
+	_cleanupDropDone = _cleanupDropDone
 
-		if (parent) {
-			node.parentId = parent.id
-			node.path = file.relPath
-		}
+	// view-interactions
+	changeFilesView = changeFilesView
+	applyFilter = applyFilter
+	clearFilter = clearFilter
+	selectVariant = selectVariant
+	showVariantDetails = showVariantDetails
 
-		file.path = node.path
-		return node
-	}
+	// utils
+	sanitizeFileName = sanitizeFileName
+	_sortFiles = _sortFiles
+	_compareVariants = _compareVariants
+	_determineExtensions = _determineExtensions
+	_determineSizes = _determineSizes
+	_join = _join
+	_determineParentPath = _determineParentPath
+	_fileToKalpaNode = _fileToKalpaNode
+	_formatBytes = formatBytes
+	_isImageFile = _isImageFile
 
-	/*
-	makeLocatedFileToKalpaNode(parent) {
-		let self = this
-		return function (file) {
-			return self.fileToKalpaNode(file, parent)
-		}
-	}
-	*/
+	// delete
+	deleteFile = deleteFile
+	deleteDirectory = deleteDirectory
+
+	// sink
+	_uploadData = _uploadData
+	findDirectories = findDirectories
 
 }
