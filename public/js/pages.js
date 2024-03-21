@@ -36403,14 +36403,16 @@ function _transformRelativeUrlToPublic(url) {
 	return url	
 }
 
-async function getSelectedUrl() {
-	let selected = this.getSelectedFiles()
+async function getSelectedUrl(selectedFiles) {
+	if(!selectedFiles) {
+		selectedFiles = this.getSelectedFiles()
+	}
 	
-	if(selected.variants.length == 0) {
+	if(selectedFiles.variants.length == 0) {
 		return
 	}
 	
-	let variant = selected.variants[0]
+	let variant = selectedFiles.variants[0]
 	let chosen
 	if(variant.primary) {
 		chosen = variant.primary.file
@@ -37343,6 +37345,37 @@ function nameParts(file) {
 	}
 	
 	return result
+}
+
+/***/ }),
+
+/***/ "./client-lib/styles-loaded.mjs":
+/*!**************************************!*\
+  !*** ./client-lib/styles-loaded.mjs ***!
+  \**************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ areStylesLoaded)
+/* harmony export */ });
+
+/**
+ * Returns true if the styles for the image browser have been loaded
+ */
+function areStylesLoaded() {
+	let d = document.createElement('div')
+	d.classList.add('webhandle-file-tree-image-browser-test')
+	
+	d.style.position = 'absolute'
+	d.style.left = '-10000px'
+	
+	
+	document.body.appendChild(d)
+	let color = window.getComputedStyle(d)['background-color'] 
+	d.remove()
+
+	return color === 'rgb(101, 105, 99)'
 }
 
 /***/ }),
@@ -43838,9 +43871,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _client_lib_data_to_image_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../client-lib/data-to-image.mjs */ "./client-lib/data-to-image.mjs");
 /* harmony import */ var _client_lib_get_image_stats_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../client-lib/get-image-stats.mjs */ "./client-lib/get-image-stats.mjs");
 /* harmony import */ var _client_lib_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../client-lib/make-image-set.mjs */ "./client-lib/make-image-set.mjs");
-/* harmony import */ var _client_lib_image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../client-lib/image-browser-view.mjs */ "./client-lib/image-browser-view.mjs");
-/* harmony import */ var _client_lib_file_select_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../client-lib/file-select-dialog.mjs */ "./client-lib/file-select-dialog.mjs");
-/* harmony import */ var _webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @webhandle/event-notification-panel */ "./node_modules/@webhandle/event-notification-panel/client-js/index.mjs");
+/* harmony import */ var _client_lib_styles_loaded_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../client-lib/styles-loaded.mjs */ "./client-lib/styles-loaded.mjs");
+/* harmony import */ var _client_lib_image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../client-lib/image-browser-view.mjs */ "./client-lib/image-browser-view.mjs");
+/* harmony import */ var _client_lib_file_select_dialog_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../client-lib/file-select-dialog.mjs */ "./client-lib/file-select-dialog.mjs");
+/* harmony import */ var _webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @webhandle/event-notification-panel */ "./node_modules/@webhandle/event-notification-panel/client-js/index.mjs");
 /* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
 
 (0,_sink_setup_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()
@@ -43855,35 +43889,30 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let eventPanel = (0,_webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_7__.setup)({
+
+let eventPanel = (0,_webhandle_event_notification_panel__WEBPACK_IMPORTED_MODULE_8__.setup)({
 	notificationHolder: '#event-notifications' /* Optional. The selector of the element to which the
 												  panel should be added. */
 })
 
 let treeHolder = document.querySelector('.webhandle-file-tree-image-browser')
 if(treeHolder) {
-	let imageBrowserView = new _client_lib_image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_5__["default"]({
+	let imageBrowserView = new _client_lib_image_browser_view_mjs__WEBPACK_IMPORTED_MODULE_6__["default"]({
 		sink: webhandle.sinks.files
 		// , imagesOnly: true
-		, eventNotificationPanel: eventPanel
+		// , eventNotificationPanel: eventPanel
 		, startingDirectory: 'empty'
 		// , deleteWithoutConfirm: true
 	})
 	imageBrowserView.appendTo(treeHolder)
 	imageBrowserView.render()
 
-	// eventPanel.addNotification({
-	// 	model: {
-	// 		status: 'success',
-	// 		headline: 'Page started'
-	// 	}
-	// })
 	
 	imageBrowserView.emitter.on('select', async function(evt) {
 
-		// console.log(evt)
 		console.log(await imageBrowserView.getSelectedUrl())
 	})
+	
 }
 
 
@@ -43919,7 +43948,7 @@ if(selectButton) {
 	selectButton.addEventListener('click', async function(evt) {
 		evt.preventDefault()
 		
-		let diag = new _client_lib_file_select_dialog_mjs__WEBPACK_IMPORTED_MODULE_6__.FileSelectDialog({
+		let diag = new _client_lib_file_select_dialog_mjs__WEBPACK_IMPORTED_MODULE_7__.FileSelectDialog({
 			sink: webhandle.sinks.files
 			, startingDirectory: 'img'
 			, imagesOnly: true

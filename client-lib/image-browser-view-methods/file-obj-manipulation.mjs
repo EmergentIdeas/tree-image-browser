@@ -144,14 +144,16 @@ export function _transformRelativeUrlToPublic(url) {
 	return url	
 }
 
-export async function getSelectedUrl() {
-	let selected = this.getSelectedFiles()
+export async function getSelectedUrl(selectedFiles) {
+	if(!selectedFiles) {
+		selectedFiles = this.getSelectedFiles()
+	}
 	
-	if(selected.variants.length == 0) {
+	if(selectedFiles.variants.length == 0) {
 		return
 	}
 	
-	let variant = selected.variants[0]
+	let variant = selectedFiles.variants[0]
 	let chosen
 	if(variant.primary) {
 		chosen = variant.primary.file

@@ -1426,6 +1426,9 @@ body {
 .nowrap {
   white-space: nowrap;
 }
+.webhandle-file-tree-image-browser-test {
+  background-color: #656963;
+}
 .webhandle-file-tree-image-browser {
   --webhandle-file-tree-image-box-background: #eeeeee;
   --webhandle-file-tree-image-selected-box-hightlight: blue;

@@ -5,6 +5,7 @@ import resizeImage from '../client-lib/image-resize.mjs'
 import dataToImage from '../client-lib/data-to-image.mjs'
 import getImageStats from '../client-lib/get-image-stats.mjs'
 import makeImageSet from '../client-lib/make-image-set.mjs'
+import areStylesLoaded from '../client-lib/styles-loaded.mjs'
 
 import ImageBrowserView from '../client-lib/image-browser-view.mjs'
 
@@ -21,25 +22,19 @@ if(treeHolder) {
 	let imageBrowserView = new ImageBrowserView({
 		sink: webhandle.sinks.files
 		// , imagesOnly: true
-		, eventNotificationPanel: eventPanel
+		// , eventNotificationPanel: eventPanel
 		, startingDirectory: 'empty'
 		// , deleteWithoutConfirm: true
 	})
 	imageBrowserView.appendTo(treeHolder)
 	imageBrowserView.render()
 
-	// eventPanel.addNotification({
-	// 	model: {
-	// 		status: 'success',
-	// 		headline: 'Page started'
-	// 	}
-	// })
 	
 	imageBrowserView.emitter.on('select', async function(evt) {
 
-		// console.log(evt)
 		console.log(await imageBrowserView.getSelectedUrl())
 	})
+	
 }
 
 
