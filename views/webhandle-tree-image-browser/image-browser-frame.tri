@@ -62,29 +62,16 @@
 						delete
 					</span>
 				</button>
+				<button type="button" class="btn upload-file" title="upload file(s)">
+					<span class="material-icons thumbnail-icon">
+						upload
+					</span>
+				</button>
 			</div>
 
 		</div>
 	</div>
 	<div class="drop-cover file-drop-cover">
-		<div class="drop-type guided-upload">
-			<div class="msg">
-				<h2>Guided Upload</h2>
-				<p>
-					Let us help you rename, and resize (if needed), the files by asking you questions
-				</p>
-			</div>
-		</div>
-		<div class="drop-type automatic">
-			<div class="msg">
-				<h2>
-					Web Safe
-				</h2>
-				<p>
-					We'll rename the files so they fit better with the web and create multiple formats images.
-				</p>
-			</div>
-		</div>
 		<div class="drop-type literal">
 			<div class="msg">
 				<h2>
@@ -95,7 +82,6 @@
 				</p>
 			</div>
 		</div>
-
 	</div>
 	<div class="drop-cover img-drop-cover">
 		<div class="drop-type guided-upload">
@@ -127,6 +113,10 @@
 			</div>
 		</div>
 
+	</div>
+	<div class="hidden-elements">
+		<input name="fileUpload" type="file" placeholder="Upload a file" />
+		
 	</div>
 
 </div>

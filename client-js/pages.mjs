@@ -22,7 +22,7 @@ if(treeHolder) {
 	let imageBrowserView = new ImageBrowserView({
 		sink: webhandle.sinks.files
 		// , imagesOnly: true
-		// , eventNotificationPanel: eventPanel
+		, eventNotificationPanel: eventPanel
 		, startingDirectory: 'empty'
 		// , deleteWithoutConfirm: true
 	})

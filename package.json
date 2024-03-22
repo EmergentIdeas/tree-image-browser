@@ -34,7 +34,7 @@
 		"file-sink": "^1.0.12",
 		"file-sink-server": "^1.0.5",
 		"filter-log": "0.0.5",
-		"input-value-injector": "^1.0.8",
+		"input-value-injector": "^1.0.10",
 		"jsdoc": "^3.6.11",
 		"less": "^3.10.3",
 		"mocha": "^9.1.3",

@@ -1810,6 +1810,11 @@ body {
 .webhandle-file-tree-image-browser .radio-options label input[type=radio]:not(:checked) + .extension-pill {
   background-color: transparent;
 }
+.webhandle-file-tree-image-browser .hidden-elements {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+}
 #event-notifications {
   max-height: 200px;
   overflow: auto;

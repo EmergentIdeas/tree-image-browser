@@ -51,6 +51,7 @@ export function createVariantValues(info) {
 	variantValues.sort(this._compareVariants)
 	return variantValues
 }
+
 export async function _getFilesFromEvent(evt) {
 	let files = []
 
@@ -86,6 +87,10 @@ export async function _getFilesFromEvent(evt) {
 				else {
 					files.push(item.getAsFile())
 				}
+			}
+			else if (item instanceof File) {
+				// Maybe from a file input element
+				files.push(item)
 			}
 		}
 	} else {

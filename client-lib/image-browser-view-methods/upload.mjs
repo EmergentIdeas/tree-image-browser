@@ -100,7 +100,7 @@ export async function _uploadAutomaticImageFile(file) {
 	return true
 }
 
-export async function _uploadFiles(files, { uploadType } = {}) {
+export async function uploadFiles(files, { uploadType } = {}) {
 	for (let file of files) {
 
 		let uploaded = false
@@ -140,3 +140,20 @@ export async function _uploadFiles(files, { uploadType } = {}) {
 	this.setCurrentNode(this.currentNode)
 }
 
+
+export function _uploadFileButton(evt, selected) {
+	this.el.querySelector(this.fileUploadSelector).click()
+}
+
+export async function _uploadFile(evt, selected) {
+	evt.preventDefault()
+	let input = this.el.querySelector(this.fileUploadSelector)
+	evt.dataTransfer = {
+		files: input.files
+	}
+	let files = await this._getFilesFromEvent(evt)
+	if(files.length > 0) {
+		this.uploadFiles(files, { uploadType: 'guided' })
+		input.value = ''
+	}
+}

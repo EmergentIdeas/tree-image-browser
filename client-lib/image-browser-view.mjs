@@ -1,17 +1,9 @@
 import { View } from '@webhandle/backbone-view'
 import { imageBrowserFrame, variantChoiceBox } from '../views/load-browser-views.js'
 import KalpaTreeOnPage from 'kalpa-tree-on-page'
-// import basename from '@dankolz/webp-detection/lib/file-basename.js'
-// import Dialog from 'ei-dialog'
 import formatBytes from './format-bytes.mjs'
-// import baseImageName from './base-image-name.mjs'
-// import makeImageSet from './make-image-set.mjs'
-// import nameParts from './name-parts.mjs'
-// import getFileImageStats from './get-file-image-stats.mjs'
-// import getExtension from './get-extension-from-mime.mjs'
 
 import Emitter from '@webhandle/minimal-browser-event-emitter'
-
 
 // method imports
 import { deleteFile, deleteDirectory } from './image-browser-view-methods/delete.mjs'
@@ -24,7 +16,7 @@ import { getDropCoverSelector, handleDrop, isFileTypeDrag, dragEnter, dragLeave,
 import { createDirectory } from './image-browser-view-methods/create-directory.mjs'
 import { createVariantValues, _getFilesFromEvent, _getAssociatedRealFiles, _createAccessUrl, 
 	getSelectedFiles, _transformRelativeUrlToPublic, getSelectedUrl } from './image-browser-view-methods/file-obj-manipulation.mjs'
-import { _uploadGuidedImageFile, _uploadGuidedFile, _uploadAutomaticImageFile, _uploadFiles } from './image-browser-view-methods/upload.mjs'
+import { _uploadGuidedImageFile, _uploadGuidedFile, _uploadAutomaticImageFile, uploadFiles, _uploadFileButton, _uploadFile } from './image-browser-view-methods/upload.mjs'
 import { _uploadData, findDirectories } from './image-browser-view-methods/sink.mjs'
 
 
@@ -33,12 +25,14 @@ export default class ImageBrowserView extends View {
 	 * Construct a new file browser
 	 * @param {object} options 
 	 * @param {FileSink} options.sink The file to use as a file source
-	 * @param {boolean} options.imagesOnly Set to true if you would like to display only images
-	 * @param {boolean} options.allowFileSelection Set to true so that selected files are marked
-	 * @param {EventNotificationPanel} options.eventNotificationPanel The panel which status messages will be added to.
-	 * @param {string} options.startingDirectory
-	 * @param {boolean} options.deleteWithoutConfirm False by default
-	 * @param {Emitter} options.emitter Emitter for various file events
+	 * @param {boolean} [options.imagesOnly] Set to true if you would like to display only images
+	 * @param {boolean} [options.allowFileSelection] Set to true so that selected files are marked
+	 * @param {EventNotificationPanel} [options.eventNotificationPanel] The panel which status messages will be added to.
+	 * @param {string} [options.startingDirectory] Opens to that directory path if it exists
+	 * @param {boolean} [options.deleteWithoutConfirm] False by default
+	 * @param {boolean} [options.ignoreGlobalEvents] False by default, if true it will not listen to events like paste or keypresses
+	 * which occur on the document
+	 * @param {Emitter} [options.emitter] Emitter for various file events
 	 */
 	constructor(options) {
 		super(options)
@@ -49,6 +43,8 @@ export default class ImageBrowserView extends View {
 		this.nodes = {}
 		this.events = {
 			'click .create-directory': 'createDirectory'
+			, 'click .upload-file': '_uploadFileButton'
+			, 'change [name="fileUpload"]': '_uploadFile'
 			, 'click .delete-file': 'deleteFile'
 			, 'click .delete-directory': 'deleteDirectory'
 			, 'click .variant-choice-box .details': 'showVariantDetails'
@@ -68,7 +64,23 @@ export default class ImageBrowserView extends View {
 		if (!this.emitter) {
 			this.emitter = new Emitter()
 		}
+		
+		this.fileUploadSelector = 'input[name="fileUpload"]'
+		
+		
+		document.addEventListener('paste', this.handlePaste.bind(this))
 	}
+	
+	async handlePaste(evt) {
+		if(this.ignoreGlobalEvents) {
+			return
+		}
+		evt.preventDefault()
+		if(evt.clipboardData && evt.clipboardData.files && evt.clipboardData.files.length > 0) {
+			this.uploadFiles(evt.clipboardData.files, { uploadType: 'guided' })
+		}
+	}
+	
 
 	_addPending(file) {
 		let note
@@ -160,7 +172,9 @@ export default class ImageBrowserView extends View {
 	_uploadGuidedImageFile = _uploadGuidedImageFile
 	_uploadGuidedFile = _uploadGuidedFile
 	_uploadAutomaticImageFile = _uploadAutomaticImageFile
-	_uploadFiles = _uploadFiles
+	uploadFiles = uploadFiles
+	_uploadFileButton = _uploadFileButton
+	_uploadFile = _uploadFile
 
 	// file-obj-manipulation
 	createVariantValues = createVariantValues

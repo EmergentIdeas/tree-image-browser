@@ -18,7 +18,7 @@ export async function handleDrop(evt, selected) {
 	this._cleanupDropDone()
 	evt.preventDefault()
 	let files = await this._getFilesFromEvent(evt)
-	this._uploadFiles(files, { uploadType })
+	this.uploadFiles(files, { uploadType })
 }
 
 export function isFileTypeDrag(evt) {

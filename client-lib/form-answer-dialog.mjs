@@ -2,6 +2,7 @@ import Dialog from 'ei-dialog'
 import formValueInjector from 'form-value-injector'
 import gatherFormData from '@webhandle/gather-form-data'
 
+
 export class FormAnswerDialog extends Dialog {
 	/**
 	 * 
