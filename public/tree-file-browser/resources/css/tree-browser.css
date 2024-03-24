@@ -1,0 +1,394 @@
+.webhandle-file-tree-image-browser-test {
+  background-color: #656963;
+}
+.webhandle-file-tree-image-browser {
+  --webhandle-file-tree-image-box-background: #eeeeee;
+  --webhandle-file-tree-image-selected-box-hightlight: blue;
+}
+.webhandle-file-tree-image-browser .file-lines {
+  grid-auto-flow: row dense;
+  grid-template-columns: 100px 1fr auto auto auto;
+  overflow-x: hidden;
+}
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box .bottom {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box .bottom .content {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box.selected .extensions,
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box.selected .basename,
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box.selected .size-line,
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box.selected .actions,
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box.selected .img {
+  z-index: 2;
+}
+.webhandle-file-tree-image-browser .file-lines .variant-choice-box.selected .img:before {
+  content: '\00a0';
+  position: absolute;
+  top: -3px;
+  bottom: 0px;
+  left: -3px;
+  width: 100vw;
+  background-color: #f0f0f0;
+}
+.webhandle-file-tree-image-browser .file-lines .extensions {
+  display: block !important;
+  grid-column: 3;
+  padding-top: 3px;
+}
+.webhandle-file-tree-image-browser .file-lines .extensions .extension-pill {
+  display: inline-block;
+  margin-right: 2px;
+}
+.webhandle-file-tree-image-browser .file-lines .basename {
+  grid-column: 2;
+}
+.webhandle-file-tree-image-browser .file-lines .size-line {
+  grid-column: 4;
+}
+.webhandle-file-tree-image-browser .file-lines .img {
+  max-width: 100px;
+}
+.webhandle-file-tree-image-browser .file-lines .img .thumbnail-icon {
+  font-size: 30px;
+  position: relative;
+  z-index: 2;
+}
+.webhandle-file-tree-image-browser .file-lines .actions {
+  grid-column: 5;
+}
+.webhandle-file-tree-image-browser .image-browser .image-browser-frame {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(300px, 30%) 1fr;
+  column-gap: 20px;
+  background-color: white;
+}
+.webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side {
+  height: 800px;
+  max-height: 90vh;
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+.the-dialog .webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side {
+  max-height: 67vh;
+}
+.webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side button {
+  border: none;
+  background-color: transparent;
+  color: white;
+}
+.webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side .directory-controls {
+  background-color: #393C40;
+}
+.webhandle-file-tree-image-browser .image-browser .node-content {
+  position: relative;
+}
+.webhandle-file-tree-image-browser .image-browser .box-holder {
+  position: absolute;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  padding-top: 3px;
+  padding-left: 3px;
+}
+.webhandle-file-tree-image-browser .image-browser .node-view {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  row-gap: 12px;
+}
+.webhandle-file-tree-image-browser .image-browser .node-view .view-controls {
+  display: grid;
+  grid-template-columns: auto auto;
+  padding-right: 20px;
+  padding-top: 4px;
+}
+.webhandle-file-tree-image-browser .image-browser .node-view .view-controls .right {
+  text-align: right;
+  -webkit-user-select: none;
+  /* Safari */
+  user-select: none;
+  /* Standard syntax */
+}
+.webhandle-file-tree-image-browser .image-browser .node-view .view-controls button {
+  border: none;
+  background: none;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 20px;
+  row-gap: 20px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.grid-small {
+  grid-template-columns: repeat(5, 1fr);
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows {
+  grid-auto-flow: row dense;
+  grid-template-columns: 100px 1fr auto auto auto;
+  overflow-x: hidden;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box .bottom {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box .bottom .content {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box.selected .extensions,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box.selected .basename,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box.selected .size-line,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box.selected .actions,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box.selected .img {
+  z-index: 2;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .variant-choice-box.selected .img:before {
+  content: '\00a0';
+  position: absolute;
+  top: -3px;
+  bottom: 0px;
+  left: -3px;
+  width: 100vw;
+  background-color: #f0f0f0;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .extensions {
+  display: block !important;
+  grid-column: 3;
+  padding-top: 3px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .extensions .extension-pill {
+  display: inline-block;
+  margin-right: 2px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .basename {
+  grid-column: 2;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .size-line {
+  grid-column: 4;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .img {
+  max-width: 100px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .img .thumbnail-icon {
+  font-size: 30px;
+  position: relative;
+  z-index: 2;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.rows .actions {
+  grid-column: 5;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text {
+  grid-auto-flow: row dense;
+  grid-template-columns: 100px 1fr auto auto auto;
+  overflow-x: hidden;
+  grid-template-columns: auto 1fr auto auto auto;
+  row-gap: 5px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box .bottom {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box .bottom .content {
+  display: contents;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box.selected .extensions,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box.selected .basename,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box.selected .size-line,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box.selected .actions,
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box.selected .img {
+  z-index: 2;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .variant-choice-box.selected .img:before {
+  content: '\00a0';
+  position: absolute;
+  top: -3px;
+  bottom: 0px;
+  left: -3px;
+  width: 100vw;
+  background-color: #f0f0f0;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .extensions {
+  display: block !important;
+  grid-column: 3;
+  padding-top: 3px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .extensions .extension-pill {
+  display: inline-block;
+  margin-right: 2px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .basename {
+  grid-column: 2;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .size-line {
+  grid-column: 4;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .img {
+  max-width: 100px;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .img .thumbnail-icon {
+  font-size: 30px;
+  position: relative;
+  z-index: 2;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .actions {
+  grid-column: 5;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .img {
+  aspect-ratio: auto;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .img img {
+  display: none;
+}
+.webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .img .thumbnail-icon {
+  font-size: 0;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box {
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px #cccccc;
+  -webkit-user-select: none;
+  /* Safari */
+  user-select: none;
+  /* Standard syntax */
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .img {
+  display: grid;
+  aspect-ratio: 1.6;
+  position: relative;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .img .thumbnail-icon {
+  font-size: 70px;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .img > span {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: center;
+  align-self: center;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .img img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom .basename {
+  display: inline;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom .extensions {
+  display: inline-flex;
+  column-gap: 5px;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box .bottom .actions button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box.selected {
+  box-shadow: 1px 1px 10px var(--webhandle-file-tree-image-selected-box-hightlight);
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box.hidden {
+  display: none;
+}
+.webhandle-file-tree-image-browser .image-browser .variant-choice-box.hidden > * {
+  display: none !important;
+}
+.webhandle-file-tree-image-browser .image-browser .bottom-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding-right: 34px;
+  padding-top: 10px;
+}
+.webhandle-file-tree-image-browser .image-browser .bottom-controls button {
+  border: none;
+  background-color: transparent;
+}
+.webhandle-file-tree-image-browser .image-browser .drop-cover {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: -1;
+  display: grid;
+  column-gap: 30px;
+  row-gap: 30px;
+  transition: opacity 0.3s;
+  opacity: 0.2;
+}
+.webhandle-file-tree-image-browser .image-browser .drop-cover .drop-type {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 12px;
+  border: solid 1px black;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px #cccccc;
+  background-color: rgba(238, 238, 238, 0.7);
+}
+.webhandle-file-tree-image-browser .image-browser .drop-cover .drop-type .msg {
+  width: 100%;
+}
+.webhandle-file-tree-image-browser .image-browser .drop-cover .drop-type:hover {
+  background-color: #eeeeee;
+}
+.webhandle-file-tree-image-browser .image-browser .drop-cover.file-dropping {
+  z-index: 2;
+  opacity: 1;
+}
+.webhandle-file-tree-image-browser .image-browser .img-drop-cover {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+.webhandle-file-tree-image-browser .image-browser .img-drop-cover .guided-upload {
+  grid-row: 1 / span 4;
+  grid-column: 1 / span 2;
+}
+.webhandle-file-tree-image-browser .image-browser .img-drop-cover .automatic {
+  grid-row: 1 / span 3;
+  grid-column: 3;
+}
+.webhandle-file-tree-image-browser .image-browser .img-drop-cover .literal {
+  grid-row: 4;
+  grid-column: 3;
+}
+.webhandle-file-tree-image-browser .extension-pill {
+  padding: 3px 5px;
+  border-radius: 5px;
+  background-color: var(--webhandle-file-tree-image-box-background);
+}
+.webhandle-file-tree-image-browser .radio-options label {
+  display: inline-block;
+  position: relative;
+}
+.webhandle-file-tree-image-browser .radio-options label input[type=radio] {
+  position: absolute;
+  display: inline-block;
+  left: -10000px;
+}
+.webhandle-file-tree-image-browser .radio-options label input[type=radio]:not(:checked) + .extension-pill {
+  background-color: transparent;
+}
+.webhandle-file-tree-image-browser .hidden-elements {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+}
+/*# sourceMappingURL=tree-browser.css.map */

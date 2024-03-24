@@ -4,7 +4,8 @@ import express from "express"
 import filog from "filter-log"
 import loadTemplates from "./add-templates.js"
 import webhandle from "webhandle"
-import kalpaTreeOnPage from 'kalpa-tree-on-page'
+import initializeTreeBrowserResources from "./initialize-tree-browser-resources.cjs"
+// import kalpaTreeOnPage from 'kalpa-tree-on-page'
 import FileSinkServer from 'file-sink-server'
 import FileSink from 'file-sink'
 
@@ -22,9 +23,11 @@ export default function(app) {
 		res.set('Content-Type', "application/javascript")
 		next()
 	})
-	kalpaTreeOnPage(webhandle)
+	// kalpaTreeOnPage(webhandle)
+	initializeTreeBrowserResources(webhandle)
 	let router = express.Router()
-	let sinkServer = new FileSinkServer(new FileSink('/home/kolz/data/test-data/image-files'))
+	// let sinkServer = new FileSinkServer(new FileSink('/home/kolz/data/test-data/image-files'))
+	let sinkServer = new FileSinkServer(new FileSink('/home/kolz/personal-data/dmusic'))
 	sinkServer.addToRouter(router)
 	app.use('/files', router)
 

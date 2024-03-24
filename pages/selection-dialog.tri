@@ -12,5 +12,12 @@ __::start__
 	<div class="image-selection-result">
 		
 	</div>
+	<div class="image-in-input-holder">
+		<label >
+			chosen files
+			<input name="img" class="picture-input-field" data-image-dir="img/empty" />
+		</label>
+		
+	</div>
 </div>
 __::end__

@@ -1498,9 +1498,13 @@ body {
 }
 .webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side {
   height: 800px;
+  max-height: 90vh;
   position: relative;
   display: grid;
   grid-template-rows: 1fr auto;
+}
+.the-dialog .webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side {
+  max-height: 67vh;
 }
 .webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side button {
   border: none;

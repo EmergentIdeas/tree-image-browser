@@ -10,13 +10,21 @@ export class FileSelectDialog extends Dialog {
 
 				let treeHolder = bodyElement.querySelector('.webhandle-file-tree-image-browser')
 				if (treeHolder) {
-					let imageBrowserView = this.imageBrowserView = new ImageBrowserView({
+					let options = {
 						sink: dialog.sink
 						, imagesOnly: dialog.imagesOnly
 						, eventNotificationPanel: dialog.eventNotificationPanel
 						, startingDirectory: dialog.startingDirectory
 						, deleteWithoutConfirm: dialog.deleteWithoutConfirm
-					})
+					}
+					
+					let imageBrowserView = this.imageBrowserView = new ImageBrowserView(options)
+					if(dialog._createAccessUrl) {
+						imageBrowserView._createAccessUrl = dialog._createAccessUrl
+					}
+					if(dialog._transformRelativeUrlToPublic) {
+						imageBrowserView._transformRelativeUrlToPublic = dialog._transformRelativeUrlToPublic
+					}
 					imageBrowserView.appendTo(treeHolder)
 					imageBrowserView.render()
 
@@ -24,7 +32,6 @@ export class FileSelectDialog extends Dialog {
 
 					})
 				}
-
 			}
 		}, options,
 			{
@@ -47,7 +54,6 @@ export class FileSelectDialog extends Dialog {
 						return true
 					}
 				}
-
 			}
 		))
 	}
@@ -61,5 +67,4 @@ export class FileSelectDialog extends Dialog {
 
 		return this.promise
 	}
-
 }

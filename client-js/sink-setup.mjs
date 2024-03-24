@@ -5,6 +5,7 @@ export default function sinkSetup() {
 
 	webhandle.sinks = webhandle.sinks || {}
 	webhandle.sinks.files = new FileSinkRemoteHTTP('/files')
+	webhandle.sinks.public = webhandle.sinks.files
 
 }
 

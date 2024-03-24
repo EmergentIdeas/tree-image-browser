@@ -46,18 +46,56 @@ module.exports = [{
 	},
 
 }
-/*
 ,
 {
-	entry: './client-js/index.js',
+	entry: './client-js/sink-setup.mjs',
 	mode: 'production',
 	"devtool": 'source-map',
 	experiments: {
 		outputModule: true,
 	},
 	output: {
-		filename: 'index.js',
+		filename: 'sink-setup.js',
 		path: path.resolve(__dirname, 'public/js'),
+		library: {
+			type: 'module',
+		}
+	},
+	module: {
+		rules: [
+			{ test: /\.tmpl$/, use: 'tripartite/webpack-loader.mjs' }
+			, { test: /\.tri$/, use: 'tripartite/webpack-loader.mjs' }
+			, {
+				test: /\.txt$/i,
+				use: 'raw-loader',
+			}
+		],
+	},
+	resolve: {
+		fallback: {
+			stream: require.resolve('stream-browserify'),
+		}
+	},
+	plugins: [
+		new NodePolyfillPlugin()
+	],
+	stats: {
+		colors: true,
+		reasons: true
+	},
+
+}
+,
+{
+	entry: './client-lib/dynamic-load.mjs',
+	mode: 'production',
+	"devtool": 'source-map',
+	experiments: {
+		outputModule: true,
+	},
+	output: {
+		filename: 'tree-file-browser.js',
+		path: path.resolve(__dirname, 'public/tree-file-browser/resources/js'),
 		library: {
 			type: 'module',
 		}
@@ -86,6 +124,5 @@ module.exports = [{
 	},
 
 }
-*/
 
 ]
