@@ -6,6 +6,9 @@ export function _join(...parts) {
 }
 
 export function _determineParentPath(path) {
+	if(!path) {
+		return ''
+	}
 	let parts = path.split('/')
 	parts.pop()
 	return parts.join('/')
