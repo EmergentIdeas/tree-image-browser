@@ -1,7 +1,7 @@
 <div class="variant-choice-box">
 	<div class="img">
 		__!this.thumbnail??'<span class="material-icons thumbnail-icon">' + thumbnailIcon + '</span>'__
-		__this.thumbnail??'<img class="thumbnail-image" src="' + thumbnail + '" />'__
+		__this.thumbnail??'<img loading="lazy" class="thumbnail-image" src="' + safeThumbnail + '" />'__
 	</div>
 	<div class="size-line">
 		__size__
@@ -9,7 +9,7 @@
 	<div class="bottom">
 		<div class="content">
 			<div class="basename">
-				__baseName__
+				__safeBaseName__
 			</div>
 			<div class="extensions">
 				__extensions::./extension-pill__

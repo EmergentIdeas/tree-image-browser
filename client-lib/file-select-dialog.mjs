@@ -1,6 +1,13 @@
 import Dialog from 'ei-dialog'
 import ImageBrowserView from './image-browser-view.mjs'
 
+/**
+ * Selects a file.
+ * @param {Object} [options]
+ * @param {string} [options.title] The dialog box title
+ * @param {boolean} [options.chooseOnUpload] If true, uploading a file causes the dialog to close and the URL of uploaded
+ * file to be returned
+ */
 export class FileSelectDialog extends Dialog {
 	constructor(options) {
 		super(Object.assign({
@@ -31,8 +38,17 @@ export class FileSelectDialog extends Dialog {
 					imageBrowserView.emitter.on('select', async function (evt) {
 
 					})
+					imageBrowserView.emitter.on('upload', async function (evt) {
+						if(dialog.chooseOnUpload) {
+							dialog.close()
+							dialog.resolve({
+								url: evt.accessUrls[0]
+							})
+						}
+					})
 				}
 			}
+			, chooseOnUpload: true
 		}, options,
 			{
 				on: {

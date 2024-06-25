@@ -8,14 +8,14 @@ import Emitter from '@webhandle/minimal-browser-event-emitter'
 // method imports
 import { deleteFile, deleteDirectory } from './image-browser-view-methods/delete.mjs'
 import {
-	_join, _determineParentPath, _fileToKalpaNode, _determineExtensions,
-	_determineSizes, _sortFiles, _compareVariants, sanitizeFileName, _isImageFile
+	_join, _determineParentPath, _fileToKalpaNode, _determineExtensions, _addPending,
+	_determineSizes, _sortFiles, _compareVariants, sanitizeFileName, _isImageFile, setIfNotSet
 } from './image-browser-view-methods/utils.mjs'
-import { changeFilesView, applyFilter, clearFilter, selectVariant, showVariantDetails } from './image-browser-view-methods/view-interactions.mjs'
-import { getDropCoverSelector, handleDrop, isFileTypeDrag, dragEnter, dragLeave, dragOver, _cleanupDropDone } from './image-browser-view-methods/drag-and-drop.mjs'
+import { changeFilesView, changeFilesViewToClass, applyFilter, clearFilter, selectVariant, showVariantDetails, setFolderInfo, cleanFileInfo } from './image-browser-view-methods/view-interactions.mjs'
+import { getDropCoverSelector, handleDrop, isFileTypeDrag, dragEnter, dragLeave, dragOver, _cleanupDropDone, handlePaste } from './image-browser-view-methods/drag-and-drop.mjs'
 import { createDirectory } from './image-browser-view-methods/create-directory.mjs'
-import { createVariantValues, _getFilesFromEvent, _getAssociatedRealFiles, _createAccessUrl, 
-	getSelectedFiles, _transformRelativeUrlToPublic, getSelectedUrl } from './image-browser-view-methods/file-obj-manipulation.mjs'
+import { createVariantValues, _getFilesFromEvent, _getAssociatedRealFiles, _createAccessUrl, escapeAccessUrl,
+	getSelectedFiles, _transformRelativeUrlToPublic, getSelectedUrl, getSelectedUrlExtFromMeta } from './image-browser-view-methods/file-obj-manipulation.mjs'
 import { _uploadGuidedImageFile, _uploadGuidedFile, _uploadAutomaticImageFile, uploadFiles, _uploadFileButton, _uploadFile } from './image-browser-view-methods/upload.mjs'
 import { _uploadData, findDirectories } from './image-browser-view-methods/sink.mjs'
 
@@ -33,10 +33,18 @@ export default class ImageBrowserView extends View {
 	 * @param {boolean} [options.ignoreGlobalEvents] False by default, if true it will not listen to events like paste or keypresses
 	 * which occur on the document
 	 * @param {Emitter} [options.emitter] Emitter for various file events
+	 * @param {int} [options.listTriggerSize] If the number of items are over this limit, they are shown as a plain list by default
+	 * @param {int} [options.listLockSize] If the number of items are over this limit, they can't use anyting other than the plain list
 	 */
 	constructor(options) {
 		super(options)
+		this.setIfNotSet('overCount', 0)
+		this.setIfNotSet('emitter', new Emitter())
+		this.setIfNotSet('fileUploadSelector', 'input[name="fileUpload"]')
+		this.setIfNotSet('listTriggerSize', 100)
+		this.setIfNotSet('listLockSize', 200)
 	}
+
 	preinitialize() {
 		this.className = 'image-browser'
 		this.idInd = 1
@@ -59,41 +67,10 @@ export default class ImageBrowserView extends View {
 			, 'dragover .': 'dragOver'
 			, 'drop .': 'handleDrop'
 		}
-		this.overCount = 0
-
-		if (!this.emitter) {
-			this.emitter = new Emitter()
-		}
-		
-		this.fileUploadSelector = 'input[name="fileUpload"]'
-		
-		
-		document.addEventListener('paste', this.handlePaste.bind(this))
+		document.addEventListener('paste', handlePaste.bind(this))
 	}
 	
-	async handlePaste(evt) {
-		if(this.ignoreGlobalEvents) {
-			return
-		}
-		evt.preventDefault()
-		if(evt.clipboardData && evt.clipboardData.files && evt.clipboardData.files.length > 0) {
-			this.uploadFiles(evt.clipboardData.files, { uploadType: 'guided' })
-		}
-	}
 	
-
-	_addPending(file) {
-		let note
-		if (this.eventNotificationPanel) {
-			note = this.eventNotificationPanel.addNotification({
-				model: {
-					status: 'pending',
-					headline: `uploading ${file.name}`
-				}
-			})
-		}
-		return note
-	}
 
 	async render() {
 		this.el.innerHTML = imageBrowserFrame(this.model)
@@ -147,9 +124,15 @@ export default class ImageBrowserView extends View {
 
 	async setCurrentNode(node) {
 		this.currentNode = node
+		this.cleanFileInfo()
+		let choicesBoxes = this.el.querySelector('.choice-boxes')
 		let info = await this.sink.getFullFileInfo(node.file.relPath)
 		let variantValues = this.createVariantValues(info)
 
+
+		if(variantValues.length > this.listTriggerSize) {
+			this.changeFilesViewToClass('list-text')
+		}	
 
 		let content = ''
 		for (let child of variantValues) {
@@ -157,7 +140,6 @@ export default class ImageBrowserView extends View {
 		}
 
 
-		let choicesBoxes = this.el.querySelector('.choice-boxes')
 		choicesBoxes.innerHTML = ''
 		choicesBoxes.insertAdjacentHTML('beforeend', content)
 
@@ -181,9 +163,11 @@ export default class ImageBrowserView extends View {
 	_getFilesFromEvent = _getFilesFromEvent
 	_getAssociatedRealFiles = _getAssociatedRealFiles
 	_createAccessUrl = _createAccessUrl
+	escapeAccessUrl = escapeAccessUrl
 	getSelectedFiles = getSelectedFiles
 	_transformRelativeUrlToPublic = _transformRelativeUrlToPublic
 	getSelectedUrl = getSelectedUrl
+	getSelectedUrlExtFromMeta = getSelectedUrlExtFromMeta
 
 	// create-directory 
 	createDirectory = createDirectory
@@ -195,14 +179,18 @@ export default class ImageBrowserView extends View {
 	dragEnter = dragEnter
 	dragLeave = dragLeave
 	dragOver = dragOver
+	handlePaste = handlePaste
 	_cleanupDropDone = _cleanupDropDone
 
 	// view-interactions
 	changeFilesView = changeFilesView
+	changeFilesViewToClass = changeFilesViewToClass
 	applyFilter = applyFilter
 	clearFilter = clearFilter
 	selectVariant = selectVariant
 	showVariantDetails = showVariantDetails
+	setFolderInfo = setFolderInfo
+	cleanFileInfo = cleanFileInfo
 
 	// utils
 	sanitizeFileName = sanitizeFileName
@@ -215,6 +203,8 @@ export default class ImageBrowserView extends View {
 	_fileToKalpaNode = _fileToKalpaNode
 	_formatBytes = formatBytes
 	_isImageFile = _isImageFile
+	setIfNotSet = setIfNotSet
+	_addPending = _addPending
 
 	// delete
 	deleteFile = deleteFile

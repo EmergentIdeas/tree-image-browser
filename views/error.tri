@@ -1,0 +1,7 @@
+__::start__
+<h1>__error.message__</h1>
+<h2>__error.status__</h2>
+<pre>
+__error.stack__
+</pre>
+__::end__

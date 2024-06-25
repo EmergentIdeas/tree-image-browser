@@ -1,12 +1,18 @@
 import { InfoDialog } from '../info-dialog.mjs'
+import escapeHtmlAttributeValue from '@dankolz/escape-html-attribute-value'
 
 export function changeFilesView(evt, selected) {
+	let className = selected.getAttribute('data-show-class')
+	this.changeFilesViewToClass(className)
+}
+
+export function changeFilesViewToClass(className) {
 	let choiceBoxes = this.el.querySelector('.choice-boxes')
-	let classes = [...selected.closest('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
+	let classes = [...this.el.querySelector('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
 	classes.forEach(item => {
 		choiceBoxes.classList.remove(item)
 	})
-	choiceBoxes.classList.add(selected.getAttribute('data-show-class'))
+	choiceBoxes.classList.add(className)
 }
 
 export function applyFilter(evt, selected) {
@@ -16,12 +22,14 @@ export function applyFilter(evt, selected) {
 		for (let variant of allVariants) {
 			variant.classList.remove('hidden')
 			if (value) {
-				let searchString = variant.variant.baseName + variant.variant.extensions.join()
+				value = value.toLowerCase()
+				let searchString = variant.variant.baseName.toLowerCase() + variant.variant.extensions.map(ext => ext.toLowerCase()).join()
 				if (searchString.indexOf(value) < 0) {
 					variant.classList.add('hidden')
 				}
 			}
 		}
+		this.setFolderInfo()
 	})
 }
 
@@ -69,13 +77,22 @@ export function showVariantDetails(evt, selected) {
 
 	let files = this._getAssociatedRealFiles(variant)
 
-	let content = '<ul>'
+	let content = '<div class="variant-details-information">'
+	if (variant.safeThumbnail) {
+		content += `<div class="details-preview-image">
+		<img loading="lazy" src="${variant.safeThumbnail}" />
+		</div>`
+	}
+
+	content += '<ul class="variants">'
 	for (let file of files) {
-		content += '<li><a target="_blank" href="' + file.accessUrl + '">'
-		content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
+		content += '<li><a target="_blank" href="' + escapeHtmlAttributeValue(this.escapeAccessUrl(file.accessUrl)) + '">'
+		content += escapeHtmlAttributeValue(file.name) + '</a> - ' + this._formatBytes(file.stat.size)
 		content += '</li>'
 	}
 	content += '</ul>'
+
+	content += '</div>'
 
 	let dialog = new InfoDialog({
 		title: 'File Details: ' + variant.baseName
@@ -92,5 +109,46 @@ export function showVariantDetails(evt, selected) {
 		if (data) {
 		}
 	})
+}
 
+export function setFolderInfo() {
+	let fileCount = 0
+	let variantCount = 0
+	let byteCount = 0
+	let nonImages = 0
+	let allVariants = this.el.querySelectorAll('.choice-boxes .variant-choice-box')
+	for (let variant of allVariants) {
+		if (variant.classList.contains('hidden')) {
+			continue
+		}
+		variantCount++
+
+		if (variant.variant.variants) {
+			variant.variant.variants.forEach(variant => {
+				fileCount++
+				byteCount += variant.file.stat.size
+			})
+
+		}
+		else {
+			fileCount++
+			byteCount += variant.variant.file.stat.size
+			nonImages++
+		}
+	}
+	this.el.querySelector('.folder-info').innerHTML = `${variantCount} items / ${fileCount} files / ${this._formatBytes(byteCount)} `
+	if (variantCount > this.listTriggerSize) {
+		this.changeFilesViewToClass('list-text')
+	}
+	this.el.querySelector('.view-icons').classList.remove('no-img')
+	if (variantCount - nonImages > this.listLockSize) {
+		this.el.querySelector('.view-icons').classList.add('no-img')
+	}
+}
+
+export function cleanFileInfo() {
+	this.el.querySelector('.folder-info').innerHTML = ''
+	let choicesBoxes = this.el.querySelector('.choice-boxes')
+	choicesBoxes.innerHTML = '<div class="loading-info">Loading Information Now</div>'
+	this.el.querySelector('.view-icons').classList.add('no-img')
 }

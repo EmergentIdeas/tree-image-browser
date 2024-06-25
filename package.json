@@ -1,6 +1,6 @@
 {
 	"name": "@webhandle/tree-file-browser",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "",
 	"main": "client-lib/image-browser-view.mjs",
 	"scripts": {

@@ -106,3 +106,22 @@ export function _isImageFile(file) {
 	}
 	return false
 }
+
+export function setIfNotSet(key, value) {
+	if (!(key in this)) {
+		this[key] = value
+	}
+}
+
+export function _addPending(file) {
+	let note
+	if (this.eventNotificationPanel) {
+		note = this.eventNotificationPanel.addNotification({
+			model: {
+				status: 'pending',
+				headline: `uploading ${file.name}`
+			}
+		})
+	}
+	return note
+}

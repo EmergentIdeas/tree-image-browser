@@ -1,5 +1,28 @@
 /******/ var __webpack_modules__ = ({
 
+/***/ "./node_modules/@dankolz/escape-html-attribute-value/index.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@dankolz/escape-html-attribute-value/index.js ***!
+  \********************************************************************/
+/***/ ((module) => {
+
+function escapeHtmlAttributeValue(s, preserveCR) {
+    preserveCR = preserveCR ? '&#13;' : '\n';
+    return ('' + s) 
+        .replace(/&/g, '&amp;') 
+        .replace(/'/g, '&apos;') 
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\r\n/g, preserveCR) 
+        .replace(/[\r\n]/g, preserveCR)
+}
+
+module.exports = escapeHtmlAttributeValue
+
+
+/***/ }),
+
 /***/ "./node_modules/@dankolz/webhandle-admin-icons/client-js/ensure-styles-are-loaded.js":
 /*!*******************************************************************************************!*\
   !*** ./node_modules/@dankolz/webhandle-admin-icons/client-js/ensure-styles-are-loaded.js ***!
@@ -25104,7 +25127,7 @@ module.exports = tri.addTemplate("webhandle-tree-image-browser/guilded-image-upl
   \********************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"directory-side\">\n\t\t<div class=\"treebox\">\n\n\t\t<\/div>\n\t\t<div class=\"directory-controls\">\n\t\t\t<button type=\"button\" class=\"btn create-directory\" title=\"create new directory\">\n\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\tcreate_new_folder\n\t\t\t\t<\/span>\n\t\t\t<\/button>\n\t\t\t<button type=\"button\" class=\"btn delete-directory\" title=\"delete selected directory\">\n\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\tfolder_delete\n\t\t\t\t<\/span>\n\t\t\t<\/button>\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"view-controls\">\n\t\t\t<div class=\"left\">\n\t\t\t\t<input name=\"filter\" type=\"text\" placeholder=\"filter\" \/>\n\t\t\t\t<button class=\"clear-filter\">&times;<\/button>\n\t\t\t<\/div>\n\t\t\t<div class=\"right\">\n\t\t\t\t<span class=\"view-icons\">\n\t\t\t\t\t<button type=\"button\" class=\"show-large-tiles\" title=\"show big tiles\" data-show-class=\"grid-large\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tgrid_view\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-small-tiles\" title=\"show small tiles\"\n\t\t\t\t\t\tdata-show-class=\"grid-small\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tgrid_on\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-list-rows\" title=\"show as rows\" data-show-class=\"rows\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tlist\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-list-text\" title=\"show as list\" data-show-class=\"list-text\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\ttable_rows\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t<\/span>\n\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"bottom-controls\">\n\t\t\t<div class=\"file-controls\">\n\t\t\t\t<button type=\"button\" class=\"btn delete-file\" title=\"delete selected file(s)\">\n\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\tdelete\n\t\t\t\t\t<\/span>\n\t\t\t\t<\/button>\n\t\t\t\t<button type=\"button\" class=\"btn upload-file\" title=\"upload file(s)\">\n\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\tupload\n\t\t\t\t\t<\/span>\n\t\t\t\t<\/button>\n\t\t\t<\/div>\n\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"drop-cover file-drop-cover\">\n\t\t<div class=\"drop-type literal\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tJust Do It\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe won't mess the files at all, just upload them.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"drop-cover img-drop-cover\">\n\t\t<div class=\"drop-type guided-upload\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>Guided Upload<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tLet us help you rename, and resize (if needed), the files by asking you questions\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type automatic\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tWeb Safe\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe'll rename the files so they fit better with the web and create multiple formats images.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type literal\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tJust Do It\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe won't mess the files at all, just upload them.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\n\t<\/div>\n\t<div class=\"hidden-elements\">\n\t\t<input name=\"fileUpload\" type=\"file\" placeholder=\"Upload a file\" \/>\n\t\t\n\t<\/div>\n\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"image-browser-frame\">\n\t<div class=\"directory-side\">\n\t\t<div class=\"treebox\">\n\n\t\t<\/div>\n\t\t<div class=\"directory-controls\">\n\t\t\t<button type=\"button\" class=\"btn create-directory\" title=\"create new directory\">\n\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\tcreate_new_folder\n\t\t\t\t<\/span>\n\t\t\t<\/button>\n\t\t\t<button type=\"button\" class=\"btn delete-directory\" title=\"delete selected directory\">\n\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\tfolder_delete\n\t\t\t\t<\/span>\n\t\t\t<\/button>\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"node-view\">\n\t\t<div class=\"view-controls\">\n\t\t\t<div class=\"left\">\n\t\t\t\t<input name=\"filter\" type=\"text\" placeholder=\"filter\" \/>\n\t\t\t\t<button class=\"clear-filter\">&times;<\/button>\n\t\t\t<\/div>\n\t\t\t<div class=\"right\">\n\t\t\t\t<span class=\"view-icons\">\n\t\t\t\t\t<button type=\"button\" class=\"show-large-tiles\" title=\"show big tiles\" data-show-class=\"grid-large\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tgrid_view\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-small-tiles\" title=\"show small tiles\"\n\t\t\t\t\t\tdata-show-class=\"grid-small\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tgrid_on\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-list-rows\" title=\"show as rows\" data-show-class=\"rows\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\tlist\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t\t<button type=\"button\" class=\"show-list-text\" title=\"show as list\" data-show-class=\"list-text\">\n\t\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\t\ttable_rows\n\t\t\t\t\t\t<\/span>\n\t\t\t\t\t<\/button>\n\t\t\t\t<\/span>\n\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"node-content\">\n\t\t\t<div class=\"box-holder\">\n\t\t\t\t<div class=\"choice-boxes\">\n\t\t\t\t<\/div>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"bottom-controls\">\n\t\t\t<div class=\"file-controls\">\n\t\t\t\t<button type=\"button\" class=\"btn delete-file\" title=\"delete selected file(s)\">\n\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\tdelete\n\t\t\t\t\t<\/span>\n\t\t\t\t<\/button>\n\t\t\t\t<button type=\"button\" class=\"btn upload-file\" title=\"upload file(s)\">\n\t\t\t\t\t<span class=\"material-icons thumbnail-icon\">\n\t\t\t\t\t\tupload\n\t\t\t\t\t<\/span>\n\t\t\t\t<\/button>\n\t\t\t<\/div>\n\t\t\t<div class=\"folder-info\">\n\t\t\t\t\n\t\t\t<\/div>\n\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"drop-cover file-drop-cover\">\n\t\t<div class=\"drop-type literal\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tJust Do It\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe won't mess the files at all, just upload them.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"drop-cover img-drop-cover\">\n\t\t<div class=\"drop-type guided-upload\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>Guided Upload<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tLet us help you rename, and resize (if needed), the files by asking you questions\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type automatic\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tWeb Safe\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe'll rename the files so they fit better with the web and create multiple formats images.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"drop-type literal\">\n\t\t\t<div class=\"msg\">\n\t\t\t\t<h2>\n\t\t\t\t\tJust Do It\n\t\t\t\t<\/h2>\n\t\t\t\t<p>\n\t\t\t\t\tWe won't mess the files at all, just upload them.\n\t\t\t\t<\/p>\n\t\t\t<\/div>\n\t\t<\/div>\n\n\t<\/div>\n\t<div class=\"hidden-elements\">\n\t\t<input name=\"fileUpload\" type=\"file\" placeholder=\"Upload a file\" \/>\n\t\t\n\t<\/div>\n\n<\/div>"; 
 module.exports = tri.addTemplate("webhandle-tree-image-browser/image-browser-frame", t); 
 
 /***/ }),
@@ -25115,7 +25138,7 @@ module.exports = tri.addTemplate("webhandle-tree-image-browser/image-browser-fra
   \*******************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"variant-choice-box\">\n\t<div class=\"img\">\n\t\t__!this.thumbnail??'<span class=\"material-icons thumbnail-icon\">' + thumbnailIcon + '<\/span>'__\n\t\t__this.thumbnail??'<img class=\"thumbnail-image\" src=\"' + thumbnail + '\" \/>'__\n\t<\/div>\n\t<div class=\"size-line\">\n\t\t__size__\n\t<\/div>\n\t<div class=\"bottom\">\n\t\t<div class=\"content\">\n\t\t\t<div class=\"basename\">\n\t\t\t\t__baseName__\n\t\t\t<\/div>\n\t\t\t<div class=\"extensions\">\n\t\t\t\t__extensions::.\/extension-pill__\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"actions\">\n\t\t\t<button class=\"details\">\n\t\t\t\t<span class=\"material-icons\">more_vert<\/span>\n\t\t\t<\/button>\n\t\t<\/div>\n\t<\/div>\n\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"variant-choice-box\">\n\t<div class=\"img\">\n\t\t__!this.thumbnail??'<span class=\"material-icons thumbnail-icon\">' + thumbnailIcon + '<\/span>'__\n\t\t__this.thumbnail??'<img loading=\"lazy\" class=\"thumbnail-image\" src=\"' + safeThumbnail + '\" \/>'__\n\t<\/div>\n\t<div class=\"size-line\">\n\t\t__size__\n\t<\/div>\n\t<div class=\"bottom\">\n\t\t<div class=\"content\">\n\t\t\t<div class=\"basename\">\n\t\t\t\t__safeBaseName__\n\t\t\t<\/div>\n\t\t\t<div class=\"extensions\">\n\t\t\t\t__extensions::.\/extension-pill__\n\t\t\t<\/div>\n\t\t<\/div>\n\t\t<div class=\"actions\">\n\t\t\t<button class=\"details\">\n\t\t\t\t<span class=\"material-icons\">more_vert<\/span>\n\t\t\t<\/button>\n\t\t<\/div>\n\t<\/div>\n\n<\/div>"; 
 module.exports = tri.addTemplate("webhandle-tree-image-browser/variant-choice-box", t); 
 
 /***/ }),
@@ -25919,6 +25942,44 @@ function sinkSetup() {
 
 /***/ }),
 
+/***/ "./client-lib/add-soft-breaks.mjs":
+/*!****************************************!*\
+  !*** ./client-lib/add-soft-breaks.mjs ***!
+  \****************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ addSoftBreaks)
+/* harmony export */ });
+
+function breakOnChars(chrs, txt) {
+	for (let c of chrs) {
+		txt = txt.split(c).join('<wbr>' + c)
+	}
+	return txt
+}
+
+function addSoftBreaks(txt) {
+	if(!txt || typeof txt !== 'string') {
+		return txt
+	}
+	
+	let chars = [...txt]
+	txt = ''
+	for(let i = 0; i < chars.length; i++) {
+		txt += chars[i]
+		if(i % 10 === 0) {
+			txt += '<wbr>'
+		}
+	}
+	txt = breakOnChars(['_'], txt)
+
+	return txt
+}
+
+/***/ }),
+
 /***/ "./client-lib/base-image-name.mjs":
 /*!****************************************!*\
   !*** ./client-lib/base-image-name.mjs ***!
@@ -26087,6 +26148,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * Selects a file.
+ * @param {Object} [options]
+ * @param {string} [options.title] The dialog box title
+ * @param {boolean} [options.chooseOnUpload] If true, uploading a file causes the dialog to close and the URL of uploaded
+ * file to be returned
+ */
 class FileSelectDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
 	constructor(options) {
 		super(Object.assign({
@@ -26117,8 +26185,17 @@ class FileSelectDialog extends ei_dialog__WEBPACK_IMPORTED_MODULE_0__ {
 					imageBrowserView.emitter.on('select', async function (evt) {
 
 					})
+					imageBrowserView.emitter.on('upload', async function (evt) {
+						if(dialog.chooseOnUpload) {
+							dialog.close()
+							dialog.resolve({
+								url: evt.accessUrls[0]
+							})
+						}
+					})
 				}
 			}
+			, chooseOnUpload: true
 		}, options,
 			{
 				on: {
@@ -26517,6 +26594,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   dragOver: () => (/* binding */ dragOver),
 /* harmony export */   getDropCoverSelector: () => (/* binding */ getDropCoverSelector),
 /* harmony export */   handleDrop: () => (/* binding */ handleDrop),
+/* harmony export */   handlePaste: () => (/* binding */ handlePaste),
 /* harmony export */   isFileTypeDrag: () => (/* binding */ isFileTypeDrag)
 /* harmony export */ });
 
@@ -26577,6 +26655,16 @@ function _cleanupDropDone() {
 	[...this.el.querySelectorAll('.file-dropping')].forEach(cover => cover.classList.remove('file-dropping'))
 }
 
+async function handlePaste(evt) {
+	if (this.ignoreGlobalEvents) {
+		return
+	}
+	evt.preventDefault()
+	if (evt.clipboardData && evt.clipboardData.files && evt.clipboardData.files.length > 0) {
+		this.uploadFiles(evt.clipboardData.files, { uploadType: 'guided' })
+	}
+}
+
 /***/ }),
 
 /***/ "./client-lib/image-browser-view-methods/file-obj-manipulation.mjs":
@@ -26592,10 +26680,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   _getFilesFromEvent: () => (/* binding */ _getFilesFromEvent),
 /* harmony export */   _transformRelativeUrlToPublic: () => (/* binding */ _transformRelativeUrlToPublic),
 /* harmony export */   createVariantValues: () => (/* binding */ createVariantValues),
+/* harmony export */   escapeAccessUrl: () => (/* binding */ escapeAccessUrl),
 /* harmony export */   getSelectedFiles: () => (/* binding */ getSelectedFiles),
-/* harmony export */   getSelectedUrl: () => (/* binding */ getSelectedUrl)
+/* harmony export */   getSelectedUrl: () => (/* binding */ getSelectedUrl),
+/* harmony export */   getSelectedUrlExtFromMeta: () => (/* binding */ getSelectedUrlExtFromMeta)
 /* harmony export */ });
 /* harmony import */ var _dankolz_webp_detection_lib_condense_image_variants_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @dankolz/webp-detection/lib/condense-image-variants.js */ "./node_modules/@dankolz/webp-detection/lib/condense-image-variants.js");
+/* harmony import */ var _dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @dankolz/escape-html-attribute-value */ "./node_modules/@dankolz/escape-html-attribute-value/index.js");
+/* harmony import */ var _add_soft_breaks_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../add-soft-breaks.mjs */ "./client-lib/add-soft-breaks.mjs");
+
+
 
 
 function createVariantValues(info) {
@@ -26617,6 +26711,7 @@ function createVariantValues(info) {
 		child.thumbnailIcon = 'image'
 		if (child.preview) {
 			child.thumbnail = this._createAccessUrl(child.preview.file)
+			child.safeThumbnail = _dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_1__(child.thumbnail)
 		}
 	}
 
@@ -26634,7 +26729,7 @@ function createVariantValues(info) {
 	}
 
 
-	// Determine extensions
+	// Determine extensions, add additional top level info (safeBaseName)
 	for (let item of variantValues) {
 		item.extensions = this._determineExtensions(item)
 		item.sizes = this._determineSizes(item)
@@ -26644,6 +26739,7 @@ function createVariantValues(info) {
 		else {
 			item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1])
 		}
+		item.safeBaseName = (0,_add_soft_breaks_mjs__WEBPACK_IMPORTED_MODULE_2__["default"])(_dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_1__(item.baseName))
 	}
 
 	variantValues.sort(this._compareVariants)
@@ -26715,7 +26811,18 @@ function _getAssociatedRealFiles(variant) {
 }
 
 function _createAccessUrl(file) {
-	return file.accessUrl
+	return this.escapeAccessUrl(file.accessUrl)
+}
+
+function urlEscapeChars(chrs, url) {
+	for (let c of chrs) {
+		url = url.split(c).join(encodeURIComponent(c))
+	}
+	return url
+}
+
+function escapeAccessUrl(url) {
+	return urlEscapeChars(['%', ' ', '#', '?',  '<', '>', '$', '@', '^', '&'], url)
 }
 
 
@@ -26771,12 +26878,7 @@ async function getSelectedUrl(selectedFiles) {
 		let defData = await this.sink.read(variant.definitionFile.relPath)
 		try {
 			let data = JSON.parse(defData)
-			let sizes = data.displaySize.split('x')
-			base += `#format=webp2x&width=${sizes[0]}&height=${sizes[1]}`
-			
-			if(data.altText) {
-				base += '&alt=' + encodeURIComponent(data.altText)
-			}
+			base += this.getSelectedUrlExtFromMeta(data)
 		}
 		catch(e) {
 
@@ -26786,6 +26888,19 @@ async function getSelectedUrl(selectedFiles) {
 	return base
 
 }
+
+function getSelectedUrlExtFromMeta(data) {
+	let url = ''
+	let sizes = data.displaySize.split('x')
+	url += `#format=webp2x&width=${sizes[0]}&height=${sizes[1]}`
+	
+	if(data.altText) {
+		url += '&alt=' + encodeURIComponent(data.altText)
+	}
+	
+	return url
+}
+
 
 /***/ }),
 
@@ -26804,6 +26919,7 @@ __webpack_require__.r(__webpack_exports__);
 async function _uploadData(name, data) {
 	let path = this.currentNode.file.relPath + '/' + this.sanitizeFileName(name)
 	await this.sink.write(path, data)
+	return path
 }
 
 async function findDirectories() {
@@ -26884,15 +27000,26 @@ async function _uploadGuidedImageFile(file) {
 
 		let note = this._addPending(file)
 		let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_2__["default"])(file, makeImageData)
+		let meta = JSON.parse(files[baseFileName + '.json'])
 
+		let mainUrl
 		for (let fileName of Object.keys(files)) {
-			await this._uploadData(fileName, files[fileName])
+			let path = await this._uploadData(fileName, files[fileName])
+			if(fileName === meta.name + '.' + meta.fallback) {
+				mainUrl = path
+			}
 		}
+
+		let base = this._transformRelativeUrlToPublic(mainUrl)
+		
+		let ext = this.getSelectedUrlExtFromMeta(meta)
+		base += ext
 
 		if (note) {
 			note.remove()
 		}
-		return true
+
+		return base
 	}
 }
 
@@ -26917,12 +27044,13 @@ async function _uploadGuidedFile(file) {
 	if (result) {
 		let note = this._addPending(file)
 
-		await this._uploadData(result.name, file)
+		let mainUrl = await this._uploadData(result.name, file)
+		let base = this._transformRelativeUrlToPublic(mainUrl)
 
 		if (note) {
 			note.remove()
 		}
-		return true
+		return base
 	}
 }
 
@@ -26935,18 +27063,27 @@ async function _uploadAutomaticImageFile(file) {
 		baseFileName: baseFileName,
 		outputFormat: file.type
 	})
+	let meta = JSON.parse(files[baseFileName + '.json'])
 
+	let mainUrl
 	for (let fileName of Object.keys(files)) {
-		await this._uploadData(fileName, files[fileName])
+		let path = await this._uploadData(fileName, files[fileName])
+		if(fileName === meta.name + '.' + meta.fallback) {
+			mainUrl = path
+		}
 	}
+	let base = this._transformRelativeUrlToPublic(mainUrl)
+	let ext = this.getSelectedUrlExtFromMeta(meta)
+	base += ext
 
 	if (note) {
 		note.remove()
 	}
-	return true
+	return base
 }
 
 async function uploadFiles(files, { uploadType } = {}) {
+	let uploadedAccessUrls = []
 	for (let file of files) {
 
 		let uploaded = false
@@ -26961,17 +27098,19 @@ async function uploadFiles(files, { uploadType } = {}) {
 		}
 		else {
 			let note = this._addPending(file)
+			let path
 			if (uploadType === 'automatic') {
 				let parts = (0,_name_parts_mjs__WEBPACK_IMPORTED_MODULE_3__["default"])(file)
-				await this._uploadData(parts.join('.'), file)
+				path = await this._uploadData(parts.join('.'), file)
 			}
 			else {
-				await this._uploadData(file.name, file)
+				path = await this._uploadData(file.name, file)
 			}
+			uploaded = this._transformRelativeUrlToPublic(path)
+			
 			if (note) {
 				note.remove()
 			}
-			uploaded = true
 		}
 		if (this.eventNotificationPanel && uploaded) {
 			this.eventNotificationPanel.addNotification({
@@ -26982,8 +27121,14 @@ async function uploadFiles(files, { uploadType } = {}) {
 				, ttl: 2000
 			})
 		}
+		uploadedAccessUrls.push(uploaded)
 	}
 	this.setCurrentNode(this.currentNode)
+	this.emitter.emit('upload', {
+		type: 'upload'
+		, accessUrls: uploadedAccessUrls
+	})
+	return uploadedAccessUrls
 }
 
 
@@ -26999,8 +27144,9 @@ async function _uploadFile(evt, selected) {
 	}
 	let files = await this._getFilesFromEvent(evt)
 	if(files.length > 0) {
-		this.uploadFiles(files, { uploadType: 'guided' })
+		let result = this.uploadFiles(files, { uploadType: 'guided' })
 		input.value = ''
+		return result
 	}
 }
 
@@ -27015,6 +27161,7 @@ async function _uploadFile(evt, selected) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   _addPending: () => (/* binding */ _addPending),
 /* harmony export */   _compareVariants: () => (/* binding */ _compareVariants),
 /* harmony export */   _determineExtensions: () => (/* binding */ _determineExtensions),
 /* harmony export */   _determineParentPath: () => (/* binding */ _determineParentPath),
@@ -27023,7 +27170,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   _isImageFile: () => (/* binding */ _isImageFile),
 /* harmony export */   _join: () => (/* binding */ _join),
 /* harmony export */   _sortFiles: () => (/* binding */ _sortFiles),
-/* harmony export */   sanitizeFileName: () => (/* binding */ sanitizeFileName)
+/* harmony export */   sanitizeFileName: () => (/* binding */ sanitizeFileName),
+/* harmony export */   setIfNotSet: () => (/* binding */ setIfNotSet)
 /* harmony export */ });
 
 function _join(...parts) {
@@ -27033,6 +27181,9 @@ function _join(...parts) {
 }
 
 function _determineParentPath(path) {
+	if(!path) {
+		return ''
+	}
 	let parts = path.split('/')
 	parts.pop()
 	return parts.join('/')
@@ -27131,6 +27282,25 @@ function _isImageFile(file) {
 	return false
 }
 
+function setIfNotSet(key, value) {
+	if (!(key in this)) {
+		this[key] = value
+	}
+}
+
+function _addPending(file) {
+	let note
+	if (this.eventNotificationPanel) {
+		note = this.eventNotificationPanel.addNotification({
+			model: {
+				status: 'pending',
+				headline: `uploading ${file.name}`
+			}
+		})
+	}
+	return note
+}
+
 
 /***/ }),
 
@@ -27144,20 +27314,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   applyFilter: () => (/* binding */ applyFilter),
 /* harmony export */   changeFilesView: () => (/* binding */ changeFilesView),
+/* harmony export */   changeFilesViewToClass: () => (/* binding */ changeFilesViewToClass),
+/* harmony export */   cleanFileInfo: () => (/* binding */ cleanFileInfo),
 /* harmony export */   clearFilter: () => (/* binding */ clearFilter),
 /* harmony export */   selectVariant: () => (/* binding */ selectVariant),
+/* harmony export */   setFolderInfo: () => (/* binding */ setFolderInfo),
 /* harmony export */   showVariantDetails: () => (/* binding */ showVariantDetails)
 /* harmony export */ });
 /* harmony import */ var _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../info-dialog.mjs */ "./client-lib/info-dialog.mjs");
+/* harmony import */ var _dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @dankolz/escape-html-attribute-value */ "./node_modules/@dankolz/escape-html-attribute-value/index.js");
+
 
 
 function changeFilesView(evt, selected) {
+	let className = selected.getAttribute('data-show-class')
+	this.changeFilesViewToClass(className)
+}
+
+function changeFilesViewToClass(className) {
 	let choiceBoxes = this.el.querySelector('.choice-boxes')
-	let classes = [...selected.closest('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
+	let classes = [...this.el.querySelector('.view-icons').querySelectorAll('button')].map(button => button.getAttribute('data-show-class'))
 	classes.forEach(item => {
 		choiceBoxes.classList.remove(item)
 	})
-	choiceBoxes.classList.add(selected.getAttribute('data-show-class'))
+	choiceBoxes.classList.add(className)
 }
 
 function applyFilter(evt, selected) {
@@ -27167,12 +27347,14 @@ function applyFilter(evt, selected) {
 		for (let variant of allVariants) {
 			variant.classList.remove('hidden')
 			if (value) {
-				let searchString = variant.variant.baseName + variant.variant.extensions.join()
+				value = value.toLowerCase()
+				let searchString = variant.variant.baseName.toLowerCase() + variant.variant.extensions.map(ext => ext.toLowerCase()).join()
 				if (searchString.indexOf(value) < 0) {
 					variant.classList.add('hidden')
 				}
 			}
 		}
+		this.setFolderInfo()
 	})
 }
 
@@ -27220,13 +27402,22 @@ function showVariantDetails(evt, selected) {
 
 	let files = this._getAssociatedRealFiles(variant)
 
-	let content = '<ul>'
+	let content = '<div class="variant-details-information">'
+	if (variant.safeThumbnail) {
+		content += `<div class="details-preview-image">
+		<img loading="lazy" src="${variant.safeThumbnail}" />
+		</div>`
+	}
+
+	content += '<ul class="variants">'
 	for (let file of files) {
-		content += '<li><a target="_blank" href="' + file.accessUrl + '">'
-		content += file.name + '</a> - ' + this._formatBytes(file.stat.size)
+		content += '<li><a target="_blank" href="' + _dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_1__(this.escapeAccessUrl(file.accessUrl)) + '">'
+		content += _dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_1__(file.name) + '</a> - ' + this._formatBytes(file.stat.size)
 		content += '</li>'
 	}
 	content += '</ul>'
+
+	content += '</div>'
 
 	let dialog = new _info_dialog_mjs__WEBPACK_IMPORTED_MODULE_0__.InfoDialog({
 		title: 'File Details: ' + variant.baseName
@@ -27243,8 +27434,50 @@ function showVariantDetails(evt, selected) {
 		if (data) {
 		}
 	})
-
 }
+
+function setFolderInfo() {
+	let fileCount = 0
+	let variantCount = 0
+	let byteCount = 0
+	let nonImages = 0
+	let allVariants = this.el.querySelectorAll('.choice-boxes .variant-choice-box')
+	for (let variant of allVariants) {
+		if (variant.classList.contains('hidden')) {
+			continue
+		}
+		variantCount++
+
+		if (variant.variant.variants) {
+			variant.variant.variants.forEach(variant => {
+				fileCount++
+				byteCount += variant.file.stat.size
+			})
+
+		}
+		else {
+			fileCount++
+			byteCount += variant.variant.file.stat.size
+			nonImages++
+		}
+	}
+	this.el.querySelector('.folder-info').innerHTML = `${variantCount} items / ${fileCount} files / ${this._formatBytes(byteCount)} `
+	if (variantCount > this.listTriggerSize) {
+		this.changeFilesViewToClass('list-text')
+	}
+	this.el.querySelector('.view-icons').classList.remove('no-img')
+	if (variantCount - nonImages > this.listLockSize) {
+		this.el.querySelector('.view-icons').classList.add('no-img')
+	}
+}
+
+function cleanFileInfo() {
+	this.el.querySelector('.folder-info').innerHTML = ''
+	let choicesBoxes = this.el.querySelector('.choice-boxes')
+	choicesBoxes.innerHTML = '<div class="loading-info">Loading Information Now</div>'
+	this.el.querySelector('.view-icons').classList.add('no-img')
+}
+
 
 /***/ }),
 
@@ -27302,10 +27535,18 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	 * @param {boolean} [options.ignoreGlobalEvents] False by default, if true it will not listen to events like paste or keypresses
 	 * which occur on the document
 	 * @param {Emitter} [options.emitter] Emitter for various file events
+	 * @param {int} [options.listTriggerSize] If the number of items are over this limit, they are shown as a plain list by default
+	 * @param {int} [options.listLockSize] If the number of items are over this limit, they can't use anyting other than the plain list
 	 */
 	constructor(options) {
 		super(options)
+		this.setIfNotSet('overCount', 0)
+		this.setIfNotSet('emitter', new _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_4__["default"]())
+		this.setIfNotSet('fileUploadSelector', 'input[name="fileUpload"]')
+		this.setIfNotSet('listTriggerSize', 100)
+		this.setIfNotSet('listLockSize', 200)
 	}
+
 	preinitialize() {
 		this.className = 'image-browser'
 		this.idInd = 1
@@ -27328,41 +27569,10 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 			, 'dragover .': 'dragOver'
 			, 'drop .': 'handleDrop'
 		}
-		this.overCount = 0
-
-		if (!this.emitter) {
-			this.emitter = new _webhandle_minimal_browser_event_emitter__WEBPACK_IMPORTED_MODULE_4__["default"]()
-		}
-		
-		this.fileUploadSelector = 'input[name="fileUpload"]'
-		
-		
-		document.addEventListener('paste', this.handlePaste.bind(this))
+		document.addEventListener('paste', _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.handlePaste.bind(this))
 	}
 	
-	async handlePaste(evt) {
-		if(this.ignoreGlobalEvents) {
-			return
-		}
-		evt.preventDefault()
-		if(evt.clipboardData && evt.clipboardData.files && evt.clipboardData.files.length > 0) {
-			this.uploadFiles(evt.clipboardData.files, { uploadType: 'guided' })
-		}
-	}
 	
-
-	_addPending(file) {
-		let note
-		if (this.eventNotificationPanel) {
-			note = this.eventNotificationPanel.addNotification({
-				model: {
-					status: 'pending',
-					headline: `uploading ${file.name}`
-				}
-			})
-		}
-		return note
-	}
 
 	async render() {
 		this.el.innerHTML = (0,_views_load_browser_views_js__WEBPACK_IMPORTED_MODULE_1__.imageBrowserFrame)(this.model)
@@ -27416,9 +27626,15 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 
 	async setCurrentNode(node) {
 		this.currentNode = node
+		this.cleanFileInfo()
+		let choicesBoxes = this.el.querySelector('.choice-boxes')
 		let info = await this.sink.getFullFileInfo(node.file.relPath)
 		let variantValues = this.createVariantValues(info)
 
+
+		if(variantValues.length > this.listTriggerSize) {
+			this.changeFilesViewToClass('list-text')
+		}	
 
 		let content = ''
 		for (let child of variantValues) {
@@ -27426,7 +27642,6 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 		}
 
 
-		let choicesBoxes = this.el.querySelector('.choice-boxes')
 		choicesBoxes.innerHTML = ''
 		choicesBoxes.insertAdjacentHTML('beforeend', content)
 
@@ -27450,9 +27665,11 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	_getFilesFromEvent = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._getFilesFromEvent
 	_getAssociatedRealFiles = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._getAssociatedRealFiles
 	_createAccessUrl = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._createAccessUrl
+	escapeAccessUrl = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__.escapeAccessUrl
 	getSelectedFiles = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__.getSelectedFiles
 	_transformRelativeUrlToPublic = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__._transformRelativeUrlToPublic
 	getSelectedUrl = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__.getSelectedUrl
+	getSelectedUrlExtFromMeta = _image_browser_view_methods_file_obj_manipulation_mjs__WEBPACK_IMPORTED_MODULE_10__.getSelectedUrlExtFromMeta
 
 	// create-directory 
 	createDirectory = _image_browser_view_methods_create_directory_mjs__WEBPACK_IMPORTED_MODULE_9__.createDirectory
@@ -27464,14 +27681,18 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	dragEnter = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.dragEnter
 	dragLeave = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.dragLeave
 	dragOver = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.dragOver
+	handlePaste = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__.handlePaste
 	_cleanupDropDone = _image_browser_view_methods_drag_and_drop_mjs__WEBPACK_IMPORTED_MODULE_8__._cleanupDropDone
 
 	// view-interactions
 	changeFilesView = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.changeFilesView
+	changeFilesViewToClass = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.changeFilesViewToClass
 	applyFilter = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.applyFilter
 	clearFilter = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.clearFilter
 	selectVariant = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.selectVariant
 	showVariantDetails = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.showVariantDetails
+	setFolderInfo = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.setFolderInfo
+	cleanFileInfo = _image_browser_view_methods_view_interactions_mjs__WEBPACK_IMPORTED_MODULE_7__.cleanFileInfo
 
 	// utils
 	sanitizeFileName = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__.sanitizeFileName
@@ -27484,6 +27705,8 @@ class ImageBrowserView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE
 	_fileToKalpaNode = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._fileToKalpaNode
 	_formatBytes = _format_bytes_mjs__WEBPACK_IMPORTED_MODULE_3__["default"]
 	_isImageFile = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._isImageFile
+	setIfNotSet = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__.setIfNotSet
+	_addPending = _image_browser_view_methods_utils_mjs__WEBPACK_IMPORTED_MODULE_6__._addPending
 
 	// delete
 	deleteFile = _image_browser_view_methods_delete_mjs__WEBPACK_IMPORTED_MODULE_5__.deleteFile
@@ -27614,7 +27837,7 @@ __webpack_require__.r(__webpack_exports__);
 function loadStyles() {
 	if(!(0,_styles_loaded_mjs__WEBPACK_IMPORTED_MODULE_0__["default"])()) {
 		let link = document.createElement('link')
-		link.href = '@webhandle/tree-file-browser/resources/css/tree-browser.css'
+		link.href = '/@webhandle/tree-file-browser/resources/css/tree-browser.css'
 		link.rel = 'stylesheet'
 		document.head.appendChild(link)
 		
@@ -34174,6 +34397,7 @@ let variantChoiceBox = _webhandle_tree_image_browser_variant_choice_box_tri__WEB
 let extensionPill = _webhandle_tree_image_browser_extension_pill_tri__WEBPACK_IMPORTED_MODULE_2__
 let guidedImageUploadForm = _webhandle_tree_image_browser_guilded_image_upload_form_tri__WEBPACK_IMPORTED_MODULE_3__
 let guidedFileUploadForm = _webhandle_tree_image_browser_guilded_file_upload_form_tri__WEBPACK_IMPORTED_MODULE_4__
+
 
 /***/ })
 

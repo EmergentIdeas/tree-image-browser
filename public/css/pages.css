@@ -1514,6 +1514,11 @@ body {
 .webhandle-file-tree-image-browser .image-browser .image-browser-frame > .directory-side .directory-controls {
   background-color: #393C40;
 }
+.webhandle-file-tree-image-browser .image-browser .view-icons.no-img .show-large-tiles,
+.webhandle-file-tree-image-browser .image-browser .view-icons.no-img .show-small-tiles,
+.webhandle-file-tree-image-browser .image-browser .view-icons.no-img .show-list-rows {
+  display: none;
+}
 .webhandle-file-tree-image-browser .image-browser .node-content {
   position: relative;
 }
@@ -1684,6 +1689,12 @@ body {
 .webhandle-file-tree-image-browser .image-browser .choice-boxes.list-text .img .thumbnail-icon {
   font-size: 0;
 }
+.webhandle-file-tree-image-browser .image-browser .choice-boxes .loading-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .webhandle-file-tree-image-browser .image-browser .variant-choice-box {
   padding: 10px;
   border-radius: 5px;
@@ -1818,6 +1829,16 @@ body {
   position: absolute;
   left: -10000px;
   top: 0;
+}
+.variant-details-information .details-preview-image img {
+  display: block;
+  margin: auto;
+  max-width: 300px;
+}
+.variant-details-information .variants {
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
 }
 #event-notifications {
   max-height: 200px;

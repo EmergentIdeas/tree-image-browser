@@ -1,4 +1,6 @@
 import condense from '@dankolz/webp-detection/lib/condense-image-variants.js'
+import escapeHtmlAttributeValue from '@dankolz/escape-html-attribute-value'
+import addSoftBreaks from '../add-soft-breaks.mjs'
 
 export function createVariantValues(info) {
 	let variants = condense(info.children)
@@ -19,6 +21,7 @@ export function createVariantValues(info) {
 		child.thumbnailIcon = 'image'
 		if (child.preview) {
 			child.thumbnail = this._createAccessUrl(child.preview.file)
+			child.safeThumbnail = escapeHtmlAttributeValue(child.thumbnail)
 		}
 	}
 
@@ -36,7 +39,7 @@ export function createVariantValues(info) {
 	}
 
 
-	// Determine extensions
+	// Determine extensions, add additional top level info (safeBaseName)
 	for (let item of variantValues) {
 		item.extensions = this._determineExtensions(item)
 		item.sizes = this._determineSizes(item)
@@ -46,6 +49,7 @@ export function createVariantValues(info) {
 		else {
 			item.size = this._formatBytes(item.sizes[0]) + ' - ' + this._formatBytes(item.sizes[1])
 		}
+		item.safeBaseName = addSoftBreaks(escapeHtmlAttributeValue(item.baseName))
 	}
 
 	variantValues.sort(this._compareVariants)
@@ -117,7 +121,18 @@ export function _getAssociatedRealFiles(variant) {
 }
 
 export function _createAccessUrl(file) {
-	return file.accessUrl
+	return this.escapeAccessUrl(file.accessUrl)
+}
+
+function urlEscapeChars(chrs, url) {
+	for (let c of chrs) {
+		url = url.split(c).join(encodeURIComponent(c))
+	}
+	return url
+}
+
+export function escapeAccessUrl(url) {
+	return urlEscapeChars(['%', ' ', '#', '?',  '<', '>', '$', '@', '^', '&'], url)
 }
 
 
@@ -173,12 +188,7 @@ export async function getSelectedUrl(selectedFiles) {
 		let defData = await this.sink.read(variant.definitionFile.relPath)
 		try {
 			let data = JSON.parse(defData)
-			let sizes = data.displaySize.split('x')
-			base += `#format=webp2x&width=${sizes[0]}&height=${sizes[1]}`
-			
-			if(data.altText) {
-				base += '&alt=' + encodeURIComponent(data.altText)
-			}
+			base += this.getSelectedUrlExtFromMeta(data)
 		}
 		catch(e) {
 
@@ -187,4 +197,16 @@ export async function getSelectedUrl(selectedFiles) {
 	
 	return base
 
+}
+
+export function getSelectedUrlExtFromMeta(data) {
+	let url = ''
+	let sizes = data.displaySize.split('x')
+	url += `#format=webp2x&width=${sizes[0]}&height=${sizes[1]}`
+	
+	if(data.altText) {
+		url += '&alt=' + encodeURIComponent(data.altText)
+	}
+	
+	return url
 }

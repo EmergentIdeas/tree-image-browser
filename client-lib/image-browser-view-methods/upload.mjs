@@ -38,15 +38,26 @@ export async function _uploadGuidedImageFile(file) {
 
 		let note = this._addPending(file)
 		let files = await makeImageSet(file, makeImageData)
+		let meta = JSON.parse(files[baseFileName + '.json'])
 
+		let mainUrl
 		for (let fileName of Object.keys(files)) {
-			await this._uploadData(fileName, files[fileName])
+			let path = await this._uploadData(fileName, files[fileName])
+			if(fileName === meta.name + '.' + meta.fallback) {
+				mainUrl = path
+			}
 		}
+
+		let base = this._transformRelativeUrlToPublic(mainUrl)
+		
+		let ext = this.getSelectedUrlExtFromMeta(meta)
+		base += ext
 
 		if (note) {
 			note.remove()
 		}
-		return true
+
+		return base
 	}
 }
 
@@ -71,12 +82,13 @@ export async function _uploadGuidedFile(file) {
 	if (result) {
 		let note = this._addPending(file)
 
-		await this._uploadData(result.name, file)
+		let mainUrl = await this._uploadData(result.name, file)
+		let base = this._transformRelativeUrlToPublic(mainUrl)
 
 		if (note) {
 			note.remove()
 		}
-		return true
+		return base
 	}
 }
 
@@ -89,18 +101,27 @@ export async function _uploadAutomaticImageFile(file) {
 		baseFileName: baseFileName,
 		outputFormat: file.type
 	})
+	let meta = JSON.parse(files[baseFileName + '.json'])
 
+	let mainUrl
 	for (let fileName of Object.keys(files)) {
-		await this._uploadData(fileName, files[fileName])
+		let path = await this._uploadData(fileName, files[fileName])
+		if(fileName === meta.name + '.' + meta.fallback) {
+			mainUrl = path
+		}
 	}
+	let base = this._transformRelativeUrlToPublic(mainUrl)
+	let ext = this.getSelectedUrlExtFromMeta(meta)
+	base += ext
 
 	if (note) {
 		note.remove()
 	}
-	return true
+	return base
 }
 
 export async function uploadFiles(files, { uploadType } = {}) {
+	let uploadedAccessUrls = []
 	for (let file of files) {
 
 		let uploaded = false
@@ -115,17 +136,19 @@ export async function uploadFiles(files, { uploadType } = {}) {
 		}
 		else {
 			let note = this._addPending(file)
+			let path
 			if (uploadType === 'automatic') {
 				let parts = nameParts(file)
-				await this._uploadData(parts.join('.'), file)
+				path = await this._uploadData(parts.join('.'), file)
 			}
 			else {
-				await this._uploadData(file.name, file)
+				path = await this._uploadData(file.name, file)
 			}
+			uploaded = this._transformRelativeUrlToPublic(path)
+			
 			if (note) {
 				note.remove()
 			}
-			uploaded = true
 		}
 		if (this.eventNotificationPanel && uploaded) {
 			this.eventNotificationPanel.addNotification({
@@ -136,8 +159,14 @@ export async function uploadFiles(files, { uploadType } = {}) {
 				, ttl: 2000
 			})
 		}
+		uploadedAccessUrls.push(uploaded)
 	}
 	this.setCurrentNode(this.currentNode)
+	this.emitter.emit('upload', {
+		type: 'upload'
+		, accessUrls: uploadedAccessUrls
+	})
+	return uploadedAccessUrls
 }
 
 
@@ -153,7 +182,8 @@ export async function _uploadFile(evt, selected) {
 	}
 	let files = await this._getFilesFromEvent(evt)
 	if(files.length > 0) {
-		this.uploadFiles(files, { uploadType: 'guided' })
+		let result = this.uploadFiles(files, { uploadType: 'guided' })
 		input.value = ''
+		return result
 	}
 }
