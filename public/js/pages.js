@@ -25116,7 +25116,7 @@ module.exports = tri.addTemplate("webhandle-tree-image-browser/guilded-file-uplo
   \**************************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"guided-image-upload-form ei-form\">\n\t<label>\n\t\tSource file name:<br>\n\t\t__nativeName__\n\t<\/label>\n\t<label>\n\t\tNative resolution:<br>\n\t\t__stats.width__ x __stats.height__\n\t<\/label>\n\t<label>\n\t\tAfter uploaded name (no extension):\n\t\t<input name=\"name\" type=\"text\" \/>\n\t<\/label>\n\t<div class=\"radio-options\">\n\t\tOutput format:\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/png\" \/> <span class=\"extension-pill\">PNG<\/span>\n\t\t<\/label>\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/jpeg\" \/> <span class=\"extension-pill\">JPG<\/span>\n\t\t<\/label>\n\t<\/div>\n\t<label>\n\t\tOn screen width (px):\n\t\t<input name=\"width\" type=\"number\" \/>\n\t<\/label>\n\t\n\t<label>\n\t\tAlt text:\n\t\t<textarea name=\"altText\"><\/textarea>\n\t<\/label>\n\t\n<\/div>"; 
+var tri = __webpack_require__(/*! tripartite */ "./node_modules/tripartite/tripartite.js"); var t = "<div class=\"guided-image-upload-form ei-form\">\n\t<label>\n\t\tSource file name:<br>\n\t\t__nativeName__\n\t<\/label>\n\t<label>\n\t\tNative resolution:<br>\n\t\t__stats.width__ x __stats.height__\n\t<\/label>\n\t<label>\n\t\tAfter uploaded name (no extension):\n\t\t<input name=\"name\" type=\"text\" \/>\n\t<\/label>\n\t<div class=\"radio-options\">\n\t\tOutput format:\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/png\" \/> <span class=\"extension-pill\">PNG<\/span>\n\t\t<\/label>\n\t\t<label>\n\t\t\t<input type=\"radio\" name=\"outputFormat\" value=\"image\/jpeg\" \/> <span class=\"extension-pill\">JPG<\/span>\n\t\t<\/label>\n\t<\/div>\n\t<label>\n\t\tOn screen width (px):\n\t\t<input name=\"width\" type=\"number\" \/>\n\t<\/label>\n\t<label>\n\t\tOutput quality (0 to 1):\n\t\t<input name=\"quality\" value=\"0.7\" type=\"number\" min=\"0\" max=\"1\" step=\".01\" \/>\n\t<\/label>\n\t\n\t<label>\n\t\tAlt text:\n\t\t<textarea name=\"altText\"><\/textarea>\n\t<\/label>\n\t\n<\/div>"; 
 module.exports = tri.addTemplate("webhandle-tree-image-browser/guilded-image-upload-form", t); 
 
 /***/ }),
@@ -26995,6 +26995,7 @@ async function _uploadGuidedImageFile(file) {
 			baseFileName: result.name
 			, outputFormat: result.outputFormat
 			, singleDensityWidth: parseInt(result.width)
+			, quality: parseFloat(result.quality)
 			, altText: result.altText
 		}
 

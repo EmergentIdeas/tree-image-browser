@@ -24,6 +24,10 @@
 		On screen width (px):
 		<input name="width" type="number" />
 	</label>
+	<label>
+		Output quality (0 to 1):
+		<input name="quality" value="0.7" type="number" min="0" max="1" step=".01" />
+	</label>
 	
 	<label>
 		Alt text:

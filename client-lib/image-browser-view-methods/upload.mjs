@@ -33,6 +33,7 @@ export async function _uploadGuidedImageFile(file) {
 			baseFileName: result.name
 			, outputFormat: result.outputFormat
 			, singleDensityWidth: parseInt(result.width)
+			, quality: parseFloat(result.quality)
 			, altText: result.altText
 		}
 
