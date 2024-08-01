@@ -33,4 +33,3 @@ export default function(app) {
 	app.use('/files', router)
 
 }
-

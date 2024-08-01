@@ -27001,7 +27001,7 @@ async function _uploadGuidedImageFile(file) {
 
 		let note = this._addPending(file)
 		let files = await (0,_make_image_set_mjs__WEBPACK_IMPORTED_MODULE_2__["default"])(file, makeImageData)
-		let meta = JSON.parse(files[baseFileName + '.json'])
+		let meta = JSON.parse(files[makeImageData.baseFileName + '.json'])
 
 		let mainUrl
 		for (let fileName of Object.keys(files)) {

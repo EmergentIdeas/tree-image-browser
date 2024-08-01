@@ -39,7 +39,7 @@ export async function _uploadGuidedImageFile(file) {
 
 		let note = this._addPending(file)
 		let files = await makeImageSet(file, makeImageData)
-		let meta = JSON.parse(files[baseFileName + '.json'])
+		let meta = JSON.parse(files[makeImageData.baseFileName + '.json'])
 
 		let mainUrl
 		for (let fileName of Object.keys(files)) {
