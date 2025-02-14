@@ -67,10 +67,14 @@ export default class ImageBrowserView extends View {
 			, 'dragover .': 'dragOver'
 			, 'drop .': 'handleDrop'
 		}
-		document.addEventListener('paste', handlePaste.bind(this))
+
+		this.pasteListener = handlePaste.bind(this)
+		document.addEventListener('paste', this.pasteListener)
 	}
 	
-	
+	cleanup() {
+		document.removeEventListener('paste', this.pasteListener)
+	}
 
 	async render() {
 		this.el.innerHTML = imageBrowserFrame(this.model)

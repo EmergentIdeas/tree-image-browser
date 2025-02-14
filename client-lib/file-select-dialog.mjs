@@ -57,16 +57,19 @@ export class FileSelectDialog extends Dialog {
 							selection: this.imageBrowserView.getSelectedFiles()
 						}
 						result.url = await this.imageBrowserView.getSelectedUrl(result.selection)
+						this.imageBrowserView.cleanup()
 						this.resolve(result)
 
 						return true
 					},
 					'.mask': () => {
 						this.resolve()
+						this.imageBrowserView.cleanup()
 						return true
 					},
 					'.btn-cancel': () => {
 						this.resolve()
+						this.imageBrowserView.cleanup()
 						return true
 					}
 				}
