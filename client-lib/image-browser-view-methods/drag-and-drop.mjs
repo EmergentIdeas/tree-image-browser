@@ -60,8 +60,8 @@ export async function handlePaste(evt) {
 	if (this.ignoreGlobalEvents) {
 		return
 	}
-	evt.preventDefault()
 	if (evt.clipboardData && evt.clipboardData.files && evt.clipboardData.files.length > 0) {
+		evt.preventDefault()
 		this.uploadFiles(evt.clipboardData.files, { uploadType: 'guided' })
 	}
 }
