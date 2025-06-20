@@ -41,6 +41,7 @@ export class FileSelectDialog extends Dialog {
 					imageBrowserView.emitter.on('upload', async function (evt) {
 						if(dialog.chooseOnUpload) {
 							dialog.close()
+							dialog.imageBrowserView.cleanup()
 							dialog.resolve({
 								url: evt.accessUrls[0]
 							})
