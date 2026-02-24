@@ -43,7 +43,9 @@
 		"/server-lib",
 		"public/tree-file-browser",
 		"/views/load-browser-views.js",
-		"/views/webhandle-tree-image-browser"
+		"/views/webhandle-tree-image-browser",
+		"README.md",
+		"initialize-webhandle-component.mjs"
 	],
 	"type": "module"
 }
