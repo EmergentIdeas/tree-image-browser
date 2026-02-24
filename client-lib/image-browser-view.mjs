@@ -1,7 +1,8 @@
 import { View } from '@webhandle/backbone-view'
 import { imageBrowserFrame, variantChoiceBox } from '../views/load-browser-views.js'
-import KalpaTreeOnPage from 'kalpa-tree-on-page'
+import {KalpaTreeView} from "kalpa-tree-on-page/kalpa-tree-view"
 import formatBytes from './format-bytes.mjs'
+import loadStyles from './load-styles.mjs'
 
 import Emitter from '@webhandle/minimal-browser-event-emitter'
 
@@ -26,6 +27,7 @@ export default class ImageBrowserView extends View {
 	 * @param {object} options 
 	 * @param {FileSink} options.sink The file to use as a file source
 	 * @param {boolean} [options.imagesOnly] Set to true if you would like to display only images
+	 * @param {boolean} [options.loadStyles] True by default. If true, default styles will be loaded.
 	 * @param {boolean} [options.allowFileSelection] Set to true so that selected files are marked
 	 * @param {EventNotificationPanel} [options.eventNotificationPanel] The panel which status messages will be added to.
 	 * @param {string} [options.startingDirectory] Opens to that directory path if it exists
@@ -43,6 +45,11 @@ export default class ImageBrowserView extends View {
 		this.setIfNotSet('fileUploadSelector', 'input[name="fileUpload"]')
 		this.setIfNotSet('listTriggerSize', 100)
 		this.setIfNotSet('listLockSize', 200)
+		this.setIfNotSet('loadStyles', true)
+		
+		if(this.loadStyles) {
+			loadStyles()
+		}
 	}
 
 	preinitialize() {
@@ -89,41 +96,42 @@ export default class ImageBrowserView extends View {
 		this._sortFiles(directories)
 
 		this.data.push(...directories.map(this._fileToKalpaNode.bind(this)))
-		KalpaTreeOnPage({
-			treeContainerSelector: `#${this.id} .treebox`
-			, data: this.data
-		}).then(tree => {
-			this.tree = tree
-			tree.on('select', (node) => {
-				this.setCurrentNode(node)
-			})
-			tree.on('selected', (node) => {
-				// There's a bug, either in the browser or kalpa tree that causes it
-				// not to examine if a scroll bar is needed for the tree if the content
-				// area changes in a big way. Part of this bug may be that it's being
-				// used in a grid which has some weird width/height effects
-				// Anyway, we need to make sure the browser knows to examine the tree so
-				// we change the height then change it back.
-				// This event is triggered when kalpa-tree thinks it's done with transitions
+		let treeView = new KalpaTreeView({
+			data: this.data
+		})
+		let treeBox = this.el.querySelector('.treebox')
+		treeView.appendTo(treeBox)
+		await treeView.render()
+		let tree = this.tree = treeView.tree
+		tree.on('select', (node) => {
+			this.setCurrentNode(node)
+		})
+		tree.on('selected', (node) => {
+			// There's a bug, either in the browser or kalpa tree that causes it
+			// not to examine if a scroll bar is needed for the tree if the content
+			// area changes in a big way. Part of this bug may be that it's being
+			// used in a grid which has some weird width/height effects
+			// Anyway, we need to make sure the browser knows to examine the tree so
+			// we change the height then change it back.
+			// This event is triggered when kalpa-tree thinks it's done with transitions
 
-				let tree = this.el.querySelector('.tree')
-				tree.style.height = '99.99999%'
-				setTimeout(() => {
-					tree.style.height = '100%'
-				}, 100)
-			})
-			if (this.startingDirectory) {
-				for (let node of Object.values(this.tree.nodes)) {
-					if (node.file && node.file.relPath && node.file.relPath == this.startingDirectory) {
-						tree.select(node.id)
-						break
-					}
+			let tree = this.el.querySelector('.tree')
+			tree.style.height = '99.99999%'
+			setTimeout(() => {
+				tree.style.height = '100%'
+			}, 100)
+		})
+		if (this.startingDirectory) {
+			for (let node of Object.values(this.tree.nodes)) {
+				if (node.file && node.file.relPath && node.file.relPath == this.startingDirectory) {
+					tree.select(node.id)
+					break
 				}
 			}
-			else {
-				tree.select(1)
-			}
-		})
+		}
+		else {
+			tree.select(1)
+		}
 	}
 
 	async setCurrentNode(node) {

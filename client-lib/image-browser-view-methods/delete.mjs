@@ -1,4 +1,4 @@
-import { FormAnswerDialog } from '../form-answer-dialog.mjs'
+import { FormAnswerDialog } from "@webhandle/dialog"
 
 export async function deleteFile(evt, selected) {
 	let sel = this.getSelectedFiles()

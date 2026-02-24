@@ -1,14 +1,14 @@
 import areStylesLoaded from "./styles-loaded.mjs";
-import ensureIcons from '@dankolz/webhandle-admin-icons/client-js/ensure-styles-are-loaded.js'
+import {loadMaterialIcons} from "@webhandle/material-icons"
 
 export default function loadStyles() {
 	if(!areStylesLoaded()) {
 		let link = document.createElement('link')
-		link.href = '/@webhandle/tree-file-browser/resources/css/tree-browser.css'
+		link.href = '/@webhandle/tree-file-browser/files/css/tree-browser.css'
 		link.rel = 'stylesheet'
 		document.head.appendChild(link)
 		
 	}
-	ensureIcons()
+	loadMaterialIcons()
 
 }

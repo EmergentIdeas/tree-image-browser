@@ -1,4 +1,4 @@
-import { InfoDialog } from '../info-dialog.mjs'
+import { Dialog } from '@webhandle/dialog'
 import escapeHtmlAttributeValue from '@dankolz/escape-html-attribute-value'
 
 export function changeFilesView(evt, selected) {
@@ -94,15 +94,10 @@ export function showVariantDetails(evt, selected) {
 
 	content += '</div>'
 
-	let dialog = new InfoDialog({
+	let dialog = new Dialog({
 		title: 'File Details: ' + variant.baseName
 		, body: content
-		, buttons: [
-			{
-				classes: 'btn btn-primary btn-ok',
-				label: 'OK'
-			}
-		]
+		, showCancelButton: false
 	})
 	let prom = dialog.open()
 	prom.then(async data => {

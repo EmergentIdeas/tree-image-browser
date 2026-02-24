@@ -1,4 +1,4 @@
-import { FormAnswerDialog } from '../form-answer-dialog.mjs'
+import { FormAnswerDialog } from "@webhandle/dialog"
 
 export function createDirectory(evt, selected) {
 	let dialog = new FormAnswerDialog({

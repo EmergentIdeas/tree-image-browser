@@ -1,11 +1,10 @@
-import mocha from "mocha";
-import {assert} from 'chai'
-import tu from '../utils/test-util.js'
+import test from "node:test"
+import assert from "node:assert"
 import baseImageName from "../client-lib/base-image-name.mjs";
 
-describe("a basic test which shows tests are working", function() {
-	
-	it("test base name", function() {
+
+await test("basic tests for functionality", async function (t) {
+	await t.test("name comparison", function () {
 		assert.equal(baseImageName('big-file-2x.jpg'), 'big-file')
 		assert.equal(baseImageName('big-file-@2x.jpg'), 'big-file')
 		assert.equal(baseImageName('big-file2x.jpg'), 'big-file')
@@ -16,12 +15,6 @@ describe("a basic test which shows tests are working", function() {
 		assert.equal(baseImageName('Big  f_24ile@2x.jpg'), 'big-f-24ile')
 
 		assert.equal(baseImageName('HelloThere.jpg'), 'hello-there')
-	})
-	it("two times two", function() {
-		assert.equal(tu(2, 2), 4)
-	})
-	it("two times 3", function() {
-		assert.equal(tu(2, 3), 6)
-	})
 
+	})
 })

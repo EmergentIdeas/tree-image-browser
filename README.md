@@ -21,11 +21,10 @@ code loaded on demand.
 Set up a file manager
 
 ```js
-import { ImageBrowserView, FileSelectDialog, loadStyles  } from '@webhandle/tree-file-browser/client-lib/dynamic-load.mjs'
+import { ImageBrowserView, FileSelectDialog  } from '@webhandle/tree-file-browser'
 
 let treeHolder = document.querySelector('.webhandle-file-tree-image-browser')
 if(treeHolder) {
-	loadStyles()
 	let imageBrowserView = new ImageBrowserView({
 		// The source of the files
 		sink: the file sink
@@ -33,6 +32,8 @@ if(treeHolder) {
 		, eventNotificationPanel: eventPanel
 		// optional, the directory which to open to
 		, startingDirectory: 'img/empty'
+		// true by default. Will load styles to show the file browser
+		, loadStyles: true
 	})
 	imageBrowserView.appendTo(treeHolder)
 	imageBrowserView.render()
@@ -47,8 +48,52 @@ Alternatively, the styles can be built into the pages stylesheet by including th
 so there's no harm in calling it if the css has already been included.
 
 Loading the css dynamically or loading the file browser dynamically requires that the compiled resources have been added to
-files available to the browser. These are at `@webhandle/tree-file-browser/resources` and must be available at the url
-`/@webhandle/tree-file-browser/resources`
+files available to the browser. These are at `@webhandle/tree-file-browser/files` and must be available at the url
+`/@webhandle/tree-file-browser/files`
+
+## Current Usage
+
+## Webhandle Component
+
+```js
+import treeFileBrowserSetup from "@webhandle/tree-file-browser/initialize-webhandle-component.mjs"
+let treeFileBrowserManager = await treeFileBrowserSetup(webhandle)
+
+```
+
+### Selections
+
+You can listen for selections like:
+
+```js
+	imageBrowserView.emitter.on('select', async function(evt) {
+		console.log(await imageBrowserView.getSelectedUrl())
+	})
+```
+
+### Options
+
+```js
+	/**
+	 * Construct a new file browser
+	 * @param {object} options 
+	 * @param {FileSink} options.sink The file to use as a file source
+	 * @param {boolean} [options.imagesOnly] Set to true if you would like to display only images
+	 * @param {boolean} [options.loadStyles] True by default. If true, default styles will be loaded.
+	 * @param {boolean} [options.allowFileSelection] Set to true so that selected files are marked
+	 * @param {EventNotificationPanel} [options.eventNotificationPanel] The panel which status messages will be added to.
+	 * @param {string} [options.startingDirectory] Opens to that directory path if it exists
+	 * @param {boolean} [options.deleteWithoutConfirm] False by default
+	 * @param {boolean} [options.ignoreGlobalEvents] False by default, if true it will not listen to events like paste or keypresses
+	 * which occur on the document
+	 * @param {Emitter} [options.emitter] Emitter for various file events
+	 */
+
+```
+
+
+
+## Old Usage
 
 If you're using webhandle, you can set up all the server side resources, including kapla-tree-on-page and the material icons,
 by using:
@@ -114,31 +159,3 @@ Using it independently on a single page is also pretty easy
 
 ```
 
-### Selections
-
-You can listen for selections like:
-
-```js
-	imageBrowserView.emitter.on('select', async function(evt) {
-		console.log(await imageBrowserView.getSelectedUrl())
-	})
-```
-
-### Options
-
-```js
-	/**
-	 * Construct a new file browser
-	 * @param {object} options 
-	 * @param {FileSink} options.sink The file to use as a file source
-	 * @param {boolean} [options.imagesOnly] Set to true if you would like to display only images
-	 * @param {boolean} [options.allowFileSelection] Set to true so that selected files are marked
-	 * @param {EventNotificationPanel} [options.eventNotificationPanel] The panel which status messages will be added to.
-	 * @param {string} [options.startingDirectory] Opens to that directory path if it exists
-	 * @param {boolean} [options.deleteWithoutConfirm] False by default
-	 * @param {boolean} [options.ignoreGlobalEvents] False by default, if true it will not listen to events like paste or keypresses
-	 * which occur on the document
-	 * @param {Emitter} [options.emitter] Emitter for various file events
-	 */
-
-```

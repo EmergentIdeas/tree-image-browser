@@ -20,4 +20,41 @@ __::start__
 		
 	</div>
 </div>
+	<script type="module">
+
+		import { ImageBrowserView, FileSelectDialog, loadStyles } from '@webhandle/tree-file-browser'
+		import {FileSinkRemoteHttp} from "file-sink-remote-http"
+
+		let webhandle = window.webhandle = window.webhandle || {}
+
+		webhandle.sinks = webhandle.sinks || {}
+		webhandle.sinks.files = new FileSinkRemoteHttp('/files')
+		webhandle.sinks.public = webhandle.sinks.files
+
+
+
+		let selectButton = document.querySelector('.select-image')
+		if (selectButton) {
+			selectButton.addEventListener('click', async function (evt) {
+				evt.preventDefault()
+
+				let diag = new FileSelectDialog({
+					sink: webhandle.sinks.files
+					, startingDirectory: 'img/empty'
+					, imagesOnly: true
+				})
+				let result = await diag.open()
+				console.log(result)
+
+			})
+
+
+		}
+
+
+
+
+
+
+	</script>
 __::end__

@@ -1,4 +1,4 @@
-import { FormAnswerDialog } from '../form-answer-dialog.mjs'
+import { FormAnswerDialog } from '@webhandle/dialog'
 import baseImageName from '../base-image-name.mjs'
 import makeImageSet from '../make-image-set.mjs'
 import nameParts from '../name-parts.mjs'
@@ -23,7 +23,7 @@ export async function _uploadGuidedImageFile(file) {
 		title: 'Upload File'
 		, body: guidedImageUploadForm(data)
 		, data: data
-		, dialogFrameClass: 'webhandle-file-tree-image-browser'
+		, className: 'webhandle-file-tree-image-browser'
 	})
 	let prom = dialog.open()
 	let result = await prom
@@ -75,7 +75,7 @@ export async function _uploadGuidedFile(file) {
 		title: 'Upload File'
 		, body: guidedFileUploadForm(data)
 		, data: data
-		, dialogFrameClass: 'webhandle-file-tree-image-browser'
+		, className: 'webhandle-file-tree-image-browser'
 	})
 	let prom = dialog.open()
 	let result = await prom

@@ -1,24 +1,16 @@
 {
 	"name": "@webhandle/tree-file-browser",
-	"version": "1.0.6",
+	"version": "2.0.0",
 	"description": "",
 	"main": "client-lib/image-browser-view.mjs",
 	"scripts": {
-		"test": "node_modules/mocha/bin/mocha",
-		"less-build": "npx lessc --source-map --source-map-include-source less/pages.less public/css/pages.css; npx lessc --source-map --source-map-include-source less/components.less public/tree-file-browser/resources/css/tree-browser.css",
-		"less-compress": "npx uglifycss public/css/pages.css > public/css/pages.min.css",
-		"client-js-build": "npx webpack --config pages.webpack.cjs",
-		"client-js-compress": "npx uglifyjs public/js/pages.cjs -o public/js/pages.min.cjs -c --source-map url=public/js/pages.min.cjs.map",
-		"client-js-browserify-build": "npm run client-js-pages-browserify-build",
-		"client-js-pages-browserify build": "npx browserify client-js/pages.cjs --debug | npx exorcist public/js/pages.cjs.map > public/js/pages.cjs",
+		"test": "node ./test/test-names.mjs",
+		"less-build": "lessc --source-map --source-map-include-source less/components.less public/tree-file-browser/resources/css/tree-browser.css",
+		"client-js-build": "webpack-cli --config browser.webpack.cjs",
+		"client-js-build-watch": "webpack-cli --watch --config browser.webpack.cjs",
 		"dev-less-watch": "onchange 'less/**/*.less' -- npm run less-build",
-		"dev-client-js-watch": "onchange 'client-lib/**/*js' 'views/webhandle-tree-image-browser/**/*tri' 'client-js/**/*js' -- npm run client-js-build",
-		"dev-server-js-watch": "onchange 'server-lib/**/*js' 'server-js/**/*js' -- pm2 restart webhandle-tree-image-browser-web",
-		"start": "node ./web-server.js",
-		"testDebug": "node --inspect-brk node_modules/mocha/bin/mocha",
-		"bg": "parallelshell 'npm run dev-less-watch' 'npm run dev-client-js-watch'",
-		"pm2-bg": "parallelshell 'npm run dev-less-watch' 'npm run dev-client-js-watch' 'npm run dev-server-js-watch'",
-		"dev": "parallelshell 'npm run start' 'npm run dev-less-watch' 'npm run dev-client-js-watch'"
+		"start": "run-webhandle-dev ./test/test-server.mjs",
+		"dev": "parallelshell 'npm run start' 'npm run dev-less-watch' 'npm run client-js-build-watch'"
 	},
 	"keywords": [],
 	"author": "",
@@ -26,47 +18,24 @@
 	"devDependencies": {
 		"@dankolz/ei-css-grid": "^1.0.0",
 		"@webhandle/event-notification-panel": "^1.0.0",
-		"browserify": "^14.4.0",
-		"chai": "^4.3.4",
+		"@webhandle/webpack-text-loader": "^1.0.0",
 		"ei-form-styles-1": "^1.0.2",
 		"ei-pic-browser": "^1.0.15",
-		"exorcist": "^2.0.0",
-		"express": "^4.17.1",
 		"file-sink": "^1.0.13",
-		"file-sink-remote-http": "^1.0.2",
+		"file-sink-remote-http": "^2.0.0",
 		"file-sink-server": "^1.0.5",
-		"filter-log": "0.0.5",
-		"jsdoc": "^3.6.11",
-		"less": "^3.10.3",
-		"mocha": "^9.1.3",
-		"node-polyfill-webpack-plugin": "^2.0.1",
-		"onchange": "^3.2.1",
-		"parallelshell": "3.0.1",
-		"raw-loader": "^4.0.2",
-		"tripartite": "^1.1.1",
-		"uglify-js": "^3.17.4",
-		"webhandle": "^1.0.32",
-		"webhandle-js-widget-setup": "^1.0.5",
-		"webpack-cli": "^5.1.4"
+		"filter-log": "^1.0.13",
+		"tripartite": "^1.1.1"
 	},
 	"dependencies": {
 		"@dankolz/escape-html-attribute-value": "^1.0.0",
-		"@dankolz/webhandle-admin-icons": "^1.0.2",
 		"@dankolz/webp-detection": "^1.0.14",
 		"@webhandle/backbone-view": "^1.0.1",
-		"@webhandle/gather-form-data": "^1.0.0",
+		"@webhandle/dialog": "^1.0.1",
+		"@webhandle/initialize-webhandle-component": "^1.0.2",
+		"@webhandle/material-icons": "^1.0.1",
 		"@webhandle/minimal-browser-event-emitter": "^1.0.2",
-		"ei-dialog": "^1.0.11",
-		"form-value-injector": "^1.0.6",
-		"input-value-injector": "^1.0.11",
-		"kalpa-tree-on-page": "^1.0.2",
-		"select-value-injector": "^1.0.3",
-		"textarea-value-injector": "^1.0.3"
-	},
-	"browserify": {
-		"transform": [
-			"tripartite/browserify-transform"
-		]
+		"kalpa-tree-on-page": "^1.0.5"
 	},
 	"files": [
 		"/client-lib",
