@@ -1,4 +1,4 @@
-<div class="guided-image-upload-form ei-form">
+<div class="guided-image-upload-form ei-form-styles">
 	<label>
 		Source file name:<br>
 		__nativeName__

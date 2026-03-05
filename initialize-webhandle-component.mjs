@@ -4,6 +4,7 @@ import path from "node:path"
 import setupMaterialIcons from "@webhandle/material-icons/initialize-webhandle-component.mjs"
 import setupDialog from "@webhandle/dialog/initialize-webhandle-component.mjs"
 import kalpaTreeSetup from "kalpa-tree-on-page/initialize-webhandle-component.mjs"
+import stylesSetup from "ei-form-styles-1/initialize-webhandle-component.mjs"
 
 let initializeWebhandleComponent = createInitializeWebhandleComponent()
 
@@ -21,6 +22,7 @@ initializeWebhandleComponent.setup = async function(webhandle, config) {
 	let managerMaterialIcons = await setupMaterialIcons(webhandle)
 	let managerDialog = await setupDialog(webhandle)
 	let kalpaTreeManager = await kalpaTreeSetup(webhandle)
+	let stylesManager = await stylesSetup(webhandle)
 
 	manager.provideExternalResources = function(externalResourceManager) {
 
