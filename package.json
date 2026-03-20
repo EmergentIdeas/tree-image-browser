@@ -1,6 +1,6 @@
 {
 	"name": "@webhandle/tree-file-browser",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "",
 	"main": "client-lib/image-browser-view.mjs",
 	"scripts": {
@@ -35,7 +35,7 @@
 		"@webhandle/material-icons": "^1.0.1",
 		"@webhandle/minimal-browser-event-emitter": "^1.0.2",
 		"ei-form-styles-1": "^1.0.4",
-		"kalpa-tree-on-page": "^1.0.5"
+		"kalpa-tree-on-page": "^1.0.6"
 	},
 	"files": [
 		"/client-lib",
