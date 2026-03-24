@@ -12,7 +12,7 @@ initializeWebhandleComponent.componentName = '@webhandle/tree-file-browser'
 initializeWebhandleComponent.componentDir = import.meta.dirname
 initializeWebhandleComponent.defaultConfig = {
 	publicFilesPrefix: "/@webhandle/tree-file-browser/files"
-	, provideResources: true
+	, provideResources: false
 }
 
 initializeWebhandleComponent.setup = async function(webhandle, config) {
