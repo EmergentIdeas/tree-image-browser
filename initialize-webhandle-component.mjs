@@ -23,6 +23,10 @@ initializeWebhandleComponent.setup = async function(webhandle, config) {
 	let managerDialog = await setupDialog(webhandle)
 	let kalpaTreeManager = await kalpaTreeSetup(webhandle)
 	let stylesManager = await stylesSetup(webhandle)
+	
+	manager.addExternalResources = function(externalResourceManager) {
+		manager.provideExternalResources(externalResourceManager)
+	}
 
 	manager.provideExternalResources = function(externalResourceManager) {
 

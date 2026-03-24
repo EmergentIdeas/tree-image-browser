@@ -58,6 +58,7 @@ files available to the browser. These are at `@webhandle/tree-file-browser/files
 ```js
 import treeFileBrowserSetup from "@webhandle/tree-file-browser/initialize-webhandle-component.mjs"
 let treeFileBrowserManager = await treeFileBrowserSetup(webhandle)
+treeFileBrowserManager.addExternalResources(externalResourceManager)
 
 ```
 
