@@ -5,7 +5,7 @@ __::start__
 			<div id="event-notifications"></div>
 		</div>
 	</div>
-
+	__::@webhandle/tree-file-browser/addExternalResources__
 	<div class="webhandle-file-tree-image-browser">
 
 	</div>

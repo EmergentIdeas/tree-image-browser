@@ -11,7 +11,7 @@ export default function loadStyles() {
 	}
 	loadMaterialIcons()
 
-	let sheetUrls = [...document.styleSheets].map(sheet => sheet.href)
+	let sheetUrls = [...document.styleSheets].map(sheet => ('' + sheet.href).toString())
 	if (!sheetUrls.some(url => url.includes('ei-form-styles.css'))) {
 		let link = document.createElement('link')
 		link.href = '/ei-form-styles-1/ei-form-styles.css'

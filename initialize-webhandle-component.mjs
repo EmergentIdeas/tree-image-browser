@@ -5,6 +5,7 @@ import setupMaterialIcons from "@webhandle/material-icons/initialize-webhandle-c
 import setupDialog from "@webhandle/dialog/initialize-webhandle-component.mjs"
 import kalpaTreeSetup from "kalpa-tree-on-page/initialize-webhandle-component.mjs"
 import stylesSetup from "ei-form-styles-1/initialize-webhandle-component.mjs"
+import fileSinkRemoteHttpSetup from "file-sink-remote-http/initialize-webhandle-component.mjs"
 
 let initializeWebhandleComponent = createInitializeWebhandleComponent()
 
@@ -23,8 +24,10 @@ initializeWebhandleComponent.setup = async function(webhandle, config) {
 	let managerDialog = await setupDialog(webhandle)
 	let kalpaTreeManager = await kalpaTreeSetup(webhandle)
 	let stylesManager = await stylesSetup(webhandle)
+	let fileSinkRemoteHttpManager = await fileSinkRemoteHttpSetup(webhandle)
 	
 	manager.addExternalResources = function(externalResourceManager) {
+		fileSinkRemoteHttpManager.addExternalResources(externalResourceManager)
 		manager.provideExternalResources(externalResourceManager)
 	}
 
@@ -48,6 +51,11 @@ initializeWebhandleComponent.setup = async function(webhandle, config) {
 		}
 		externalResourceManager.provideResource(resource)
 	}
+	webhandle.addTemplate(initializeWebhandleComponent.componentName + '/addExternalResources', (data) => {
+		let externalResourceManager = initializeWebhandleComponent.getExternalResourceManager(data)
+		manager.addExternalResources(externalResourceManager)
+		return externalResourceManager.render()
+	})
 	
 	if(config.provideResources) {
 		webhandle.routers.preDynamic.use((req, res, next) => {
