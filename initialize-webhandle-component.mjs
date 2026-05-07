@@ -27,6 +27,10 @@ initializeWebhandleComponent.setup = async function(webhandle, config) {
 	let fileSinkRemoteHttpManager = await fileSinkRemoteHttpSetup(webhandle)
 	
 	manager.addExternalResources = function(externalResourceManager) {
+		managerMaterialIcons.addExternalResources(externalResourceManager)
+		stylesManager.addExternalResources(externalResourceManager)
+		managerDialog.addExternalResources(externalResourceManager)
+		kalpaTreeManager.addExternalResources(externalResourceManager)
 		fileSinkRemoteHttpManager.addExternalResources(externalResourceManager)
 		manager.provideExternalResources(externalResourceManager)
 	}
