@@ -11,7 +11,7 @@ export async function deleteFile(evt, selected) {
 		if (!this.deleteWithoutConfirm) {
 			let dialog = new FormAnswerDialog({
 				title: 'Delete File' + (files.length > 1 ? 's' : '')
-				, body: '<p>' + names.join(', ') + '</p>'
+				, body: '<p>' + names.join(',<br>') + '</p>'
 			})
 			let prom = dialog.open()
 			let ans = await prom

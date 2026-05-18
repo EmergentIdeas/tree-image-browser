@@ -1,5 +1,6 @@
-import { Dialog } from '@webhandle/dialog'
+import { Dialog, FormAnswerDialog } from '@webhandle/dialog'
 import escapeHtmlAttributeValue from '@dankolz/escape-html-attribute-value'
+import addSoftBreaks from '../add-soft-breaks.mjs'
 
 export function changeFilesView(evt, selected) {
 	let className = selected.getAttribute('data-show-class')
@@ -71,11 +72,23 @@ export function selectVariant(evt, selected) {
 
 
 
-export function showVariantDetails(evt, selected) {
+export async function showVariantDetails(evt, selected) {
 	let choiceBox = selected.closest('.variant-choice-box')
 	let variant = choiceBox.variant
 
 	let files = this._getAssociatedRealFiles(variant)
+	
+	let url = await this.getSelectedUrl({variants: [variant]})
+	let alt = ''
+	
+	if(variant.definitionFile && url) {
+		let ind = url.indexOf('&alt=')
+		if(ind > -1) {
+			// we have an alt value
+
+			alt = decodeURIComponent(url.substring(ind + 5))
+		}
+	}
 
 	let content = '<div class="variant-details-information">'
 	if (variant.safeThumbnail) {
@@ -84,26 +97,46 @@ export function showVariantDetails(evt, selected) {
 		</div>`
 	}
 
-	content += '<ul class="variants">'
+	content += '<table class="variants" cellspacing="2">'
 	for (let file of files) {
-		content += '<li><a target="_blank" href="' + escapeHtmlAttributeValue(this.escapeAccessUrl(file.accessUrl)) + '">'
-		content += escapeHtmlAttributeValue(file.name) + '</a> - ' + this._formatBytes(file.stat.size)
-		content += '</li>'
+		content += '<tr><td><a target="_blank" href="' + escapeHtmlAttributeValue(this.escapeAccessUrl(file.accessUrl)) + '">'
+		content += escapeHtmlAttributeValue(file.name) + '</a> </td><td> ' + this._formatBytes(file.stat.size)
+		content += '</td></tr>'
 	}
-	content += '</ul>'
+	content += '</table>'
+	
+	content += `<div>webp url: ${addSoftBreaks(url)}</div>`
+	
+	content += '<div class="alt" style="margin-top: 10px;"><label>Alternative text: <br><input type="text" style="width: 100%; margin-top: 5px; box-sizing: border-box;" name="alt" /></label></div>'
 
 	content += '</div>'
 
-	let dialog = new Dialog({
-		title: 'File Details: ' + variant.baseName
+	let dialog = new FormAnswerDialog({
+		title: 'File Details:2 ' + variant.baseName
 		, body: content
-		, showCancelButton: false
+		// , showCancelButton: false
+		, data: {
+			alt: alt
+		}
 	})
 	let prom = dialog.open()
 	prom.then(async data => {
 		if (data) {
+			if(data.alt != alt && variant.definitionFile) {
+				try {
+					let defData = await this.sink.read(variant.definitionFile.relPath)
+					let meta = JSON.parse(defData)
+					meta.altText = data.alt
+					await this.sink.write(variant.definitionFile.relPath, JSON.stringify(meta))
+				}
+				catch(e) {
+					console.log(e)
+				}
+				
+			}
 		}
 	})
+
 }
 
 export function setFolderInfo() {

@@ -1,0 +1,14 @@
+{
+	"@webhandle/emergent-ideas-2025": {
+		"excludeBasicInfrastructure": false,
+		"excludeManagementTools": true
+	},
+	"@webhandle/session-cookie": {
+		"identity": {
+			"publicKeyBase64": "ZLsywLMy0APrTEf7wY_L1wnyJIbdgYkw99E4xEO_1HM",
+			"privateKeyPKCS8Base64": "MC4CAQAwBQYDK2VwBCIEIOWW5X153YK8-y3HUs5Dl0Zt9D2obc5B8W_p9ukBjDdw",
+			"symmetricKeyBase64": "pWuBjfUhwZR0zVpPIh694Pl6j44pk6yNxlqrznMgpwU",
+			"nickname": "j-wFA4GWORgrgS_5De5lt42jX02rcdlxRK1J4h5qSaU"
+		}
+	}
+}

@@ -1,6 +1,6 @@
 {
 	"name": "@webhandle/tree-file-browser",
-	"version": "2.0.9",
+	"version": "2.0.10",
 	"description": "",
 	"main": "client-lib/image-browser-view.mjs",
 	"scripts": {
@@ -9,7 +9,7 @@
 		"client-js-build": "webpack-cli --config browser.webpack.cjs",
 		"client-js-build-watch": "webpack-cli --watch --config browser.webpack.cjs",
 		"dev-less-watch": "onchange 'less/**/*.less' -- npm run less-build",
-		"start": "run-webhandle-dev ./test/test-server.mjs",
+		"start": "export webhandleConfigFile=conf/dev.json; run-webhandle-dev ./test/test-server.mjs",
 		"dev": "parallelshell 'npm run start' 'npm run dev-less-watch' 'npm run client-js-build-watch'"
 	},
 	"keywords": [],
