@@ -85,7 +85,8 @@ export async function showVariantDetails(evt, selected) {
 	
 	if(variant.definitionFile && url) {
 		let ind = url.indexOf('&alt=')
-		if(ind > -1) {
+		let hasAlt = ind > -1
+		if(hasAlt) {
 			// we have an alt value
 			alt = decodeURIComponent(url.substring(ind + 5))
 		}
@@ -112,7 +113,7 @@ export async function showVariantDetails(evt, selected) {
 		
 		content += `<div>webp url: ${addSoftBreaks(url)}</div>`
 		
-		content += '<div class="alt" style="margin-top: 10px;"><label>Alternative text: <br><input type="text" style="width: 100%; margin-top: 5px; box-sizing: border-box;" name="alt" /></label></div>'
+		content += `<div class="alt" style="margin-top: 10px;"><label>Alternative text: <br><input type="text" style="width: 100%; margin-top: 5px; box-sizing: border-box;" name="alt" value="${alt}" /></label></div>`
 
 		content += '</div>'
 	}
