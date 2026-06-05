@@ -12,7 +12,7 @@ import {
 	_join, _determineParentPath, _fileToKalpaNode, _determineExtensions, _addPending,
 	_determineSizes, _sortFiles, _compareVariants, sanitizeFileName, _isImageFile, setIfNotSet
 } from './image-browser-view-methods/utils.mjs'
-import { changeFilesView, changeFilesViewToClass, applyFilter, clearFilter, selectVariant, showVariantDetails, setFolderInfo, cleanFileInfo } from './image-browser-view-methods/view-interactions.mjs'
+import { changeFilesView, changeFilesViewToClass, applyFilter, clearFilter, selectVariant, showVariantDetails, setFolderInfo, cleanFileInfo, editFileContent } from './image-browser-view-methods/view-interactions.mjs'
 import { getDropCoverSelector, handleDrop, isFileTypeDrag, dragEnter, dragLeave, dragOver, _cleanupDropDone, handlePaste } from './image-browser-view-methods/drag-and-drop.mjs'
 import { createDirectory } from './image-browser-view-methods/create-directory.mjs'
 import { createVariantValues, _getFilesFromEvent, _getAssociatedRealFiles, _createAccessUrl, escapeAccessUrl,
@@ -201,6 +201,7 @@ export default class ImageBrowserView extends View {
 	clearFilter = clearFilter
 	selectVariant = selectVariant
 	showVariantDetails = showVariantDetails
+	editFileContent = editFileContent
 	setFolderInfo = setFolderInfo
 	cleanFileInfo = cleanFileInfo
 

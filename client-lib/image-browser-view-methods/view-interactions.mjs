@@ -1,6 +1,8 @@
 import { Dialog, FormAnswerDialog } from '@webhandle/dialog'
 import escapeHtmlAttributeValue from '@dankolz/escape-html-attribute-value'
 import addSoftBreaks from '../add-soft-breaks.mjs'
+import { fileDialogContentWithEditor  } from '../../views/load-browser-views.js'
+import isImageFileName from '../is-image-file-name.mjs'
 
 export function changeFilesView(evt, selected) {
 	let className = selected.getAttribute('data-show-class')
@@ -74,7 +76,7 @@ export function selectVariant(evt, selected) {
 
 export async function showVariantDetails(evt, selected) {
 	let choiceBox = selected.closest('.variant-choice-box')
-	let variant = choiceBox.variant
+	let variant = this.shownVariant = choiceBox.variant
 
 	let files = this._getAssociatedRealFiles(variant)
 	
@@ -85,43 +87,65 @@ export async function showVariantDetails(evt, selected) {
 		let ind = url.indexOf('&alt=')
 		if(ind > -1) {
 			// we have an alt value
-
 			alt = decodeURIComponent(url.substring(ind + 5))
 		}
 	}
-
-	let content = '<div class="variant-details-information">'
-	if (variant.safeThumbnail) {
-		content += `<div class="details-preview-image">
-		<img loading="lazy" src="${variant.safeThumbnail}" />
-		</div>`
-	}
-
-	content += '<table class="variants" cellspacing="2">'
-	for (let file of files) {
-		content += '<tr><td><a target="_blank" href="' + escapeHtmlAttributeValue(this.escapeAccessUrl(file.accessUrl)) + '">'
-		content += escapeHtmlAttributeValue(file.name) + '</a> </td><td> ' + this._formatBytes(file.stat.size)
-		content += '</td></tr>'
-	}
-	content += '</table>'
 	
-	content += `<div>webp url: ${addSoftBreaks(url)}</div>`
-	
-	content += '<div class="alt" style="margin-top: 10px;"><label>Alternative text: <br><input type="text" style="width: 100%; margin-top: 5px; box-sizing: border-box;" name="alt" /></label></div>'
+	let isImage = variant.thumbnailIcon === 'image'
+	let content = ''
 
-	content += '</div>'
+	if(isImage) {
+		content = '<div class="variant-details-information">'
+		if (variant.safeThumbnail) {
+			content += `<div class="details-preview-image">
+			<img loading="lazy" src="${variant.safeThumbnail}" />
+			</div>`
+		}
+
+		content += '<table class="variants" cellspacing="2">'
+		for (let file of files) {
+			content += '<tr><td><a target="_blank" href="' + escapeHtmlAttributeValue(this.escapeAccessUrl(file.accessUrl)) + '">'
+			content += escapeHtmlAttributeValue(file.name) + '</a> </td><td> ' + this._formatBytes(file.stat.size)
+			content += '</td></tr>'
+		}
+		content += '</table>'
+		
+		content += `<div>webp url: ${addSoftBreaks(url)}</div>`
+		
+		content += '<div class="alt" style="margin-top: 10px;"><label>Alternative text: <br><input type="text" style="width: 100%; margin-top: 5px; box-sizing: border-box;" name="alt" /></label></div>'
+
+		content += '</div>'
+	}
+	else {
+		let data = {
+			url: url
+			, urlText: addSoftBreaks(url)
+			, showEditButton: files.length === 1
+		}
+		content = fileDialogContentWithEditor(data)
+	}
 
 	let dialog = new FormAnswerDialog({
-		title: 'File Details:2 ' + variant.baseName
+		title: 'File Details: ' + variant.baseName
 		, body: content
 		// , showCancelButton: false
+		, afterOpen: () => {
+			let editButton = dialog.el.querySelector('.edit-file-content')
+			if(editButton) {
+				editButton.addEventListener('click', this.editFileContent.bind(this))
+			}
+			let downloadButton = dialog.el.querySelector('.download-file-content')
+			if(downloadButton) {
+				downloadButton.addEventListener('click', this.downloadFileContent.bind(this))
+			}
+		}
 		, data: {
 			alt: alt
 		}
 	})
 	let prom = dialog.open()
 	prom.then(async data => {
-		if (data) {
+		if (data && isImage) {
 			if(data.alt != alt && variant.definitionFile) {
 				try {
 					let defData = await this.sink.read(variant.definitionFile.relPath)
@@ -137,6 +161,35 @@ export async function showVariantDetails(evt, selected) {
 		}
 	})
 
+}
+
+export async function editFileContent(evt, selected) {
+	try {
+
+		let files = this._getAssociatedRealFiles(this.shownVariant)
+		let curItem = files[0]
+	
+		let content = (await this.sink.read(curItem.relPath)).toString()
+		let html = '<div class="ei-form-styles"><label>File content: <textarea type="text" name="fileContent" style="height: 80vh" ></textarea></label></div>'
+
+		let dialog = new FormAnswerDialog({
+			body: html
+			, afterOpen: () => {
+				let textarea = dialog.el.querySelector('textarea[name="fileContent"]')
+				textarea.value = content
+			}
+			, styles: {
+				width: "90%"
+			}
+		})
+		let answer = await dialog.open()
+		if(answer && answer.fileContent) {
+			await this.sink.write(curItem.relPath, answer.fileContent)
+		}
+	}
+	catch(e) {
+		alert('Could not open the file.')
+	}
 }
 
 export function setFolderInfo() {

@@ -1,0 +1,9 @@
+<div class="variant-details-information">
+	<div>url:
+		<a target="_blank" href="__url__">__urlText__</a>
+	</div>
+	<br>
+	<div class="buttons">
+		__showEditButton??'<button class="btn btn-default edit-file-content">Edit Content</button>'__
+	</div>
+</div>
